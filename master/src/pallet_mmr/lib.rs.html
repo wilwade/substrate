@@ -724,7 +724,7 @@
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">primitives::Error</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="ident">proof</span>.<span class="ident">leaf_count</span> <span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::mmr_leaves</span>() <span class="op">|</span><span class="op">|</span>
 			<span class="ident">proof</span>.<span class="ident">leaf_count</span> <span class="op">==</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span>
-			<span class="ident">proof</span>.<span class="ident">items</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">&gt;</span> <span class="ident">mmr::utils::NodesUtils::new</span>(<span class="ident">proof</span>.<span class="ident">leaf_count</span>).<span class="ident">depth</span>()
+			(<span class="ident">proof</span>.<span class="ident">items</span>.<span class="ident">len</span>().<span class="ident">saturating_add</span>(<span class="ident">leaves</span>.<span class="ident">len</span>())) <span class="kw">as</span> <span class="ident">u64</span> <span class="op">&gt;</span> <span class="ident">proof</span>.<span class="ident">leaf_count</span>
 		{
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">primitives::Error::Verify</span>
 				.<span class="ident">log_debug</span>(<span class="string">&quot;The proof has incorrect number of leaves or proof items.&quot;</span>))

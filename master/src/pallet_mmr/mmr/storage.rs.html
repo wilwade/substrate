@@ -516,7 +516,7 @@
 		<span class="kw">let</span> <span class="ident">window_size</span> <span class="op">=</span>
 			<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::BlockHashCount::get</span>().<span class="ident">unique_saturated_into</span>();
 		<span class="kw">if</span> <span class="ident">leaves</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">window_size</span> {
-			<span class="comment">// Move the rolling window towards the end of  `block_num-&gt;hash` mappings available</span>
+			<span class="comment">// Move the rolling window towards the end of `block_num-&gt;hash` mappings available</span>
 			<span class="comment">// in the runtime: we &quot;canonicalize&quot; the leaf at the end,</span>
 			<span class="kw">let</span> <span class="ident">to_canon_leaf</span> <span class="op">=</span> <span class="ident">leaves</span>.<span class="ident">saturating_sub</span>(<span class="ident">window_size</span>);
 			<span class="comment">// and all the nodes added by that leaf.</span>
