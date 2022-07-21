@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["pallet_bounties"] = [];
+implementors["pallet_child_bounties"] = [{"text":"impl&lt;T:&nbsp;<a class=\"trait\" href=\"pallet_child_bounties/pallet/trait.Config.html\" title=\"trait pallet_child_bounties::pallet::Config\">Config</a>&gt; ChildBountyManager&lt;&lt;&lt;T as Config&lt;<a class=\"primitive\" href=\"https://doc.rust-lang.org/nightly/std/primitive.unit.html\">()</a>&gt;&gt;::Currency as Currency&lt;&lt;T as Config&gt;::AccountId&gt;&gt;::Balance&gt; for <a class=\"struct\" href=\"pallet_child_bounties/pallet/struct.Pallet.html\" title=\"struct pallet_child_bounties::pallet::Pallet\">Pallet</a>&lt;T&gt;","synthetic":false,"types":["pallet_child_bounties::pallet::Pallet"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

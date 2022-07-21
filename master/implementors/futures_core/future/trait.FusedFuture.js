@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["sc_network_gossip"] = [{"text":"impl&lt;B:&nbsp;BlockT&gt; FusedFuture for <a class=\"struct\" href=\"sc_network_gossip/struct.GossipEngine.html\" title=\"struct sc_network_gossip::GossipEngine\">GossipEngine</a>&lt;B&gt;","synthetic":false,"types":["sc_network_gossip::bridge::GossipEngine"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
