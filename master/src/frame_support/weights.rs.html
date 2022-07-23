@@ -1039,6 +1039,43 @@
 <span id="1034">1034</span>
 <span id="1035">1035</span>
 <span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
+<span id="1039">1039</span>
+<span id="1040">1040</span>
+<span id="1041">1041</span>
+<span id="1042">1042</span>
+<span id="1043">1043</span>
+<span id="1044">1044</span>
+<span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
+<span id="1053">1053</span>
+<span id="1054">1054</span>
+<span id="1055">1055</span>
+<span id="1056">1056</span>
+<span id="1057">1057</span>
+<span id="1058">1058</span>
+<span id="1059">1059</span>
+<span id="1060">1060</span>
+<span id="1061">1061</span>
+<span id="1062">1062</span>
+<span id="1063">1063</span>
+<span id="1064">1064</span>
+<span id="1065">1065</span>
+<span id="1066">1066</span>
+<span id="1067">1067</span>
+<span id="1068">1068</span>
+<span id="1069">1069</span>
+<span id="1070">1070</span>
+<span id="1071">1071</span>
+<span id="1072">1072</span>
+<span id="1073">1073</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1397,6 +1434,15 @@
 		<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw-2">&amp;</span><span class="ident">err</span>.<span class="ident">post_info</span>,
 	}
 	.<span class="ident">calc_actual_weight</span>(<span class="ident">info</span>)
+}
+
+<span class="doccomment">/// Extract the actual pays_fee from a dispatch result if any or fall back to the default weight.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extract_actual_pays_fee</span>(<span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">DispatchResultWithPostInfo</span>, <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">DispatchInfo</span>) -&gt; <span class="ident">Pays</span> {
+	<span class="kw">match</span> <span class="ident">result</span> {
+		<span class="prelude-val">Ok</span>(<span class="ident">post_info</span>) =&gt; <span class="ident">post_info</span>,
+		<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw-2">&amp;</span><span class="ident">err</span>.<span class="ident">post_info</span>,
+	}
+	.<span class="ident">pays_fee</span>(<span class="ident">info</span>)
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span>, <span class="ident">Pays</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PostDispatchInfo</span> {
@@ -1995,6 +2041,34 @@
 			<span class="ident">extract_actual_weight</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Err</span>(<span class="ident">DispatchError::BadOrigin</span>.<span class="ident">with_weight</span>(<span class="number">1300</span>)), <span class="kw-2">&amp;</span><span class="ident">pre</span>),
 			<span class="number">1000</span>
 		);
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">extract_actual_pays_fee_works</span>() {
+		<span class="kw">let</span> <span class="ident">pre</span> <span class="op">=</span> <span class="ident">DispatchInfo</span> { <span class="ident">weight</span>: <span class="number">1000</span>, ..<span class="ident">Default::default</span>() };
+		<span class="macro">assert_eq!</span>(<span class="ident">extract_actual_pays_fee</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="number">7</span>).<span class="ident">into</span>()), <span class="kw-2">&amp;</span><span class="ident">pre</span>), <span class="ident">Pays::Yes</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">extract_actual_pays_fee</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="number">1000</span>).<span class="ident">into</span>()), <span class="kw-2">&amp;</span><span class="ident">pre</span>), <span class="ident">Pays::Yes</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">extract_actual_pays_fee</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Ok</span>((<span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="ident">Pays::Yes</span>).<span class="ident">into</span>()), <span class="kw-2">&amp;</span><span class="ident">pre</span>), <span class="ident">Pays::Yes</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">extract_actual_pays_fee</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Ok</span>((<span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="ident">Pays::No</span>).<span class="ident">into</span>()), <span class="kw-2">&amp;</span><span class="ident">pre</span>), <span class="ident">Pays::No</span>);
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">extract_actual_pays_fee</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Err</span>(<span class="ident">DispatchError::BadOrigin</span>.<span class="ident">with_weight</span>(<span class="number">9</span>)), <span class="kw-2">&amp;</span><span class="ident">pre</span>),
+			<span class="ident">Pays::Yes</span>
+		);
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">extract_actual_pays_fee</span>(
+				<span class="kw-2">&amp;</span><span class="prelude-val">Err</span>(<span class="ident">DispatchErrorWithPostInfo</span> {
+					<span class="ident">post_info</span>: <span class="ident">PostDispatchInfo</span> { <span class="ident">actual_weight</span>: <span class="prelude-val">None</span>, <span class="ident">pays_fee</span>: <span class="ident">Pays::No</span> },
+					<span class="ident">error</span>: <span class="ident">DispatchError::BadOrigin</span>,
+				}),
+				<span class="kw-2">&amp;</span><span class="ident">pre</span>
+			),
+			<span class="ident">Pays::No</span>
+		);
+
+		<span class="kw">let</span> <span class="ident">pre</span> <span class="op">=</span> <span class="ident">DispatchInfo</span> { <span class="ident">weight</span>: <span class="number">1000</span>, <span class="ident">pays_fee</span>: <span class="ident">Pays::No</span>, ..<span class="ident">Default::default</span>() };
+		<span class="macro">assert_eq!</span>(<span class="ident">extract_actual_pays_fee</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="number">7</span>).<span class="ident">into</span>()), <span class="kw-2">&amp;</span><span class="ident">pre</span>), <span class="ident">Pays::No</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">extract_actual_pays_fee</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="number">1000</span>).<span class="ident">into</span>()), <span class="kw-2">&amp;</span><span class="ident">pre</span>), <span class="ident">Pays::No</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">extract_actual_pays_fee</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Ok</span>((<span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="ident">Pays::Yes</span>).<span class="ident">into</span>()), <span class="kw-2">&amp;</span><span class="ident">pre</span>), <span class="ident">Pays::No</span>);
 	}
 
 	<span class="kw">type</span> <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">u64</span>;

@@ -1699,6 +1699,7 @@
 <span id="1694">1694</span>
 <span id="1695">1695</span>
 <span id="1696">1696</span>
+<span id="1697">1697</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1792,8 +1793,8 @@
 		<span class="ident">OriginTrait</span>, <span class="ident">PalletInfo</span>, <span class="ident">SortedMembers</span>, <span class="ident">StoredMap</span>, <span class="ident">TypedGet</span>,
 	},
 	<span class="ident">weights</span>::{
-		<span class="ident">extract_actual_weight</span>, <span class="ident">DispatchClass</span>, <span class="ident">DispatchInfo</span>, <span class="ident">PerDispatchClass</span>, <span class="ident">RuntimeDbWeight</span>,
-		<span class="ident">Weight</span>,
+		<span class="ident">extract_actual_pays_fee</span>, <span class="ident">extract_actual_weight</span>, <span class="ident">DispatchClass</span>, <span class="ident">DispatchInfo</span>,
+		<span class="ident">PerDispatchClass</span>, <span class="ident">RuntimeDbWeight</span>, <span class="ident">Weight</span>,
 	},
 	<span class="ident">Parameter</span>,
 };
@@ -3201,6 +3202,7 @@
 	<span class="doccomment">/// To be called immediately after an extrinsic has been applied.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">note_applied_extrinsic</span>(<span class="ident">r</span>: <span class="kw-2">&amp;</span><span class="ident">DispatchResultWithPostInfo</span>, <span class="kw-2">mut</span> <span class="ident">info</span>: <span class="ident">DispatchInfo</span>) {
 		<span class="ident">info</span>.<span class="ident">weight</span> <span class="op">=</span> <span class="ident">extract_actual_weight</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">info</span>);
+		<span class="ident">info</span>.<span class="ident">pays_fee</span> <span class="op">=</span> <span class="ident">extract_actual_pays_fee</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">info</span>);
 		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="kw">match</span> <span class="ident">r</span> {
 			<span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="ident">Event::ExtrinsicSuccess</span> { <span class="ident">dispatch_info</span>: <span class="ident">info</span> },
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
