@@ -60,8 +60,6 @@ balances and minting/burning assets.</li>
 <li><code>create</code>: Creates a new asset class, taking the required deposit.</li>
 <li><code>transfer</code>: Transfer sender’s assets to another account.</li>
 <li><code>transfer_keep_alive</code>: Transfer sender’s assets to another account, keeping the sender alive.</li>
-<li><code>set_metadata</code>: Set the metadata of an asset class.</li>
-<li><code>clear_metadata</code>: Remove the metadata of an asset class.</li>
 <li><code>approve_transfer</code>: Create or increase an delegated transfer.</li>
 <li><code>cancel_approval</code>: Rescind a previous approval.</li>
 <li><code>transfer_approved</code>: Transfer third-party’s assets to another account.</li>
@@ -85,6 +83,8 @@ balances and minting/burning assets.</li>
 <li><code>transfer_ownership</code>: Changes an asset class’s Owner; called by the asset class’s Owner.</li>
 <li><code>set_team</code>: Changes an asset class’s Admin, Freezer and Issuer; called by the asset class’s
 Owner.</li>
+<li><code>set_metadata</code>: Set the metadata of an asset class; called by the asset class’s Owner.</li>
+<li><code>clear_metadata</code>: Remove the metadata of an asset class; called by the asset class’s Owner.</li>
 </ul>
 <p>Please refer to the <a href="pallet/enum.Call.html" title="Call"><code>Call</code></a> enum and its associated variants for documentation on each
 function.</p>
