@@ -814,7 +814,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This is to make sure that extrinsics don&#39;t stay forever in the pool,</span>
 	<span class="doccomment">/// because they could seamingly fit the block (since they are below `max_block`),</span>
-	<span class="doccomment">/// but the cost of calling `on_initialize` alway prevents them from being included.</span>
+	<span class="doccomment">/// but the cost of calling `on_initialize` always prevents them from being included.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">avg_block_initialization</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">init_cost</span>: <span class="ident">Perbill</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">self</span>.<span class="ident">init_cost</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">init_cost</span>);
 		<span class="self">self</span>
