@@ -448,6 +448,29 @@
 <span id="443">443</span>
 <span id="444">444</span>
 <span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -483,7 +506,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Often there is a need for having multiple chain extensions. This is often the case when</span>
 <span class="doccomment">//! some generally useful off-the-shelf extensions should be included. To have multiple chain</span>
-<span class="doccomment">//! extensions they can be put into a tuple which is then passed to `[Config::ChainExtension]` like</span>
+<span class="doccomment">//! extensions they can be put into a tuple which is then passed to [`Config::ChainExtension`] like</span>
 <span class="doccomment">//! this `type Extensions = (ExtensionA, ExtensionB)`.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! However, only extensions implementing [`RegisteredChainExtension`] can be put into a tuple.</span>
@@ -544,6 +567,12 @@
 <span class="doccomment">/// In order to create a custom chain extension this trait must be implemented and supplied</span>
 <span class="doccomment">/// to the pallet contracts configuration trait as the associated type of the same name.</span>
 <span class="doccomment">/// Consult the [module documentation](self) for a general explanation of chain extensions.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Lifetime</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The extension will be [`Default`] initialized at the beginning of each call</span>
+<span class="doccomment">/// (**not** per call stack) and dropped afterwards. Hence any value held inside the extension</span>
+<span class="doccomment">/// can be used as a per-call scratch buffer.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ChainExtension</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Call the chain extension logic.</span>
 	<span class="doccomment">///</span>
@@ -552,8 +581,6 @@
 	<span class="doccomment">/// imported wasm function.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Parameters</span>
-	<span class="doccomment">/// - `func_id`: The first argument to `seal_call_chain_extension`. Usually used to determine</span>
-	<span class="doccomment">///   which function to realize.</span>
 	<span class="doccomment">/// - `env`: Access to the remaining arguments and the execution environment.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// # Return</span>
@@ -561,7 +588,7 @@
 	<span class="doccomment">/// In case of `Err` the contract execution is immediately suspended and the passed error</span>
 	<span class="doccomment">/// is returned to the caller. Otherwise the value of [`RetVal`] determines the exit</span>
 	<span class="doccomment">/// behaviour.</span>
-	<span class="kw">fn</span> <span class="ident">call</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">func_id</span>: <span class="ident">u32</span>, <span class="ident">env</span>: <span class="ident">Environment</span><span class="op">&lt;</span><span class="ident">E</span>, <span class="ident">InitState</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RetVal</span><span class="op">&gt;</span>
+	<span class="kw">fn</span> <span class="ident">call</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">env</span>: <span class="ident">Environment</span><span class="op">&lt;</span><span class="ident">E</span>, <span class="ident">InitState</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RetVal</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">E</span>: <span class="ident">Ext</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="ident">C</span><span class="op">&gt;</span>,
 		<span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>;
@@ -582,7 +609,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// An extension that implements this trait can be put in a tuple in order to have multiple</span>
 <span class="doccomment">/// extensions available. The tuple implementation routes requests based on the first two</span>
-<span class="doccomment">/// most significant bytes of the `func_id` passed to `call`.</span>
+<span class="doccomment">/// most significant bytes of the `id` passed to `call`.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// If this extensions is to be used by multiple runtimes consider</span>
 <span class="doccomment">/// [registering it](https://github.com/paritytech/chainextension-registry) to ensure that there</span>
@@ -600,15 +627,15 @@
 <span class="attribute">#[<span class="ident">impl_trait_for_tuples::impl_for_tuples</span>(<span class="number">10</span>)]</span>
 <span class="attribute">#[<span class="ident">tuple_types_custom_trait_bound</span>(<span class="ident">RegisteredChainExtension</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">ChainExtension</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Tuple</span> {
-	<span class="kw">fn</span> <span class="ident">call</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">func_id</span>: <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">env</span>: <span class="ident">Environment</span><span class="op">&lt;</span><span class="ident">E</span>, <span class="ident">InitState</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RetVal</span><span class="op">&gt;</span>
+	<span class="kw">fn</span> <span class="ident">call</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">env</span>: <span class="ident">Environment</span><span class="op">&lt;</span><span class="ident">E</span>, <span class="ident">InitState</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RetVal</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">E</span>: <span class="ident">Ext</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="ident">C</span><span class="op">&gt;</span>,
 		<span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
 	{
 		<span class="macro">for_tuples!</span>(
 			#(
-				<span class="kw">if</span> (<span class="ident">Tuple::ID</span> <span class="op">==</span> (<span class="ident">func_id</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span>) <span class="kw">as</span> <span class="ident">u16</span>) <span class="op">&amp;&amp;</span> <span class="ident">Tuple::enabled</span>() {
-					<span class="kw">return</span> <span class="ident">Tuple::call</span>(<span class="ident">func_id</span>, <span class="ident">env</span>);
+				<span class="kw">if</span> (<span class="ident">Tuple::ID</span> <span class="op">==</span> <span class="ident">env</span>.<span class="ident">ext_id</span>()) <span class="op">&amp;&amp;</span> <span class="ident">Tuple::enabled</span>() {
+					<span class="kw">return</span> <span class="ident">Tuple</span>.<span class="ident">call</span>(<span class="ident">env</span>);
 				}
 			)<span class="op">*</span>
 		);
@@ -656,6 +683,22 @@
 <span class="kw">where</span>
 	<span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
 {
+	<span class="doccomment">/// The function id within the `id` passed by a contract.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// It returns the two least significant bytes of the `id` passed by a contract as the other</span>
+	<span class="doccomment">/// two bytes represent the chain extension itself (the code which is calling this function).</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">func_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
+		(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">id</span> <span class="op">&amp;</span> <span class="number">0x00FF</span>) <span class="kw">as</span> <span class="ident">u16</span>
+	}
+
+	<span class="doccomment">/// The chain extension id within the `id` passed by a contract.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// It returns the two most significant bytes of the `id` passed by a contract which represent</span>
+	<span class="doccomment">/// the chain extension itself (the code which is calling this function).</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ext_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
+		(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">id</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">16</span>) <span class="kw">as</span> <span class="ident">u16</span>
+	}
+
 	<span class="doccomment">/// Charge the passed `amount` of weight from the overall limit.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// It returns `Ok` when there the remaining weight budget is larger than the passed</span>
@@ -701,13 +744,14 @@
 	<span class="doccomment">/// ever create this type. Chain extensions merely consume it.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">runtime</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Runtime</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span>, <span class="ident">E</span><span class="op">&gt;</span>,
+		<span class="ident">id</span>: <span class="ident">u32</span>,
 		<span class="ident">input_ptr</span>: <span class="ident">u32</span>,
 		<span class="ident">input_len</span>: <span class="ident">u32</span>,
 		<span class="ident">output_ptr</span>: <span class="ident">u32</span>,
 		<span class="ident">output_len_ptr</span>: <span class="ident">u32</span>,
 	) -&gt; <span class="self">Self</span> {
 		<span class="ident">Environment</span> {
-			<span class="ident">inner</span>: <span class="ident">Inner</span> { <span class="ident">runtime</span>, <span class="ident">input_ptr</span>, <span class="ident">input_len</span>, <span class="ident">output_ptr</span>, <span class="ident">output_len_ptr</span> },
+			<span class="ident">inner</span>: <span class="ident">Inner</span> { <span class="ident">runtime</span>, <span class="ident">id</span>, <span class="ident">input_ptr</span>, <span class="ident">input_len</span>, <span class="ident">output_ptr</span>, <span class="ident">output_len_ptr</span> },
 			<span class="ident">phantom</span>: <span class="ident">PhantomData</span>,
 		}
 	}
@@ -855,6 +899,8 @@
 <span class="kw">struct</span> <span class="ident">Inner</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The runtime contains all necessary functions to interact with the running contract.</span>
 	<span class="ident">runtime</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Runtime</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span>, <span class="ident">E</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Verbatim argument passed to `seal_call_chain_extension`.</span>
+	<span class="ident">id</span>: <span class="ident">u32</span>,
 	<span class="doccomment">/// Verbatim argument passed to `seal_call_chain_extension`.</span>
 	<span class="ident">input_ptr</span>: <span class="ident">u32</span>,
 	<span class="doccomment">/// Verbatim argument passed to `seal_call_chain_extension`.</span>

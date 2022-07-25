@@ -2486,6 +2486,8 @@
 <span id="2481">2481</span>
 <span id="2482">2482</span>
 <span id="2483">2483</span>
+<span id="2484">2484</span>
+<span id="2485">2485</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -3837,7 +3839,7 @@
 		<span class="doccomment">///   pool.</span>
 		<span class="doccomment">/// - `points` is the number of points that are issued as a result of `balance` being</span>
 		<span class="doccomment">/// dissolved into the corresponding unbonding pool.</span>
-		<span class="doccomment">///</span>
+		<span class="doccomment">/// - `era` is the era in which the balance will be unbonded.</span>
 		<span class="doccomment">/// In the absence of slashing, these values will match. In the presence of slashing, the</span>
 		<span class="doccomment">/// number of points that are issued in the unbonding pool will be less than the amount</span>
 		<span class="doccomment">/// requested to be unbonded.</span>
@@ -3846,6 +3848,7 @@
 			<span class="ident">pool_id</span>: <span class="ident">PoolId</span>,
 			<span class="ident">balance</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">points</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">era</span>: <span class="ident">EraIndex</span>,
 		},
 		<span class="doccomment">/// A member has withdrawn from their pool.</span>
 		<span class="doccomment">///</span>
@@ -4171,6 +4174,7 @@
 				<span class="ident">pool_id</span>: <span class="ident">member</span>.<span class="ident">pool_id</span>,
 				<span class="ident">points</span>: <span class="ident">points_unbonded</span>,
 				<span class="ident">balance</span>: <span class="ident">unbonding_balance</span>,
+				<span class="ident">era</span>: <span class="ident">unbond_era</span>,
 			});
 
 			<span class="comment">// Now that we know everything has worked write the items to storage.</span>
