@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Subkey",""]],"fn":[["run","Run the subkey command, given the appropriate runtime."]]});
+window.SIDEBAR_ITEMS = {"enum":[["Subkey",""]],"fn":[["run","Run the subkey command, given the appropriate runtime."]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["PoolBenchmark",""],["PoolBenchmarkDescription",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["PoolBenchmark",""],["PoolBenchmarkDescription",""]]};

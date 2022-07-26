@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["main",""]],"mod":[["common","Common fuzzing utils."]]});
+window.SIDEBAR_ITEMS = {"fn":[["main",""]],"mod":[["common","Common fuzzing utils."]]};

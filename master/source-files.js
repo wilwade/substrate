@@ -1,4 +1,4 @@
-var N = null;var sourcesIndex = {};
+var sourcesIndex = {};
 sourcesIndex["bags_list"] = {"name":"","files":["main.rs"]};
 sourcesIndex["beefy_gadget"] = {"name":"","files":["error.rs","gossip.rs","keystore.rs","lib.rs","metrics.rs","notification.rs","round.rs","worker.rs"]};
 sourcesIndex["beefy_gadget_rpc"] = {"name":"","files":["lib.rs","notification.rs"]};

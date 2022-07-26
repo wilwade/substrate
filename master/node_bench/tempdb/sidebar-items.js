@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["DatabaseType",""]],"struct":[["ParityDbWrapper",""],["TempDatabase",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["DatabaseType",""]],"struct":[["ParityDbWrapper",""],["TempDatabase",""]]};

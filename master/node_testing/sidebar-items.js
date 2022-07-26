@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["bench","Benchmarking module."],["client","Utilities to build a `TestClient` for `node-runtime`."],["genesis","Genesis Configuration."],["keyring","Test accounts."]]});
+window.SIDEBAR_ITEMS = {"mod":[["bench","Benchmarking module."],["client","Utilities to build a `TestClient` for `node-runtime`."],["genesis","Genesis Configuration."],["keyring","Test accounts."]]};

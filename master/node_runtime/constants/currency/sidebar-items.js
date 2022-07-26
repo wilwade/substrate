@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["CENTS",""],["DOLLARS",""],["MILLICENTS",""]],"fn":[["deposit",""]]});
+window.SIDEBAR_ITEMS = {"constant":[["CENTS",""],["DOLLARS",""],["MILLICENTS",""]],"fn":[["deposit",""]]};

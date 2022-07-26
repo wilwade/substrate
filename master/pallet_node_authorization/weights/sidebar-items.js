@@ -1,1 +1,1 @@
-initSidebarItems({"trait":[["WeightInfo",""]]});
+window.SIDEBAR_ITEMS = {"trait":[["WeightInfo",""]]};

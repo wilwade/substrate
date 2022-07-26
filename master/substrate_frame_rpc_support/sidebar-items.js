@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["StorageQuery","A typed query on chain state usable from an RPC client."]]});
+window.SIDEBAR_ITEMS = {"struct":[["StorageQuery","A typed query on chain state usable from an RPC client."]]};

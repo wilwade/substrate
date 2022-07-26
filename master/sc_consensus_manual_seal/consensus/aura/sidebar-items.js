@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["AuraConsensusDataProvider","Consensus data provider for Aura."]]});
+window.SIDEBAR_ITEMS = {"struct":[["AuraConsensusDataProvider","Consensus data provider for Aura."]]};

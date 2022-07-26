@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Pallet",""]],"trait":[["Config",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["Pallet",""]],"trait":[["Config",""]]};
