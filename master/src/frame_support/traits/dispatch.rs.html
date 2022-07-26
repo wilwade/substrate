@@ -369,23 +369,6 @@
 <span id="363">363</span>
 <span id="364">364</span>
 <span id="365">365</span>
-<span id="366">366</span>
-<span id="367">367</span>
-<span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
-<span id="379">379</span>
-<span id="380">380</span>
-<span id="381">381</span>
-<span id="382">382</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -622,23 +605,6 @@
 
 	<span class="doccomment">/// Dispatch this call but do not check the filter in origin.</span>
 	<span class="kw">fn</span> <span class="ident">dispatch_bypass_filter</span>(<span class="self">self</span>, <span class="ident">origin</span>: <span class="ident"><span class="self">Self</span>::Origin</span>) -&gt; <span class="ident">DispatchResultWithPostInfo</span>;
-}
-
-<span class="doccomment">/// Type that can be dispatched with an additional storage layer which is used to execute the call.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DispatchableWithStorageLayer</span> {
-	<span class="doccomment">/// The origin type of the runtime, (i.e. `frame_system::Config::Origin`).</span>
-	<span class="kw">type</span> <span class="ident">Origin</span>;
-
-	<span class="doccomment">/// Same as `dispatch` from the [`frame_support::dispatch::Dispatchable`] trait, but</span>
-	<span class="doccomment">/// specifically spawns a new storage layer to execute the call inside of.</span>
-	<span class="kw">fn</span> <span class="ident">dispatch_with_storage_layer</span>(<span class="self">self</span>, <span class="ident">origin</span>: <span class="ident"><span class="self">Self</span>::Origin</span>) -&gt; <span class="ident">DispatchResultWithPostInfo</span>;
-
-	<span class="doccomment">/// Same as `dispatch_bypass_filter` from the [`UnfilteredDispatchable`] trait, but specifically</span>
-	<span class="doccomment">/// spawns a new storage layer to execute the call inside of.</span>
-	<span class="kw">fn</span> <span class="ident">dispatch_bypass_filter_with_storage_layer</span>(
-		<span class="self">self</span>,
-		<span class="ident">origin</span>: <span class="ident"><span class="self">Self</span>::Origin</span>,
-	) -&gt; <span class="ident">DispatchResultWithPostInfo</span>;
 }
 
 <span class="doccomment">/// Methods available on `frame_system::Config::Origin`.</span>

@@ -190,19 +190,6 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -366,19 +353,6 @@
 							#<span class="ident">scrate::traits::UnfilteredDispatchable::dispatch_bypass_filter</span>(<span class="ident">call</span>, <span class="ident">origin</span>),
 					)<span class="op">*</span>
 				}
-			}
-		}
-		<span class="kw">impl</span> #<span class="ident">scrate::traits::DispatchableWithStorageLayer</span> <span class="kw">for</span> <span class="ident">Call</span> {
-			<span class="kw">type</span> <span class="ident">Origin</span> <span class="op">=</span> <span class="ident">Origin</span>;
-			<span class="kw">fn</span> <span class="ident">dispatch_with_storage_layer</span>(<span class="self">self</span>, <span class="ident">origin</span>: <span class="ident">Origin</span>) -&gt; #<span class="ident">scrate::dispatch::DispatchResultWithPostInfo</span> {
-				#<span class="ident">scrate::storage::with_storage_layer</span>(<span class="op">|</span><span class="op">|</span> {
-					#<span class="ident">scrate::dispatch::Dispatchable::dispatch</span>(<span class="self">self</span>, <span class="ident">origin</span>)
-				})
-			}
-			<span class="kw">fn</span> <span class="ident">dispatch_bypass_filter_with_storage_layer</span>(<span class="self">self</span>, <span class="ident">origin</span>: <span class="ident">Origin</span>) -&gt; #<span class="ident">scrate::dispatch::DispatchResultWithPostInfo</span> {
-				#<span class="ident">scrate::storage::with_storage_layer</span>(<span class="op">|</span><span class="op">|</span> {
-					#<span class="ident">scrate::traits::UnfilteredDispatchable::dispatch_bypass_filter</span>(<span class="self">self</span>, <span class="ident">origin</span>)
-				})
 			}
 		}
 
