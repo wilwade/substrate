@@ -118,7 +118,6 @@ pub mod pallet {
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
-	#[pallet::without_storage_info]
 	pub struct Pallet<T, I = ()>(_);
 
 	#[pallet::config]
@@ -159,7 +158,8 @@ pub mod pallet {
 			+ Codec
 			+ Eq
 			+ Debug
-			+ TypeInfo;
+			+ TypeInfo
+			+ MaxEncodedLen;
 
 		// Constants
 		/// The minimum amount to be used as a deposit for a public referendum proposal.
@@ -355,7 +355,7 @@ pub mod pallet {
 		#[pallet::weight(T::WeightInfo::submit())]
 		pub fn submit(
 			origin: OriginFor<T>,
-			proposal_origin: PalletsOriginOf<T>,
+			proposal_origin: Box<PalletsOriginOf<T>>,
 			proposal_hash: T::Hash,
 			enactment_moment: DispatchTime<T::BlockNumber>,
 		) -> DispatchResult {
@@ -373,7 +373,7 @@ pub mod pallet {
 			let nudge_call = Call::nudge_referendum { index };
 			let status = ReferendumStatus {
 				track,
-				origin: proposal_origin,
+				origin: *proposal_origin,
 				proposal_hash,
 				enactment: enactment_moment,
 				submitted: now,

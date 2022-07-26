@@ -97,11 +97,12 @@ mod dispatch;
 pub use dispatch::EnsureOneOf;
 pub use dispatch::{
 	AsEnsureOriginWithArg, DispatchableWithStorageLayer, EitherOf, EitherOfDiverse, EnsureOrigin,
-	EnsureOriginWithArg, MapSuccess, NeverEnsureOrigin, OriginTrait, ReduceBy, TryMapSuccess,
+	EnsureOriginWithArg, MapSuccess, NeverEnsureOrigin, OriginTrait, TryMapSuccess,
 	UnfilteredDispatchable,
 };
 
 mod voting;
 pub use voting::{
-	CurrencyToVote, PollStatus, Polling, SaturatingCurrencyToVote, U128CurrencyToVote, VoteTally,
+	ClassCountOf, CurrencyToVote, PollStatus, Polling, SaturatingCurrencyToVote,
+	U128CurrencyToVote, VoteTally,
 };
