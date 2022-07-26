@@ -82,6 +82,7 @@ sourcesIndex["pallet_nicks"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_node_authorization"] = {"name":"","files":["lib.rs","weights.rs"]};
 sourcesIndex["pallet_nomination_pools"] = {"name":"","files":["lib.rs","migration.rs","weights.rs"]};
 sourcesIndex["pallet_nomination_pools_benchmarking"] = {"name":"","files":["lib.rs"]};
+sourcesIndex["pallet_nomination_pools_runtime_api"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_nomination_pools_test_staking"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_offences"] = {"name":"","files":["lib.rs","migration.rs"]};
 sourcesIndex["pallet_offences_benchmarking"] = {"name":"","files":["lib.rs"]};

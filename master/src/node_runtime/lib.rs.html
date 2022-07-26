@@ -2170,6 +2170,12 @@
 <span id="2165">2165</span>
 <span id="2166">2166</span>
 <span id="2167">2167</span>
+<span id="2168">2168</span>
+<span id="2169">2169</span>
+<span id="2170">2170</span>
+<span id="2171">2171</span>
+<span id="2172">2172</span>
+<span id="2173">2173</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -4004,6 +4010,12 @@
 			<span class="ident">Historical::prove</span>((<span class="ident">fg_primitives::KEY_TYPE</span>, <span class="ident">authority_id</span>))
 				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">encode</span>())
 				.<span class="ident">map</span>(<span class="ident">fg_primitives::OpaqueKeyOwnershipProof::new</span>)
+		}
+	}
+
+	<span class="kw">impl</span> <span class="ident">pallet_nomination_pools_runtime_api::NominationPoolsApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">AccountId</span>, <span class="ident">Balance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+		<span class="kw">fn</span> <span class="ident">pending_rewards</span>(<span class="ident">member_account</span>: <span class="ident">AccountId</span>) -&gt; <span class="ident">Balance</span> {
+			<span class="ident">NominationPools::pending_rewards</span>(<span class="ident">member_account</span>)
 		}
 	}
 
