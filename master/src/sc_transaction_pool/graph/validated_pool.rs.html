@@ -671,8 +671,6 @@
 <span id="665">665</span>
 <span id="666">666</span>
 <span id="667">667</span>
-<span id="668">668</span>
-<span id="669">669</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -699,7 +697,6 @@
 
 <span class="kw">use</span> <span class="ident">futures::channel::mpsc</span>::{<span class="ident">channel</span>, <span class="ident">Sender</span>};
 <span class="kw">use</span> <span class="ident">parking_lot</span>::{<span class="ident">Mutex</span>, <span class="ident">RwLock</span>};
-<span class="kw">use</span> <span class="ident">retain_mut::RetainMut</span>;
 <span class="kw">use</span> <span class="ident">sc_transaction_pool_api</span>::{<span class="ident">error</span>, <span class="ident">PoolStatus</span>, <span class="ident">ReadyTransactions</span>};
 <span class="kw">use</span> <span class="ident">serde::Serialize</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
@@ -879,21 +876,20 @@
 				<span class="kw">let</span> <span class="ident">imported</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">write</span>().<span class="ident">import</span>(<span class="ident">tx</span>)<span class="question-mark">?</span>;
 
 				<span class="kw">if</span> <span class="kw">let</span> <span class="ident">base::Imported::Ready</span> { <span class="kw-2">ref</span> <span class="ident">hash</span>, .. } <span class="op">=</span> <span class="ident">imported</span> {
-					<span class="ident">RetainMut::retain_mut</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">import_notification_sinks</span>.<span class="ident">lock</span>(), <span class="op">|</span><span class="ident">sink</span><span class="op">|</span> {
-						<span class="kw">match</span> <span class="ident">sink</span>.<span class="ident">try_send</span>(<span class="kw-2">*</span><span class="ident">hash</span>) {
-							<span class="prelude-val">Ok</span>(()) =&gt; <span class="bool-val">true</span>,
-							<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt;
-								<span class="kw">if</span> <span class="ident">e</span>.<span class="ident">is_full</span>() {
-									<span class="macro">log::warn!</span>(
-										<span class="ident">target</span>: <span class="string">&quot;txpool&quot;</span>,
-										<span class="string">&quot;[{:?}] Trying to notify an import but the channel is full&quot;</span>,
-										<span class="ident">hash</span>,
-									);
-									<span class="bool-val">true</span>
-								} <span class="kw">else</span> {
-									<span class="bool-val">false</span>
-								},
-						}
+					<span class="kw">let</span> <span class="ident">sinks</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">import_notification_sinks</span>.<span class="ident">lock</span>();
+					<span class="ident">sinks</span>.<span class="ident">retain_mut</span>(<span class="op">|</span><span class="ident">sink</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">sink</span>.<span class="ident">try_send</span>(<span class="kw-2">*</span><span class="ident">hash</span>) {
+						<span class="prelude-val">Ok</span>(()) =&gt; <span class="bool-val">true</span>,
+						<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt;
+							<span class="kw">if</span> <span class="ident">e</span>.<span class="ident">is_full</span>() {
+								<span class="macro">log::warn!</span>(
+									<span class="ident">target</span>: <span class="string">&quot;txpool&quot;</span>,
+									<span class="string">&quot;[{:?}] Trying to notify an import but the channel is full&quot;</span>,
+									<span class="ident">hash</span>,
+								);
+								<span class="bool-val">true</span>
+							} <span class="kw">else</span> {
+								<span class="bool-val">false</span>
+							},
 					});
 				}
 
