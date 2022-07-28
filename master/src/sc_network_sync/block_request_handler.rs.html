@@ -417,6 +417,16 @@
 <span id="411">411</span>
 <span id="412">412</span>
 <span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Substrate.</span>
 
@@ -645,16 +655,13 @@
 
 		<span class="macro">debug!</span>(
 			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-			<span class="string">&quot;Handling block request from {}: Starting at `{:?}` with maximum blocks \
-			 of `{}`, direction `{:?}` and attributes `{:?}`.&quot;</span>,
-			<span class="ident">peer</span>,
-			<span class="ident">from_block_id</span>,
-			<span class="ident">max_blocks</span>,
-			<span class="ident">direction</span>,
-			<span class="ident">attributes</span>,
+			<span class="string">&quot;Handling block request from {peer}: Starting at `{from_block_id:?}` with \
+			maximum blocks of `{max_blocks}`, reputation_change: `{reputation_change:?}`, \
+			small_request `{small_request:?}`, direction `{direction:?}` and \
+			attributes `{attributes:?}`.&quot;</span>,
 		);
 
-		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">reputation_change</span>.<span class="ident">is_none</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">small_request</span> {
+		<span class="kw">let</span> <span class="ident">maybe_block_response</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">reputation_change</span>.<span class="ident">is_none</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">small_request</span> {
 			<span class="kw">let</span> <span class="ident">block_response</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_block_response</span>(
 				<span class="ident">attributes</span>,
 				<span class="ident">from_block_id</span>,
@@ -678,9 +685,22 @@
 				}
 			}
 
+			<span class="prelude-val">Some</span>(<span class="ident">block_response</span>)
+		} <span class="kw">else</span> {
+			<span class="prelude-val">None</span>
+		};
+
+		<span class="macro">debug!</span>(
+			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+			<span class="string">&quot;Sending result of block request from {peer} starting at `{from_block_id:?}`: \
+			blocks: {:?}, data: {:?}&quot;</span>,
+			<span class="ident">maybe_block_response</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">res</span><span class="op">|</span> <span class="ident">res</span>.<span class="ident">blocks</span>.<span class="ident">len</span>()),
+			<span class="ident">maybe_block_response</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">res</span><span class="op">|</span> <span class="ident">res</span>.<span class="ident">encoded_len</span>()),
+		);
+
+		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">block_response</span>) <span class="op">=</span> <span class="ident">maybe_block_response</span> {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">block_response</span>.<span class="ident">encoded_len</span>());
 			<span class="ident">block_response</span>.<span class="ident">encode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">data</span>)<span class="question-mark">?</span>;
-
 			<span class="prelude-val">Ok</span>(<span class="ident">data</span>)
 		} <span class="kw">else</span> {
 			<span class="prelude-val">Err</span>(())
