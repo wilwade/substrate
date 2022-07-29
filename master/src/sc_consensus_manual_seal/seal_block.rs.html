@@ -170,6 +170,8 @@
 <span id="164">164</span>
 <span id="165">165</span>
 <span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -208,7 +210,7 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_PROPOSAL_DURATION</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">10</span>;
 
 <span class="doccomment">/// params for sealing a new block</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SealBlockParams</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">BI</span>, <span class="ident">SC</span>, <span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">E</span>, <span class="ident">TP</span>, <span class="ident">CIDP</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SealBlockParams</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">BI</span>, <span class="ident">SC</span>, <span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">E</span>, <span class="ident">TP</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// if true, empty blocks(without extrinsics) will be created.</span>
 	<span class="doccomment">/// otherwise, will return Error::EmptyTransactionPool.</span>
 	<span class="kw">pub</span> <span class="ident">create_empty</span>: <span class="ident">bool</span>,
@@ -228,7 +230,7 @@
 	<span class="kw">pub</span> <span class="ident">select_chain</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">SC</span>,
 	<span class="doccomment">/// Digest provider for inclusion in blocks.</span>
 	<span class="kw">pub</span> <span class="ident">consensus_data_provider</span>:
-		<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">ConsensusDataProvider</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">dyn</span> <span class="ident">ConsensusDataProvider</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Proof</span> <span class="op">=</span> <span class="ident">P</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// block import object</span>
 	<span class="kw">pub</span> <span class="ident">block_import</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BI</span>,
 	<span class="doccomment">/// Something that can create the inherent data providers.</span>
@@ -236,7 +238,7 @@
 }
 
 <span class="doccomment">/// seals a new block with the given params</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">seal_block</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">SC</span>, <span class="ident">C</span>, <span class="ident">E</span>, <span class="ident">TP</span>, <span class="ident">CIDP</span><span class="op">&gt;</span>(
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">seal_block</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">SC</span>, <span class="ident">C</span>, <span class="ident">E</span>, <span class="ident">TP</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span>(
 	<span class="ident">SealBlockParams</span> {
 		<span class="ident">create_empty</span>,
 		<span class="ident">finalize</span>,
@@ -249,7 +251,7 @@
 		<span class="ident">create_inherent_data_providers</span>,
 		<span class="ident">consensus_data_provider</span>: <span class="ident">digest_provider</span>,
 		<span class="kw-2">mut</span> <span class="ident">sender</span>,
-	}: <span class="ident">SealBlockParams</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">SC</span>, <span class="ident">C</span>, <span class="ident">E</span>, <span class="ident">TP</span>, <span class="ident">CIDP</span><span class="op">&gt;</span>,
+	}: <span class="ident">SealBlockParams</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">SC</span>, <span class="ident">C</span>, <span class="ident">E</span>, <span class="ident">TP</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span>,
 ) <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">BlockT</span>,
 	<span class="ident">BI</span>: <span class="ident">BlockImport</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_consensus::Error</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">sp_api::TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>
@@ -258,11 +260,12 @@
 		<span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">C</span>: <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">E</span>: <span class="ident">Environment</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-	<span class="ident">E::Proposer</span>: <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">E::Proposer</span>: <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Proof</span> <span class="op">=</span> <span class="ident">P</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">TP</span>: <span class="ident">TransactionPool</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="op">=</span> <span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">SC</span>: <span class="ident">SelectChain</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span>: <span class="lifetime">&#39;static</span>,
 	<span class="ident">CIDP</span>: <span class="ident">CreateInherentDataProviders</span><span class="op">&lt;</span><span class="ident">B</span>, ()<span class="op">&gt;</span>,
+	<span class="ident">P</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="kw">async</span> {
 		<span class="kw">if</span> <span class="ident">pool</span>.<span class="ident">status</span>().<span class="ident">ready</span> <span class="op">==</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">create_empty</span> {
@@ -310,6 +313,7 @@
 		}
 
 		<span class="kw">let</span> (<span class="ident">header</span>, <span class="ident">body</span>) <span class="op">=</span> <span class="ident">proposal</span>.<span class="ident">block</span>.<span class="ident">deconstruct</span>();
+		<span class="kw">let</span> <span class="ident">proof</span> <span class="op">=</span> <span class="ident">proposal</span>.<span class="ident">proof</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">BlockImportParams::new</span>(<span class="ident">BlockOrigin::Own</span>, <span class="ident">header</span>.<span class="ident">clone</span>());
 		<span class="ident">params</span>.<span class="ident">body</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">body</span>);
 		<span class="ident">params</span>.<span class="ident">finalized</span> <span class="op">=</span> <span class="ident">finalize</span>;
@@ -319,7 +323,7 @@
 		));
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">digest_provider</span>) <span class="op">=</span> <span class="ident">digest_provider</span> {
-			<span class="ident">digest_provider</span>.<span class="ident">append_block_import</span>(<span class="kw-2">&amp;</span><span class="ident">parent</span>, <span class="kw-2">&amp;mut</span> <span class="ident">params</span>, <span class="kw-2">&amp;</span><span class="ident">inherent_data</span>)<span class="question-mark">?</span>;
+			<span class="ident">digest_provider</span>.<span class="ident">append_block_import</span>(<span class="kw-2">&amp;</span><span class="ident">parent</span>, <span class="kw-2">&amp;mut</span> <span class="ident">params</span>, <span class="kw-2">&amp;</span><span class="ident">inherent_data</span>, <span class="ident">proof</span>)<span class="question-mark">?</span>;
 		}
 
 		<span class="comment">// Make sure we return the same post-hash that will be calculated when importing the block</span>

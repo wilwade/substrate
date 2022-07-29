@@ -605,6 +605,10 @@
 <span id="599">599</span>
 <span id="600">600</span>
 <span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -688,7 +692,7 @@
 }
 
 <span class="doccomment">/// Params required to start the instant sealing authorship task.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ManualSealParams</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">BI</span>, <span class="ident">E</span>, <span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CS</span>, <span class="ident">CIDP</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ManualSealParams</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">BI</span>, <span class="ident">E</span>, <span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CS</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Block import instance for well. importing blocks.</span>
 	<span class="kw">pub</span> <span class="ident">block_import</span>: <span class="ident">BI</span>,
 
@@ -710,14 +714,14 @@
 
 	<span class="doccomment">/// Digest provider for inclusion in blocks.</span>
 	<span class="kw">pub</span> <span class="ident">consensus_data_provider</span>:
-		<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ConsensusDataProvider</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ConsensusDataProvider</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Proof</span> <span class="op">=</span> <span class="ident">P</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Something that can create the inherent data providers.</span>
 	<span class="kw">pub</span> <span class="ident">create_inherent_data_providers</span>: <span class="ident">CIDP</span>,
 }
 
 <span class="doccomment">/// Params required to start the manual sealing authorship task.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InstantSealParams</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">BI</span>, <span class="ident">E</span>, <span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CIDP</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InstantSealParams</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">BI</span>, <span class="ident">E</span>, <span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Block import instance for well. importing blocks.</span>
 	<span class="kw">pub</span> <span class="ident">block_import</span>: <span class="ident">BI</span>,
 
@@ -735,14 +739,14 @@
 
 	<span class="doccomment">/// Digest provider for inclusion in blocks.</span>
 	<span class="kw">pub</span> <span class="ident">consensus_data_provider</span>:
-		<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ConsensusDataProvider</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ConsensusDataProvider</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Proof</span> <span class="op">=</span> <span class="ident">P</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Something that can create the inherent data providers.</span>
 	<span class="kw">pub</span> <span class="ident">create_inherent_data_providers</span>: <span class="ident">CIDP</span>,
 }
 
 <span class="doccomment">/// Creates the background authorship task for the manual seal engine.</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_manual_seal</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">CB</span>, <span class="ident">E</span>, <span class="ident">C</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CS</span>, <span class="ident">CIDP</span><span class="op">&gt;</span>(
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_manual_seal</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">CB</span>, <span class="ident">E</span>, <span class="ident">C</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CS</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span>(
 	<span class="ident">ManualSealParams</span> {
 		<span class="kw-2">mut</span> <span class="ident">block_import</span>,
 		<span class="kw-2">mut</span> <span class="ident">env</span>,
@@ -752,7 +756,7 @@
 		<span class="ident">select_chain</span>,
 		<span class="ident">consensus_data_provider</span>,
 		<span class="ident">create_inherent_data_providers</span>,
-	}: <span class="ident">ManualSealParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">E</span>, <span class="ident">C</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CS</span>, <span class="ident">CIDP</span><span class="op">&gt;</span>,
+	}: <span class="ident">ManualSealParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">E</span>, <span class="ident">C</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CS</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span>,
 ) <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">BlockT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">BI</span>: <span class="ident">BlockImport</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_consensus::Error</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">sp_api::TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>
@@ -762,12 +766,13 @@
 	<span class="ident">C</span>: <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Finalizer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">CB</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">CB</span>: <span class="ident">ClientBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">E</span>: <span class="ident">Environment</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-	<span class="ident">E::Proposer</span>: <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">E::Proposer</span>: <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Proof</span> <span class="op">=</span> <span class="ident">P</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">CS</span>: <span class="ident">Stream</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">EngineCommand</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">B</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">SC</span>: <span class="ident">SelectChain</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span>: <span class="lifetime">&#39;static</span>,
 	<span class="ident">TP</span>: <span class="ident">TransactionPool</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="op">=</span> <span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">CIDP</span>: <span class="ident">CreateInherentDataProviders</span><span class="op">&lt;</span><span class="ident">B</span>, ()<span class="op">&gt;</span>,
+	<span class="ident">P</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">command</span>) <span class="op">=</span> <span class="ident">commands_stream</span>.<span class="ident">next</span>().<span class="kw">await</span> {
 		<span class="kw">match</span> <span class="ident">command</span> {
@@ -805,7 +810,7 @@
 <span class="doccomment">/// runs the background authorship task for the instant seal engine.</span>
 <span class="doccomment">/// instant-seal creates a new block for every transaction imported into</span>
 <span class="doccomment">/// the transaction pool.</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_instant_seal</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">CB</span>, <span class="ident">E</span>, <span class="ident">C</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CIDP</span><span class="op">&gt;</span>(
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_instant_seal</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">CB</span>, <span class="ident">E</span>, <span class="ident">C</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span>(
 	<span class="ident">InstantSealParams</span> {
 		<span class="ident">block_import</span>,
 		<span class="ident">env</span>,
@@ -814,7 +819,7 @@
 		<span class="ident">select_chain</span>,
 		<span class="ident">consensus_data_provider</span>,
 		<span class="ident">create_inherent_data_providers</span>,
-	}: <span class="ident">InstantSealParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">E</span>, <span class="ident">C</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CIDP</span><span class="op">&gt;</span>,
+	}: <span class="ident">InstantSealParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">BI</span>, <span class="ident">E</span>, <span class="ident">C</span>, <span class="ident">TP</span>, <span class="ident">SC</span>, <span class="ident">CIDP</span>, <span class="ident">P</span><span class="op">&gt;</span>,
 ) <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">BlockT</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">BI</span>: <span class="ident">BlockImport</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_consensus::Error</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">sp_api::TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>
@@ -824,11 +829,12 @@
 	<span class="ident">C</span>: <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Finalizer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">CB</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">CB</span>: <span class="ident">ClientBackend</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">E</span>: <span class="ident">Environment</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-	<span class="ident">E::Proposer</span>: <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">E::Proposer</span>: <span class="ident">Proposer</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Proof</span> <span class="op">=</span> <span class="ident">P</span>, <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">SC</span>: <span class="ident">SelectChain</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span>: <span class="lifetime">&#39;static</span>,
 	<span class="ident">TP</span>: <span class="ident">TransactionPool</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="op">=</span> <span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">CIDP</span>: <span class="ident">CreateInherentDataProviders</span><span class="op">&lt;</span><span class="ident">B</span>, ()<span class="op">&gt;</span>,
+	<span class="ident">P</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="comment">// instant-seal creates blocks as soon as transactions are imported</span>
 	<span class="comment">// into the transaction pool.</span>
@@ -882,6 +888,7 @@
 		<span class="ident">C</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 	{
 		<span class="kw">type</span> <span class="ident">Transaction</span> <span class="op">=</span> <span class="ident">TransactionFor</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">B</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">Proof</span> <span class="op">=</span> ();
 
 		<span class="kw">fn</span> <span class="ident">create_digest</span>(
 			<span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -896,6 +903,7 @@
 			<span class="ident">_parent</span>: <span class="kw-2">&amp;</span><span class="ident">B::Header</span>,
 			<span class="ident">params</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BlockImportParams</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident"><span class="self">Self</span>::Transaction</span><span class="op">&gt;</span>,
 			<span class="ident">_inherents</span>: <span class="kw-2">&amp;</span><span class="ident">InherentData</span>,
+			<span class="ident">_proof</span>: <span class="ident"><span class="self">Self</span>::Proof</span>,
 		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 			<span class="ident">params</span>.<span class="ident">post_digests</span>.<span class="ident">push</span>(<span class="ident">DigestItem::Other</span>(<span class="macro">vec!</span>[<span class="number">1</span>]));
 			<span class="prelude-val">Ok</span>(())
