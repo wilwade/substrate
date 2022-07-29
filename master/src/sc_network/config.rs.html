@@ -826,12 +826,6 @@
 <span id="820">820</span>
 <span id="821">821</span>
 <span id="822">822</span>
-<span id="823">823</span>
-<span id="824">824</span>
-<span id="825">825</span>
-<span id="826">826</span>
-<span id="827">827</span>
-<span id="828">828</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -930,14 +924,8 @@
 	<span class="doccomment">/// valid.</span>
 	<span class="kw">pub</span> <span class="ident">import_queue</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ImportQueue</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
-	<span class="doccomment">/// Factory function that creates a new instance of chain sync.</span>
-	<span class="kw">pub</span> <span class="ident">create_chain_sync</span>: <span class="ident">Box</span><span class="op">&lt;</span>
-		<span class="kw">dyn</span> <span class="ident">FnOnce</span>(
-			<span class="ident">sc_network_common::sync::SyncMode</span>,
-			<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
-			<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WarpSyncProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-		) -&gt; <span class="ident"><span class="kw">crate</span>::error::Result</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="op">&gt;</span>,
+	<span class="doccomment">/// Instance of chain sync implementation.</span>
+	<span class="kw">pub</span> <span class="ident">chain_sync</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Registry for recording prometheus metrics to.</span>
 	<span class="kw">pub</span> <span class="ident">metrics_registry</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Registry</span><span class="op">&gt;</span>,
@@ -972,8 +960,8 @@
 	<span class="doccomment">/// both outgoing and incoming requests.</span>
 	<span class="kw">pub</span> <span class="ident">state_request_protocol_config</span>: <span class="ident">RequestResponseConfig</span>,
 
-	<span class="doccomment">/// Optional warp sync protocol support. Include protocol config and sync provider.</span>
-	<span class="kw">pub</span> <span class="ident">warp_sync</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WarpSyncProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">RequestResponseConfig</span>)<span class="op">&gt;</span>,
+	<span class="doccomment">/// Optional warp sync protocol config.</span>
+	<span class="kw">pub</span> <span class="ident">warp_sync_protocol_config</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RequestResponseConfig</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Role of the local node.</span>
@@ -1186,7 +1174,7 @@
 }
 
 <span class="doccomment">/// Sync operation mode.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">SyncMode</span> {
 	<span class="doccomment">/// Full block download and verification.</span>
 	<span class="ident">Full</span>,

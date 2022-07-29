@@ -1122,6 +1122,10 @@
 <span id="1116">1116</span>
 <span id="1117">1117</span>
 <span id="1118">1118</span>
+<span id="1119">1119</span>
+<span id="1120">1120</span>
+<span id="1121">1121</span>
+<span id="1122">1122</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1962,10 +1966,25 @@
 			<span class="ident">protocol_config</span>
 		};
 
-		<span class="kw">let</span> <span class="ident">max_parallel_downloads</span> <span class="op">=</span> <span class="ident">network_config</span>.<span class="ident">max_parallel_downloads</span>;
 		<span class="kw">let</span> <span class="ident">block_announce_validator</span> <span class="op">=</span> <span class="ident">config</span>
 			.<span class="ident">block_announce_validator</span>
 			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">DefaultBlockAnnounceValidator</span>));
+		<span class="kw">let</span> <span class="ident">chain_sync</span> <span class="op">=</span> <span class="ident">ChainSync::new</span>(
+			<span class="kw">match</span> <span class="ident">network_config</span>.<span class="ident">sync_mode</span> {
+				<span class="ident">SyncMode::Full</span> =&gt; <span class="ident">sc_network_common::sync::SyncMode::Full</span>,
+				<span class="ident">SyncMode::Fast</span> { <span class="ident">skip_proofs</span>, <span class="ident">storage_chain_mode</span> } =&gt;
+					<span class="ident">sc_network_common::sync::SyncMode::LightState</span> {
+						<span class="ident">skip_proofs</span>,
+						<span class="ident">storage_chain_mode</span>,
+					},
+				<span class="ident">SyncMode::Warp</span> =&gt; <span class="ident">sc_network_common::sync::SyncMode::Warp</span>,
+			},
+			<span class="ident">client</span>.<span class="ident">clone</span>(),
+			<span class="ident">block_announce_validator</span>,
+			<span class="ident">network_config</span>.<span class="ident">max_parallel_downloads</span>,
+			<span class="prelude-val">Some</span>(<span class="ident">warp_sync</span>),
+		)
+		.<span class="ident">unwrap</span>();
 		<span class="kw">let</span> <span class="ident">network</span> <span class="op">=</span> <span class="ident">NetworkWorker::new</span>(<span class="ident">sc_network::config::Params</span> {
 			<span class="ident">role</span>: <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">is_authority</span> { <span class="ident">Role::Authority</span> } <span class="kw">else</span> { <span class="ident">Role::Full</span> },
 			<span class="ident">executor</span>: <span class="prelude-val">None</span>,
@@ -1977,23 +1996,12 @@
 			<span class="ident">transaction_pool</span>: <span class="ident">Arc::new</span>(<span class="ident">EmptyTransactionPool</span>),
 			<span class="ident">protocol_id</span>,
 			<span class="ident">import_queue</span>,
-			<span class="ident">create_chain_sync</span>: <span class="ident">Box::new</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">sync_mode</span>, <span class="ident">chain</span>, <span class="ident">warp_sync_provider</span><span class="op">|</span> {
-				<span class="kw">match</span> <span class="ident">ChainSync::new</span>(
-					<span class="ident">sync_mode</span>,
-					<span class="ident">chain</span>,
-					<span class="ident">block_announce_validator</span>,
-					<span class="ident">max_parallel_downloads</span>,
-					<span class="ident">warp_sync_provider</span>,
-				) {
-					<span class="prelude-val">Ok</span>(<span class="ident">chain_sync</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">Box::new</span>(<span class="ident">chain_sync</span>)),
-					<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Box::new</span>(<span class="ident">error</span>).<span class="ident">into</span>()),
-				}
-			}),
+			<span class="ident">chain_sync</span>: <span class="ident">Box::new</span>(<span class="ident">chain_sync</span>),
 			<span class="ident">metrics_registry</span>: <span class="prelude-val">None</span>,
 			<span class="ident">block_request_protocol_config</span>,
 			<span class="ident">state_request_protocol_config</span>,
 			<span class="ident">light_client_request_protocol_config</span>,
-			<span class="ident">warp_sync</span>: <span class="prelude-val">Some</span>((<span class="ident">warp_sync</span>, <span class="ident">warp_protocol_config</span>)),
+			<span class="ident">warp_sync_protocol_config</span>: <span class="prelude-val">Some</span>(<span class="ident">warp_protocol_config</span>),
 		})
 		.<span class="ident">unwrap</span>();
 
