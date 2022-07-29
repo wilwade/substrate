@@ -58,8 +58,6 @@
 <span id="52">52</span>
 <span id="53">53</span>
 <span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -79,11 +77,9 @@
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
 <span class="kw">use</span> <span class="ident">sc_utils::notification</span>::{<span class="ident">NotificationSender</span>, <span class="ident">NotificationStream</span>, <span class="ident">TracingKeyStr</span>};
-<span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">NumberFor</span>};
+<span class="kw">use</span> <span class="ident">sp_runtime::traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>;
 
-<span class="doccomment">/// A commitment with matching BEEFY authorities&#39; signatures.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">BeefySignedCommitment</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">=</span>
-	<span class="ident">beefy_primitives::SignedCommitment</span><span class="op">&lt;</span><span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>, <span class="ident">beefy_primitives::crypto::Signature</span><span class="op">&gt;</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::justification::BeefySignedCommitment</span>;
 
 <span class="doccomment">/// The sending half of the notifications channel(s) used to send</span>
 <span class="doccomment">/// notifications about best BEEFY block from the gadget side.</span>

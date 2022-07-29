@@ -145,8 +145,8 @@
 	<span class="kw">pub</span> <span class="ident">beefy_best_block</span>: <span class="ident">Gauge</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Next block BEEFY should vote on</span>
 	<span class="kw">pub</span> <span class="ident">beefy_should_vote_on</span>: <span class="ident">Gauge</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// Number of sessions without a signed commitment</span>
-	<span class="kw">pub</span> <span class="ident">beefy_skipped_sessions</span>: <span class="ident">Counter</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Number of sessions with lagging signed commitment on mandatory block</span>
+	<span class="kw">pub</span> <span class="ident">beefy_lagging_sessions</span>: <span class="ident">Counter</span><span class="op">&lt;</span><span class="ident">U64</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Metrics</span> {
@@ -178,10 +178,10 @@
 				<span class="ident">Gauge::new</span>(<span class="string">&quot;substrate_beefy_should_vote_on&quot;</span>, <span class="string">&quot;Next block, BEEFY should vote on&quot;</span>)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
-			<span class="ident">beefy_skipped_sessions</span>: <span class="ident">register</span>(
+			<span class="ident">beefy_lagging_sessions</span>: <span class="ident">register</span>(
 				<span class="ident">Counter::new</span>(
-					<span class="string">&quot;substrate_beefy_skipped_sessions&quot;</span>,
-					<span class="string">&quot;Number of sessions without a signed commitment&quot;</span>,
+					<span class="string">&quot;substrate_beefy_lagging_sessions&quot;</span>,
+					<span class="string">&quot;Number of sessions with lagging signed commitment on mandatory block&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
