@@ -658,6 +658,13 @@
 <span id="652">652</span>
 <span id="653">653</span>
 <span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -733,7 +740,14 @@
 <span class="kw">impl</span> <span class="ident">Parse</span> <span class="kw">for</span> <span class="ident">RuntimeDeclaration</span> {
 	<span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">input</span>: <span class="ident">ParseStream</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="ident">input</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="macro">Token!</span>[<span class="kw">pub</span>]<span class="op">&gt;</span>()<span class="question-mark">?</span>;
-		<span class="ident">input</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="macro">Token!</span>[<span class="kw">enum</span>]<span class="op">&gt;</span>()<span class="question-mark">?</span>;
+
+		<span class="comment">// Support either `enum` or `struct`.</span>
+		<span class="kw">if</span> <span class="ident">input</span>.<span class="ident">peek</span>(<span class="macro">Token!</span>[<span class="kw">struct</span>]) {
+			<span class="ident">input</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="macro">Token!</span>[<span class="kw">struct</span>]<span class="op">&gt;</span>()<span class="question-mark">?</span>;
+		} <span class="kw">else</span> {
+			<span class="ident">input</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="macro">Token!</span>[<span class="kw">enum</span>]<span class="op">&gt;</span>()<span class="question-mark">?</span>;
+		}
+
 		<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">syn::Ident</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">where_section</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">parse</span>()<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">pallets</span> <span class="op">=</span>
