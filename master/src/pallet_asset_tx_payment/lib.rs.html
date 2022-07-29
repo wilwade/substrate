@@ -293,6 +293,29 @@
 <span id="287">287</span>
 <span id="288">288</span>
 <span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// SPDX-License-Identifier: Apache-2.0</span>
 
@@ -408,6 +431,8 @@
 
 	<span class="attribute">#[<span class="ident">pallet::config</span>]</span>
 	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Config</span>: <span class="ident">frame_system::Config</span> <span class="op">+</span> <span class="ident">pallet_transaction_payment::Config</span> {
+		<span class="doccomment">/// The overarching event type.</span>
+		<span class="kw">type</span> <span class="ident">Event</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">IsType</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Event</span><span class="op">&gt;</span>;
 		<span class="doccomment">/// The fungibles instance used to pay for transactions in assets.</span>
 		<span class="kw">type</span> <span class="ident">Fungibles</span>: <span class="ident">Balanced</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
 		<span class="doccomment">/// The actual transaction charging logic that charges the fees.</span>
@@ -417,6 +442,19 @@
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::generate_store</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">trait</span> <span class="ident">Store</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw">_</span>);
+
+	<span class="attribute">#[<span class="ident">pallet::event</span>]</span>
+	<span class="attribute">#[<span class="ident">pallet::generate_deposit</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">deposit_event</span>)]</span>
+	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
+		<span class="doccomment">/// A transaction fee `actual_fee`, of which `tip` was added to the minimum inclusion fee,</span>
+		<span class="doccomment">/// has been paid by `who` in an asset `asset_id`.</span>
+		<span class="ident">AssetTxFeePaid</span> {
+			<span class="ident">who</span>: <span class="ident">T::AccountId</span>,
+			<span class="ident">actual_fee</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">tip</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+			<span class="ident">asset_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ChargeAssetIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		},
+	}
 }
 
 <span class="doccomment">/// Require the transactor pay for themselves and maybe include a tip to gain additional priority</span>
@@ -508,6 +546,8 @@
 		<span class="ident"><span class="self">Self</span>::AccountId</span>,
 		<span class="comment">// imbalance resulting from withdrawing the fee</span>
 		<span class="ident">InitialPayment</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="comment">// asset_id for the transaction payment</span>
+		<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ChargeAssetIdOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	);
 
 	<span class="kw">fn</span> <span class="ident">additional_signed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">sp_std::result::Result</span><span class="op">&lt;</span>(), <span class="ident">TransactionValidityError</span><span class="op">&gt;</span> {
@@ -535,7 +575,7 @@
 		<span class="ident">len</span>: <span class="ident">usize</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Pre</span>, <span class="ident">TransactionValidityError</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="ident">_fee</span>, <span class="ident">initial_payment</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">withdraw_fee</span>(<span class="ident">who</span>, <span class="ident">call</span>, <span class="ident">info</span>, <span class="ident">len</span>)<span class="question-mark">?</span>;
-		<span class="prelude-val">Ok</span>((<span class="self">self</span>.<span class="ident">tip</span>, <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">initial_payment</span>))
+		<span class="prelude-val">Ok</span>((<span class="self">self</span>.<span class="ident">tip</span>, <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">initial_payment</span>, <span class="self">self</span>.<span class="ident">asset_id</span>))
 	}
 
 	<span class="kw">fn</span> <span class="ident">post_dispatch</span>(
@@ -545,7 +585,7 @@
 		<span class="ident">len</span>: <span class="ident">usize</span>,
 		<span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">DispatchResult</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">TransactionValidityError</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">tip</span>, <span class="ident">who</span>, <span class="ident">initial_payment</span>)) <span class="op">=</span> <span class="ident">pre</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">tip</span>, <span class="ident">who</span>, <span class="ident">initial_payment</span>, <span class="ident">asset_id</span>)) <span class="op">=</span> <span class="ident">pre</span> {
 			<span class="kw">match</span> <span class="ident">initial_payment</span> {
 				<span class="ident">InitialPayment::Native</span>(<span class="ident">already_withdrawn</span>) =&gt; {
 					<span class="ident">pallet_transaction_payment::ChargeTransactionPayment</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::post_dispatch</span>(
@@ -568,6 +608,12 @@
 						<span class="ident">tip</span>.<span class="ident">into</span>(),
 						<span class="ident">already_withdrawn</span>.<span class="ident">into</span>(),
 					)<span class="question-mark">?</span>;
+					<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AssetTxFeePaid</span> {
+						<span class="ident">who</span>,
+						<span class="ident">actual_fee</span>,
+						<span class="ident">tip</span>,
+						<span class="ident">asset_id</span>,
+					});
 				},
 				<span class="ident">InitialPayment::Nothing</span> =&gt; {
 					<span class="comment">// `actual_fee` should be zero here for any signed extrinsic. It would be</span>
