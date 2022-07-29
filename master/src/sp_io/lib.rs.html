@@ -2137,8 +2137,8 @@
 <span class="attribute">#[<span class="ident">runtime_interface</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Storage</span> {
 	<span class="doccomment">/// Returns the data for `key` in the storage or `None` if the key can not be found.</span>
-	<span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">storage</span>(<span class="ident">key</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">to_vec</span>())
+	<span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bytes::Bytes</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">storage</span>(<span class="ident">key</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">bytes::Bytes::from</span>(<span class="ident">s</span>.<span class="ident">to_vec</span>()))
 	}
 
 	<span class="doccomment">/// Get `key` from storage, placing the value into `value_out` and return the number of</span>
@@ -3799,7 +3799,7 @@
 		<span class="ident">t</span>.<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;hello&quot;</span>), <span class="prelude-val">None</span>);
 			<span class="ident">storage::set</span>(<span class="string">b&quot;hello&quot;</span>, <span class="string">b&quot;world&quot;</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;hello&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">b&quot;world&quot;</span>.<span class="ident">to_vec</span>()));
+			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;hello&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">b&quot;world&quot;</span>.<span class="ident">to_vec</span>().<span class="ident">into</span>()));
 			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;foo&quot;</span>), <span class="prelude-val">None</span>);
 			<span class="ident">storage::set</span>(<span class="string">b&quot;foo&quot;</span>, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>][..]);
 		});
@@ -3811,7 +3811,7 @@
 
 		<span class="ident">t</span>.<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;hello&quot;</span>), <span class="prelude-val">None</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;foo&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">b&quot;bar&quot;</span>.<span class="ident">to_vec</span>()));
+			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;foo&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">b&quot;bar&quot;</span>.<span class="ident">to_vec</span>().<span class="ident">into</span>()));
 		});
 
 		<span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">7u8</span>; <span class="number">35</span>];
@@ -3821,7 +3821,7 @@
 
 		<span class="ident">t</span>.<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;hello&quot;</span>), <span class="prelude-val">None</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;foo00&quot;</span>), <span class="prelude-val">Some</span>(<span class="ident">value</span>.<span class="ident">clone</span>()));
+			<span class="macro">assert_eq!</span>(<span class="ident">storage::get</span>(<span class="string">b&quot;foo00&quot;</span>), <span class="prelude-val">Some</span>(<span class="ident">value</span>.<span class="ident">clone</span>().<span class="ident">into</span>()));
 		});
 	}
 

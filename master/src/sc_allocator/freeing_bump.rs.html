@@ -993,6 +993,21 @@
 <span id="987">987</span>
 <span id="988">988</span>
 <span id="989">989</span>
+<span id="990">990</span>
+<span id="991">991</span>
+<span id="992">992</span>
+<span id="993">993</span>
+<span id="994">994</span>
+<span id="995">995</span>
+<span id="996">996</span>
+<span id="997">997</span>
+<span id="998">998</span>
+<span id="999">999</span>
+<span id="1000">1000</span>
+<span id="1001">1001</span>
+<span id="1002">1002</span>
+<span id="1003">1003</span>
+<span id="1004">1004</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1309,27 +1324,50 @@
 	}
 }
 
+<span class="doccomment">/// Memory allocation stats gathered during the lifetime of the allocator.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
+<span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AllocationStats</span> {
+	<span class="doccomment">/// The current number of bytes allocated.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This represents how many bytes are allocated *right now*.</span>
+	<span class="kw">pub</span> <span class="ident">bytes_allocated</span>: <span class="ident">u32</span>,
+
+	<span class="doccomment">/// The peak number of bytes ever allocated.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This is the maximum the `bytes_allocated` ever reached.</span>
+	<span class="kw">pub</span> <span class="ident">bytes_allocated_peak</span>: <span class="ident">u32</span>,
+
+	<span class="doccomment">/// The sum of every allocation ever made.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This increases every time a new allocation is made.</span>
+	<span class="kw">pub</span> <span class="ident">bytes_allocated_sum</span>: <span class="ident">u32</span>,
+
+	<span class="doccomment">/// The amount of address space (in bytes) used by the allocator.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This is calculated as the difference between the allocator&#39;s bumper</span>
+	<span class="doccomment">/// and the heap base.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Currently the bumper&#39;s only ever incremented, so this is simultaneously</span>
+	<span class="doccomment">/// the current value as well as the peak value.</span>
+	<span class="kw">pub</span> <span class="ident">address_space_used</span>: <span class="ident">u32</span>,
+}
+
 <span class="doccomment">/// An implementation of freeing bump allocator.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Refer to the module-level documentation for further details.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FreeingBumpHeapAllocator</span> {
+	<span class="ident">original_heap_base</span>: <span class="ident">u32</span>,
 	<span class="ident">bumper</span>: <span class="ident">u32</span>,
 	<span class="ident">free_lists</span>: <span class="ident">FreeLists</span>,
-	<span class="ident">total_size</span>: <span class="ident">u32</span>,
 	<span class="ident">poisoned</span>: <span class="ident">bool</span>,
-	<span class="ident">max_total_size</span>: <span class="ident">u32</span>,
-	<span class="ident">max_bumper</span>: <span class="ident">u32</span>,
 	<span class="ident">last_observed_memory_size</span>: <span class="ident">u32</span>,
+	<span class="ident">stats</span>: <span class="ident">AllocationStats</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">FreeingBumpHeapAllocator</span> {
 	<span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-		<span class="macro">log::debug!</span>(
-			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-			<span class="string">&quot;allocator being destroyed, max_total_size {}, max_bumper {}&quot;</span>,
-			<span class="self">self</span>.<span class="ident">max_total_size</span>,
-			<span class="self">self</span>.<span class="ident">max_bumper</span>,
-		)
+		<span class="macro">log::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;allocator dropped: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">stats</span>)
 	}
 }
 
@@ -1343,13 +1381,12 @@
 		<span class="kw">let</span> <span class="ident">aligned_heap_base</span> <span class="op">=</span> (<span class="ident">heap_base</span> <span class="op">+</span> <span class="ident">ALIGNMENT</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">/</span> <span class="ident">ALIGNMENT</span> <span class="op">*</span> <span class="ident">ALIGNMENT</span>;
 
 		<span class="ident">FreeingBumpHeapAllocator</span> {
+			<span class="ident">original_heap_base</span>: <span class="ident">aligned_heap_base</span>,
 			<span class="ident">bumper</span>: <span class="ident">aligned_heap_base</span>,
 			<span class="ident">free_lists</span>: <span class="ident">FreeLists::new</span>(),
-			<span class="ident">total_size</span>: <span class="number">0</span>,
 			<span class="ident">poisoned</span>: <span class="bool-val">false</span>,
-			<span class="ident">max_total_size</span>: <span class="number">0</span>,
-			<span class="ident">max_bumper</span>: <span class="ident">aligned_heap_base</span>,
 			<span class="ident">last_observed_memory_size</span>: <span class="number">0</span>,
+			<span class="ident">stats</span>: <span class="ident">AllocationStats::default</span>(),
 		}
 	}
 
@@ -1407,22 +1444,13 @@
 		<span class="comment">// Write the order in the occupied header.</span>
 		<span class="ident">Header::Occupied</span>(<span class="ident">order</span>).<span class="ident">write_into</span>(<span class="ident">mem</span>, <span class="ident">header_ptr</span>)<span class="question-mark">?</span>;
 
-		<span class="self">self</span>.<span class="ident">total_size</span> <span class="op">+</span><span class="op">=</span> <span class="ident">order</span>.<span class="ident">size</span>() <span class="op">+</span> <span class="ident">HEADER_SIZE</span>;
+		<span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated</span> <span class="op">+</span><span class="op">=</span> <span class="ident">order</span>.<span class="ident">size</span>() <span class="op">+</span> <span class="ident">HEADER_SIZE</span>;
+		<span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated_sum</span> <span class="op">+</span><span class="op">=</span> <span class="ident">order</span>.<span class="ident">size</span>() <span class="op">+</span> <span class="ident">HEADER_SIZE</span>;
+		<span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated_peak</span> <span class="op">=</span>
+			<span class="ident">std::cmp::max</span>(<span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated_peak</span>, <span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated</span>);
+		<span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">address_space_used</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bumper</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">original_heap_base</span>;
 
-		<span class="macro">log::trace!</span>(
-			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-			<span class="string">&quot;after allocation, total_size = {}, bumper = {}.&quot;</span>,
-			<span class="self">self</span>.<span class="ident">total_size</span>,
-			<span class="self">self</span>.<span class="ident">bumper</span>,
-		);
-
-		<span class="comment">// update trackers if needed.</span>
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">total_size</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_total_size</span> {
-			<span class="self">self</span>.<span class="ident">max_total_size</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">total_size</span>;
-		}
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">bumper</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_bumper</span> {
-			<span class="self">self</span>.<span class="ident">max_bumper</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bumper</span>;
-		}
+		<span class="macro">log::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;after allocation: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">stats</span>);
 
 		<span class="ident">bomb</span>.<span class="ident">disarm</span>();
 		<span class="prelude-val">Ok</span>(<span class="ident">Pointer::new</span>(<span class="ident">header_ptr</span> <span class="op">+</span> <span class="ident">HEADER_SIZE</span>))
@@ -1464,19 +1492,21 @@
 		<span class="kw">let</span> <span class="ident">prev_head</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">free_lists</span>.<span class="ident">replace</span>(<span class="ident">order</span>, <span class="ident">Link::Ptr</span>(<span class="ident">header_ptr</span>));
 		<span class="ident">Header::Free</span>(<span class="ident">prev_head</span>).<span class="ident">write_into</span>(<span class="ident">mem</span>, <span class="ident">header_ptr</span>)<span class="question-mark">?</span>;
 
-		<span class="comment">// Do the total_size book keeping.</span>
-		<span class="self">self</span>.<span class="ident">total_size</span> <span class="op">=</span> <span class="self">self</span>
-			.<span class="ident">total_size</span>
+		<span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated</span> <span class="op">=</span> <span class="self">self</span>
+			.<span class="ident">stats</span>
+			.<span class="ident">bytes_allocated</span>
 			.<span class="ident">checked_sub</span>(<span class="ident">order</span>.<span class="ident">size</span>() <span class="op">+</span> <span class="ident">HEADER_SIZE</span>)
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">error</span>(<span class="string">&quot;Unable to subtract from total heap size without overflow&quot;</span>))<span class="question-mark">?</span>;
-		<span class="macro">log::trace!</span>(
-			<span class="string">&quot;after deallocation, total_size = {}, bumper = {}.&quot;</span>,
-			<span class="self">self</span>.<span class="ident">total_size</span>,
-			<span class="self">self</span>.<span class="ident">bumper</span>,
-		);
+			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">error</span>(<span class="string">&quot;underflow of the currently allocated bytes count&quot;</span>))<span class="question-mark">?</span>;
+
+		<span class="macro">log::trace!</span>(<span class="string">&quot;after deallocation: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">stats</span>);
 
 		<span class="ident">bomb</span>.<span class="ident">disarm</span>();
 		<span class="prelude-val">Ok</span>(())
+	}
+
+	<span class="doccomment">/// Returns the allocation stats for this allocator.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">AllocationStats</span> {
+		<span class="self">self</span>.<span class="ident">stats</span>.<span class="ident">clone</span>()
 	}
 
 	<span class="doccomment">/// Increases the `bumper` by `size`.</span>
@@ -1786,13 +1816,13 @@
 		<span class="kw">let</span> <span class="ident">ptr1</span> <span class="op">=</span> <span class="ident">heap</span>.<span class="ident">allocate</span>(<span class="kw-2">&amp;mut</span> <span class="ident">mem</span>[..], <span class="number">32</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_eq!</span>(<span class="ident">ptr1</span>, <span class="ident">to_pointer</span>(<span class="ident">HEADER_SIZE</span>));
 		<span class="ident">heap</span>.<span class="ident">deallocate</span>(<span class="kw-2">&amp;mut</span> <span class="ident">mem</span>[..], <span class="ident">ptr1</span>).<span class="ident">expect</span>(<span class="string">&quot;failed freeing ptr1&quot;</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">total_size</span>, <span class="number">0</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated</span>, <span class="number">0</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">bumper</span>, <span class="number">40</span>);
 
 		<span class="kw">let</span> <span class="ident">ptr2</span> <span class="op">=</span> <span class="ident">heap</span>.<span class="ident">allocate</span>(<span class="kw-2">&amp;mut</span> <span class="ident">mem</span>[..], <span class="number">16</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_eq!</span>(<span class="ident">ptr2</span>, <span class="ident">to_pointer</span>(<span class="number">48</span>));
 		<span class="ident">heap</span>.<span class="ident">deallocate</span>(<span class="kw-2">&amp;mut</span> <span class="ident">mem</span>[..], <span class="ident">ptr2</span>).<span class="ident">expect</span>(<span class="string">&quot;failed freeing ptr2&quot;</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">total_size</span>, <span class="number">0</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated</span>, <span class="number">0</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">bumper</span>, <span class="number">64</span>);
 
 		<span class="comment">// when</span>
@@ -1820,7 +1850,7 @@
 		<span class="ident">heap</span>.<span class="ident">allocate</span>(<span class="kw-2">&amp;mut</span> <span class="ident">mem</span>[..], <span class="number">9</span>).<span class="ident">unwrap</span>();
 
 		<span class="comment">// then</span>
-		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">total_size</span>, <span class="ident">HEADER_SIZE</span> <span class="op">+</span> <span class="number">16</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated</span>, <span class="ident">HEADER_SIZE</span> <span class="op">+</span> <span class="number">16</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1835,7 +1865,7 @@
 		<span class="ident">heap</span>.<span class="ident">deallocate</span>(<span class="kw-2">&amp;mut</span> <span class="ident">mem</span>[..], <span class="ident">ptr</span>).<span class="ident">unwrap</span>();
 
 		<span class="comment">// then</span>
-		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">total_size</span>, <span class="number">0</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated</span>, <span class="number">0</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1851,7 +1881,7 @@
 		}
 
 		<span class="comment">// then</span>
-		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">total_size</span>, <span class="number">0</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">stats</span>.<span class="ident">bytes_allocated</span>, <span class="number">0</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

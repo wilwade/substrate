@@ -791,6 +791,28 @@
 <span id="785">785</span>
 <span id="786">786</span>
 <span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -817,7 +839,7 @@
 	<span class="ident">util</span>::{<span class="self">self</span>, <span class="ident">replace_strategy_if_broken</span>},
 };
 
-<span class="kw">use</span> <span class="ident">sc_allocator::FreeingBumpHeapAllocator</span>;
+<span class="kw">use</span> <span class="ident">sc_allocator</span>::{<span class="ident">AllocationStats</span>, <span class="ident">FreeingBumpHeapAllocator</span>};
 <span class="kw">use</span> <span class="ident">sc_executor_common</span>::{
 	<span class="ident">error</span>::{<span class="prelude-ty">Result</span>, <span class="ident">WasmError</span>},
 	<span class="ident">runtime_blob</span>::{
@@ -977,8 +999,13 @@
 	<span class="ident">strategy</span>: <span class="ident">Strategy</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">WasmInstance</span> <span class="kw">for</span> <span class="ident">WasmtimeInstance</span> {
-	<span class="kw">fn</span> <span class="ident">call</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">method</span>: <span class="ident">InvokeMethod</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">impl</span> <span class="ident">WasmtimeInstance</span> {
+	<span class="kw">fn</span> <span class="ident">call_impl</span>(
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+		<span class="ident">method</span>: <span class="ident">InvokeMethod</span>,
+		<span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+		<span class="ident">allocation_stats</span>: <span class="kw-2">&amp;mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AllocationStats</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">strategy</span> {
 			<span class="ident">Strategy::LegacyInstanceReuse</span> {
 				<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">instance_wrapper</span>,
@@ -998,7 +1025,8 @@
 				<span class="ident">globals_snapshot</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;mut</span> <span class="ident">InstanceGlobals</span> { <span class="ident">instance</span>: <span class="ident">instance_wrapper</span> });
 				<span class="kw">let</span> <span class="ident">allocator</span> <span class="op">=</span> <span class="ident">FreeingBumpHeapAllocator::new</span>(<span class="kw-2">*</span><span class="ident">heap_base</span>);
 
-				<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">perform_call</span>(<span class="ident">data</span>, <span class="ident">instance_wrapper</span>, <span class="ident">entrypoint</span>, <span class="ident">allocator</span>);
+				<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span>
+					<span class="ident">perform_call</span>(<span class="ident">data</span>, <span class="ident">instance_wrapper</span>, <span class="ident">entrypoint</span>, <span class="ident">allocator</span>, <span class="ident">allocation_stats</span>);
 
 				<span class="comment">// Signal to the OS that we are done with the linear memory and that it can be</span>
 				<span class="comment">// reclaimed.</span>
@@ -1012,9 +1040,21 @@
 				<span class="kw">let</span> <span class="ident">entrypoint</span> <span class="op">=</span> <span class="ident">instance_wrapper</span>.<span class="ident">resolve_entrypoint</span>(<span class="ident">method</span>)<span class="question-mark">?</span>;
 
 				<span class="kw">let</span> <span class="ident">allocator</span> <span class="op">=</span> <span class="ident">FreeingBumpHeapAllocator::new</span>(<span class="ident">heap_base</span>);
-				<span class="ident">perform_call</span>(<span class="ident">data</span>, <span class="kw-2">&amp;mut</span> <span class="ident">instance_wrapper</span>, <span class="ident">entrypoint</span>, <span class="ident">allocator</span>)
+				<span class="ident">perform_call</span>(<span class="ident">data</span>, <span class="kw-2">&amp;mut</span> <span class="ident">instance_wrapper</span>, <span class="ident">entrypoint</span>, <span class="ident">allocator</span>, <span class="ident">allocation_stats</span>)
 			},
 		}
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">WasmInstance</span> <span class="kw">for</span> <span class="ident">WasmtimeInstance</span> {
+	<span class="kw">fn</span> <span class="ident">call_with_allocation_stats</span>(
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+		<span class="ident">method</span>: <span class="ident">InvokeMethod</span>,
+		<span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+	) -&gt; (<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AllocationStats</span><span class="op">&gt;</span>) {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">allocation_stats</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">call_impl</span>(<span class="ident">method</span>, <span class="ident">data</span>, <span class="kw-2">&amp;mut</span> <span class="ident">allocation_stats</span>);
+		(<span class="ident">result</span>, <span class="ident">allocation_stats</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">get_global_const</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -1534,6 +1574,7 @@ directory = \&quot;{cache_dir}\&quot;
 	<span class="ident">instance_wrapper</span>: <span class="kw-2">&amp;mut</span> <span class="ident">InstanceWrapper</span>,
 	<span class="ident">entrypoint</span>: <span class="ident">EntryPoint</span>,
 	<span class="kw-2">mut</span> <span class="ident">allocator</span>: <span class="ident">FreeingBumpHeapAllocator</span>,
+	<span class="ident">allocation_stats</span>: <span class="kw-2">&amp;mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AllocationStats</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">data_ptr</span>, <span class="ident">data_len</span>) <span class="op">=</span> <span class="ident">inject_input_data</span>(<span class="ident">instance_wrapper</span>, <span class="kw-2">&amp;mut</span> <span class="ident">allocator</span>, <span class="ident">data</span>)<span class="question-mark">?</span>;
 
@@ -1547,7 +1588,10 @@ directory = \&quot;{cache_dir}\&quot;
 		.<span class="ident">map</span>(<span class="ident">unpack_ptr_and_len</span>);
 
 	<span class="comment">// Reset the host state</span>
-	<span class="ident">instance_wrapper</span>.<span class="ident">store_mut</span>().<span class="ident">data_mut</span>().<span class="ident">host_state</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+	<span class="kw">let</span> <span class="ident">host_state</span> <span class="op">=</span> <span class="ident">instance_wrapper</span>.<span class="ident">store_mut</span>().<span class="ident">data_mut</span>().<span class="ident">host_state</span>.<span class="ident">take</span>().<span class="ident">expect</span>(
+		<span class="string">&quot;the host state is always set before calling into WASM so it can&#39;t be None here; qed&quot;</span>,
+	);
+	<span class="kw-2">*</span><span class="ident">allocation_stats</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">host_state</span>.<span class="ident">allocation_stats</span>());
 
 	<span class="kw">let</span> (<span class="ident">output_ptr</span>, <span class="ident">output_len</span>) <span class="op">=</span> <span class="ident">ret</span><span class="question-mark">?</span>;
 	<span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">extract_output_data</span>(<span class="ident">instance_wrapper</span>, <span class="ident">output_ptr</span>, <span class="ident">output_len</span>)<span class="question-mark">?</span>;

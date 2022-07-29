@@ -377,6 +377,10 @@
 <span id="371">371</span>
 <span id="372">372</span>
 <span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -402,7 +406,7 @@
 <span class="kw">use</span> <span class="ident">wasmtime</span>::{<span class="ident">Caller</span>, <span class="ident">Func</span>, <span class="ident">Val</span>};
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
-<span class="kw">use</span> <span class="ident">sc_allocator::FreeingBumpHeapAllocator</span>;
+<span class="kw">use</span> <span class="ident">sc_allocator</span>::{<span class="ident">AllocationStats</span>, <span class="ident">FreeingBumpHeapAllocator</span>};
 <span class="kw">use</span> <span class="ident">sc_executor_common</span>::{
 	<span class="ident">error::Result</span>,
 	<span class="ident">sandbox</span>::{<span class="self">self</span>, <span class="ident">SupervisorFuncIndex</span>},
@@ -444,6 +448,10 @@
 	<span class="doccomment">/// Takes the error message out of the host state, leaving a `None` in its place.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_panic_message</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">panic_message</span>.<span class="ident">take</span>()
+	}
+
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">allocation_stats</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">AllocationStats</span> {
+		<span class="self">self</span>.<span class="ident">allocator</span>.<span class="ident">stats</span>()
 	}
 }
 
