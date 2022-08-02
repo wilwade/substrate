@@ -182,6 +182,9 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -211,7 +214,7 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::SubscriptionTaskExecutor</span>;
 
-<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">core::RpcResult</span>, <span class="ident">PendingSubscription</span>};
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">core::RpcResult</span>, <span class="ident">types::SubscriptionResult</span>, <span class="ident">SubscriptionSink</span>};
 <span class="kw">use</span> <span class="ident">sc_client_api::BlockchainEvents</span>;
 <span class="kw">use</span> <span class="ident">sp_rpc</span>::{<span class="ident">list::ListOrValue</span>, <span class="ident">number::NumberOrHex</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
@@ -279,13 +282,13 @@
 	}
 
 	<span class="doccomment">/// All new head subscription</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_all_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>);
+	<span class="kw">fn</span> <span class="ident">subscribe_all_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>);
 
 	<span class="doccomment">/// New best head subscription</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_new_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>);
+	<span class="kw">fn</span> <span class="ident">subscribe_new_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>);
 
 	<span class="doccomment">/// Finalized head subscription</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_finalized_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>);
+	<span class="kw">fn</span> <span class="ident">subscribe_finalized_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>);
 }
 
 <span class="doccomment">/// Create new state API that works on full node.</span>
@@ -344,16 +347,19 @@
 		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">finalized_head</span>().<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">subscribe_all_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>) {
-		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_all_heads</span>(<span class="ident">sink</span>)
+	<span class="kw">fn</span> <span class="ident">subscribe_all_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>) -&gt; <span class="ident">SubscriptionResult</span> {
+		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_all_heads</span>(<span class="ident">sink</span>);
+		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">fn</span> <span class="ident">subscribe_new_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>) {
-		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_new_heads</span>(<span class="ident">sink</span>)
+	<span class="kw">fn</span> <span class="ident">subscribe_new_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>) -&gt; <span class="ident">SubscriptionResult</span> {
+		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_new_heads</span>(<span class="ident">sink</span>);
+		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">fn</span> <span class="ident">subscribe_finalized_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>) {
-		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_finalized_heads</span>(<span class="ident">sink</span>)
+	<span class="kw">fn</span> <span class="ident">subscribe_finalized_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>) -&gt; <span class="ident">SubscriptionResult</span> {
+		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_finalized_heads</span>(<span class="ident">sink</span>);
+		<span class="prelude-val">Ok</span>(())
 	}
 }
 

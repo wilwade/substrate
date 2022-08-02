@@ -635,10 +635,6 @@
 <span id="629">629</span>
 <span id="630">630</span>
 <span id="631">631</span>
-<span id="632">632</span>
-<span id="633">633</span>
-<span id="634">634</span>
-<span id="635">635</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -669,7 +665,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::SubscriptionTaskExecutor</span>;
 
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">future</span>, <span class="ident">stream</span>, <span class="ident">FutureExt</span>, <span class="ident">StreamExt</span>};
-<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">core::Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">PendingSubscription</span>};
+<span class="kw">use</span> <span class="ident">jsonrpsee</span>::{<span class="ident">core::Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">SubscriptionSink</span>};
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{
 	<span class="ident">Backend</span>, <span class="ident">BlockBackend</span>, <span class="ident">BlockchainEvents</span>, <span class="ident">CallExecutor</span>, <span class="ident">ExecutorProvider</span>, <span class="ident">ProofProvider</span>,
 	<span class="ident">StorageProvider</span>,
@@ -998,7 +994,7 @@
 			.<span class="ident">map_err</span>(<span class="ident">client_err</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">subscribe_runtime_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pending</span>: <span class="ident">PendingSubscription</span>) {
+	<span class="kw">fn</span> <span class="ident">subscribe_runtime_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>) {
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>();
 
 		<span class="kw">let</span> <span class="ident">initial</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>
@@ -1010,7 +1006,7 @@
 		{
 			<span class="prelude-val">Ok</span>(<span class="ident">initial</span>) =&gt; <span class="ident">initial</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-				<span class="ident">pending</span>.<span class="ident">reject</span>(<span class="ident">JsonRpseeError::from</span>(<span class="ident">e</span>));
+				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">reject</span>(<span class="ident">JsonRpseeError::from</span>(<span class="ident">e</span>));
 				<span class="kw">return</span>
 			},
 		};
@@ -1038,19 +1034,17 @@
 		<span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">futures::stream::once</span>(<span class="ident">future::ready</span>(<span class="ident">initial</span>)).<span class="ident">chain</span>(<span class="ident">version_stream</span>);
 
 		<span class="kw">let</span> <span class="ident">fut</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">sink</span>) <span class="op">=</span> <span class="ident">pending</span>.<span class="ident">accept</span>() {
-				<span class="ident">sink</span>.<span class="ident">pipe_from_stream</span>(<span class="ident">stream</span>).<span class="kw">await</span>;
-			}
+			<span class="ident">sink</span>.<span class="ident">pipe_from_stream</span>(<span class="ident">stream</span>).<span class="kw">await</span>;
 		};
 
 		<span class="self">self</span>.<span class="ident">executor</span>.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">fut</span>.<span class="ident">boxed</span>());
 	}
 
-	<span class="kw">fn</span> <span class="ident">subscribe_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pending</span>: <span class="ident">PendingSubscription</span>, <span class="ident">keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">subscribe_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>, <span class="ident">keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
 		<span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">storage_changes_notification_stream</span>(<span class="ident">keys</span>.<span class="ident">as_deref</span>(), <span class="prelude-val">None</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident">stream</span>) =&gt; <span class="ident">stream</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">blockchain_err</span>) =&gt; {
-				<span class="ident">pending</span>.<span class="ident">reject</span>(<span class="ident">JsonRpseeError::from</span>(<span class="ident">Error::Client</span>(<span class="ident">Box::new</span>(<span class="ident">blockchain_err</span>))));
+				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">reject</span>(<span class="ident">JsonRpseeError::from</span>(<span class="ident">Error::Client</span>(<span class="ident">Box::new</span>(<span class="ident">blockchain_err</span>))));
 				<span class="kw">return</span>
 			},
 		};
@@ -1083,9 +1077,7 @@
 			.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">storage</span><span class="op">|</span> <span class="ident">future::ready</span>(<span class="op">!</span><span class="ident">storage</span>.<span class="ident">changes</span>.<span class="ident">is_empty</span>()));
 
 		<span class="kw">let</span> <span class="ident">fut</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">sink</span>) <span class="op">=</span> <span class="ident">pending</span>.<span class="ident">accept</span>() {
-				<span class="ident">sink</span>.<span class="ident">pipe_from_stream</span>(<span class="ident">stream</span>).<span class="kw">await</span>;
-			}
+			<span class="ident">sink</span>.<span class="ident">pipe_from_stream</span>(<span class="ident">stream</span>).<span class="kw">await</span>;
 		};
 
 		<span class="self">self</span>.<span class="ident">executor</span>.<span class="ident">spawn</span>(<span class="string">&quot;substrate-rpc-subscription&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;rpc&quot;</span>), <span class="ident">fut</span>.<span class="ident">boxed</span>());

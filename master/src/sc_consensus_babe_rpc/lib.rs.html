@@ -547,7 +547,7 @@
 		<span class="kw">let</span> (<span class="ident">response</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">api</span>.<span class="ident">raw_json_request</span>(<span class="ident">request</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
 		<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;result&quot;:{&quot;5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY&quot;:{&quot;primary&quot;:[0],&quot;secondary&quot;:[1,2,4],&quot;secondary_vrf&quot;:[]}},&quot;id&quot;:1}&quot;#</span>;
 
-		<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>, <span class="ident">expected</span>);
+		<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>.<span class="ident">result</span>, <span class="ident">expected</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">tokio::test</span>]</span>
@@ -559,7 +559,7 @@
 		<span class="kw">let</span> (<span class="ident">response</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">api</span>.<span class="ident">raw_json_request</span>(<span class="ident">request</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
 		<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;code&quot;:-32601,&quot;message&quot;:&quot;RPC call is unsafe to be called externally&quot;},&quot;id&quot;:1}&quot;#</span>;
 
-		<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>, <span class="ident">expected</span>);
+		<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>.<span class="ident">result</span>, <span class="ident">expected</span>);
 	}
 }
 </code></pre></div>

@@ -491,6 +491,13 @@
 <span id="485">485</span>
 <span id="486">486</span>
 <span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -522,7 +529,8 @@
 
 <span class="kw">use</span> <span class="ident">jsonrpsee</span>::{
 	<span class="ident">core</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">JsonRpseeError</span>, <span class="ident">RpcResult</span>},
-	<span class="ident">ws_server::PendingSubscription</span>,
+	<span class="ident">types::SubscriptionResult</span>,
+	<span class="ident">ws_server::SubscriptionSink</span>,
 };
 
 <span class="kw">use</span> <span class="ident">sc_rpc_api</span>::{<span class="ident">state::ReadProof</span>, <span class="ident">DenyUnsafe</span>};
@@ -648,10 +656,10 @@
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">sp_rpc::tracing::TraceBlockResponse</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// New runtime version subscription</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_runtime_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>);
+	<span class="kw">fn</span> <span class="ident">subscribe_runtime_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>);
 
 	<span class="doccomment">/// New storage subscription</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>, <span class="ident">keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>);
+	<span class="kw">fn</span> <span class="ident">subscribe_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>, <span class="ident">keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>);
 }
 
 <span class="doccomment">/// Create new state API that works on full node.</span>
@@ -811,19 +819,25 @@
 			.<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">subscribe_runtime_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>) {
-		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_runtime_version</span>(<span class="ident">sink</span>)
+	<span class="kw">fn</span> <span class="ident">subscribe_runtime_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>) -&gt; <span class="ident">SubscriptionResult</span> {
+		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_runtime_version</span>(<span class="ident">sink</span>);
+		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">fn</span> <span class="ident">subscribe_storage</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sink</span>: <span class="ident">PendingSubscription</span>, <span class="ident">keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">subscribe_storage</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="kw-2">mut</span> <span class="ident">sink</span>: <span class="ident">SubscriptionSink</span>,
+		<span class="ident">keys</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StorageKey</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">SubscriptionResult</span> {
 		<span class="kw">if</span> <span class="ident">keys</span>.<span class="ident">is_none</span>() {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">deny_unsafe</span>.<span class="ident">check_if_safe</span>() {
 				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sink</span>.<span class="ident">reject</span>(<span class="ident">JsonRpseeError::from</span>(<span class="ident">err</span>));
-				<span class="kw">return</span>
+				<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
 			}
 		}
 
-		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_storage</span>(<span class="ident">sink</span>, <span class="ident">keys</span>)
+		<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">subscribe_storage</span>(<span class="ident">sink</span>, <span class="ident">keys</span>);
+		<span class="prelude-val">Ok</span>(())
 	}
 }
 
