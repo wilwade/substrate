@@ -196,6 +196,8 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -374,7 +376,9 @@
 			.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[
 				<span class="self">self</span>.<span class="ident">transport_label</span>,
 				<span class="ident">name</span>,
-				<span class="kw">if</span> <span class="ident">success</span> { <span class="string">&quot;true&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;false&quot;</span> },
+				<span class="comment">// the label &quot;is_error&quot;, so `success` should be regarded as false</span>
+				<span class="comment">// and vice-versa to be registrered correctly.</span>
+				<span class="kw">if</span> <span class="ident">success</span> { <span class="string">&quot;false&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;true&quot;</span> },
 			])
 			.<span class="ident">inc</span>();
 	}
