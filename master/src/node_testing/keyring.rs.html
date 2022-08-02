@@ -137,8 +137,8 @@
 <span class="doccomment">//! Test accounts.</span>
 
 <span class="kw">use</span> <span class="ident">codec::Encode</span>;
+<span class="kw">use</span> <span class="ident">kitchensink_runtime</span>::{<span class="ident">CheckedExtrinsic</span>, <span class="ident">SessionKeys</span>, <span class="ident">SignedExtra</span>, <span class="ident">UncheckedExtrinsic</span>};
 <span class="kw">use</span> <span class="ident">node_primitives</span>::{<span class="ident">AccountId</span>, <span class="ident">Balance</span>, <span class="ident">Index</span>};
-<span class="kw">use</span> <span class="ident">node_runtime</span>::{<span class="ident">CheckedExtrinsic</span>, <span class="ident">SessionKeys</span>, <span class="ident">SignedExtra</span>, <span class="ident">UncheckedExtrinsic</span>};
 <span class="kw">use</span> <span class="ident">sp_keyring</span>::{<span class="ident">AccountKeyring</span>, <span class="ident">Ed25519Keyring</span>, <span class="ident">Sr25519Keyring</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::generic::Era</span>;
 

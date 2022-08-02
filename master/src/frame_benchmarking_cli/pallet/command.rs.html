@@ -518,6 +518,15 @@
 <span id="512">512</span>
 <span id="513">513</span>
 <span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -756,14 +765,22 @@ not created by a node that was compiled with the flag&quot;</span>;
 					<span class="kw">let</span> <span class="ident">lowest</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lowest_range_values</span>.<span class="ident">get</span>(<span class="ident">idx</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or</span>(<span class="kw-2">*</span><span class="ident">low</span>);
 					<span class="kw">let</span> <span class="ident">highest</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">highest_range_values</span>.<span class="ident">get</span>(<span class="ident">idx</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or</span>(<span class="kw-2">*</span><span class="ident">high</span>);
 
-					<span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> <span class="ident">highest</span> <span class="op">-</span> <span class="ident">lowest</span>;
+					<span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span>
+						<span class="ident">highest</span>.<span class="ident">checked_sub</span>(<span class="ident">lowest</span>).<span class="ident">ok_or</span>(<span class="string">&quot;`low` cannot be higher than `high`&quot;</span>)<span class="question-mark">?</span>;
 
-					<span class="comment">// Create up to `STEPS` steps for that component between high and low.</span>
-					<span class="kw">let</span> <span class="ident">step_size</span> <span class="op">=</span> (<span class="ident">diff</span> <span class="op">/</span> <span class="self">self</span>.<span class="ident">steps</span>).<span class="ident">max</span>(<span class="number">1</span>);
-					<span class="kw">let</span> <span class="ident">num_of_steps</span> <span class="op">=</span> <span class="ident">diff</span> <span class="op">/</span> <span class="ident">step_size</span> <span class="op">+</span> <span class="number">1</span>;
-					<span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_of_steps</span> {
+					<span class="comment">// The slope logic needs at least two points</span>
+					<span class="comment">// to compute a slope.</span>
+					<span class="kw">if</span> <span class="self">self</span>.<span class="ident">steps</span> <span class="op">&lt;</span> <span class="number">2</span> {
+						<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;`steps` must be at least 2.&quot;</span>.<span class="ident">into</span>())
+					}
+
+					<span class="kw">let</span> <span class="ident">step_size</span> <span class="op">=</span> (<span class="ident">diff</span> <span class="kw">as</span> <span class="ident">f32</span> <span class="op">/</span> (<span class="self">self</span>.<span class="ident">steps</span> <span class="op">-</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">max</span>(<span class="number">0.0</span>);
+
+					<span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">steps</span> {
 						<span class="comment">// This is the value we will be testing for component `name`</span>
-						<span class="kw">let</span> <span class="ident">component_value</span> <span class="op">=</span> <span class="ident">lowest</span> <span class="op">+</span> <span class="ident">step_size</span> <span class="op">*</span> <span class="ident">s</span>;
+						<span class="kw">let</span> <span class="ident">component_value</span> <span class="op">=</span> ((<span class="ident">lowest</span> <span class="kw">as</span> <span class="ident">f32</span> <span class="op">+</span> <span class="ident">step_size</span> <span class="op">*</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">f32</span>) <span class="kw">as</span> <span class="ident">u32</span>)
+							.<span class="ident">min</span>(<span class="ident">highest</span>)
+							.<span class="ident">max</span>(<span class="ident">lowest</span>);
 
 						<span class="comment">// Select the max value for all the other components.</span>
 						<span class="kw">let</span> <span class="ident">c</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">BenchmarkParameter</span>, <span class="ident">u32</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">components</span>
@@ -884,13 +901,14 @@ not created by a node that was compiled with the flag&quot;</span>;
 						<span class="kw">if</span> <span class="ident">elapsed</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">time::Duration::from_secs</span>(<span class="number">5</span>) {
 							<span class="ident">timer</span> <span class="op">=</span> <span class="ident">time::SystemTime::now</span>();
 							<span class="macro">log::info!</span>(
-								<span class="string">&quot;Running Benchmark: {}.{} {}/{} {}/{}&quot;</span>,
+								<span class="string">&quot;Running Benchmark: {}.{}({} args) {}/{} {}/{}&quot;</span>,
 								<span class="ident">String::from_utf8</span>(<span class="ident">pallet</span>.<span class="ident">clone</span>())
 									.<span class="ident">expect</span>(<span class="string">&quot;Encoded from String; qed&quot;</span>),
 								<span class="ident">String::from_utf8</span>(<span class="ident">extrinsic</span>.<span class="ident">clone</span>())
 									.<span class="ident">expect</span>(<span class="string">&quot;Encoded from String; qed&quot;</span>),
-								<span class="ident">s</span> <span class="op">+</span> <span class="number">1</span>, <span class="comment">// s starts at 0. todo show step</span>
-								<span class="self">self</span>.<span class="ident">steps</span>,
+								<span class="ident">components</span>.<span class="ident">len</span>(),
+								<span class="ident">s</span> <span class="op">+</span> <span class="number">1</span>, <span class="comment">// s starts at 0.</span>
+								<span class="ident">all_components</span>.<span class="ident">len</span>(),
 								<span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>,
 								<span class="self">self</span>.<span class="ident">external_repeat</span>,
 							);

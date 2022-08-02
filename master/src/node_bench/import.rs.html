@@ -344,13 +344,13 @@
 						<span class="comment">//      the transaction fee into the treasury</span>
 						<span class="comment">//    - extrinsic success</span>
 						<span class="macro">assert_eq!</span>(
-							<span class="ident">node_runtime::System::events</span>().<span class="ident">len</span>(),
+							<span class="ident">kitchensink_runtime::System::events</span>().<span class="ident">len</span>(),
 							(<span class="self">self</span>.<span class="ident">block</span>.<span class="ident">extrinsics</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>) <span class="op">*</span> <span class="number">8</span> <span class="op">+</span> <span class="number">1</span>,
 						);
 					},
 					<span class="ident">BlockType::Noop</span> =&gt; {
 						<span class="macro">assert_eq!</span>(
-							<span class="ident">node_runtime::System::events</span>().<span class="ident">len</span>(),
+							<span class="ident">kitchensink_runtime::System::events</span>().<span class="ident">len</span>(),
 							<span class="comment">// should be 2 per signed extrinsic + 1 per unsigned</span>
 							<span class="comment">// we have 1 unsigned and the rest are signed in the block</span>
 							<span class="comment">// those 2 events per signed are:</span>
