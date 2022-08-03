@@ -559,6 +559,7 @@
 <span id="553">553</span>
 <span id="554">554</span>
 <span id="555">555</span>
+<span id="556">556</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1068,7 +1069,8 @@
 
 	<span class="doccomment">/// Attempts to revert the chain by `n` blocks. If `revert_finalized` is set it will attempt to</span>
 	<span class="doccomment">/// revert past any finalized block, this is unsafe and can potentially leave the node in an</span>
-	<span class="doccomment">/// inconsistent state.</span>
+	<span class="doccomment">/// inconsistent state. All blocks higher than the best block are also reverted and not counting</span>
+	<span class="doccomment">/// towards `n`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns the number of blocks that were successfully reverted and the list of finalized</span>
 	<span class="doccomment">/// blocks that has been reverted.</span>
