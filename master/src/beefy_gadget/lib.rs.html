@@ -325,8 +325,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{
 	<span class="ident">import::BeefyBlockImport</span>,
 	<span class="ident">notification</span>::{
-		<span class="ident">BeefyBestBlockSender</span>, <span class="ident">BeefyBestBlockStream</span>, <span class="ident">BeefySignedCommitmentSender</span>,
-		<span class="ident">BeefySignedCommitmentStream</span>,
+		<span class="ident">BeefyBestBlockSender</span>, <span class="ident">BeefyBestBlockStream</span>, <span class="ident">BeefyVersionedFinalityProofSender</span>,
+		<span class="ident">BeefyVersionedFinalityProofStream</span>,
 	},
 };
 
@@ -400,11 +400,11 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefyVoterLinks</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">Block</span><span class="op">&gt;</span> {
 	<span class="comment">// BlockImport -&gt; Voter links</span>
 	<span class="doccomment">/// Stream of BEEFY signed commitments from block import to voter.</span>
-	<span class="kw">pub</span> <span class="ident">from_block_import_justif_stream</span>: <span class="ident">BeefySignedCommitmentStream</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">from_block_import_justif_stream</span>: <span class="ident">BeefyVersionedFinalityProofStream</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 
 	<span class="comment">// Voter -&gt; RPC links</span>
 	<span class="doccomment">/// Sends BEEFY signed commitments from voter to RPC.</span>
-	<span class="kw">pub</span> <span class="ident">to_rpc_justif_sender</span>: <span class="ident">BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">to_rpc_justif_sender</span>: <span class="ident">BeefyVersionedFinalityProofSender</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Sends BEEFY best block hashes from voter to RPC.</span>
 	<span class="kw">pub</span> <span class="ident">to_rpc_best_block_sender</span>: <span class="ident">BeefyBestBlockSender</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 }
@@ -413,7 +413,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefyRPCLinks</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">Block</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Stream of signed commitments coming from the voter.</span>
-	<span class="kw">pub</span> <span class="ident">from_voter_justif_stream</span>: <span class="ident">BeefySignedCommitmentStream</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">from_voter_justif_stream</span>: <span class="ident">BeefyVersionedFinalityProofStream</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Stream of BEEFY best block hashes coming from the voter.</span>
 	<span class="kw">pub</span> <span class="ident">from_voter_best_beefy_stream</span>: <span class="ident">BeefyBestBlockStream</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 }
@@ -435,13 +435,13 @@
 {
 	<span class="comment">// Voter -&gt; RPC links</span>
 	<span class="kw">let</span> (<span class="ident">to_rpc_justif_sender</span>, <span class="ident">from_voter_justif_stream</span>) <span class="op">=</span>
-		<span class="ident">notification::BeefySignedCommitmentStream</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::channel</span>();
+		<span class="ident">notification::BeefyVersionedFinalityProofStream</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::channel</span>();
 	<span class="kw">let</span> (<span class="ident">to_rpc_best_block_sender</span>, <span class="ident">from_voter_best_beefy_stream</span>) <span class="op">=</span>
 		<span class="ident">notification::BeefyBestBlockStream</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::channel</span>();
 
 	<span class="comment">// BlockImport -&gt; Voter links</span>
 	<span class="kw">let</span> (<span class="ident">to_voter_justif_sender</span>, <span class="ident">from_block_import_justif_stream</span>) <span class="op">=</span>
-		<span class="ident">notification::BeefySignedCommitmentStream</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::channel</span>();
+		<span class="ident">notification::BeefyVersionedFinalityProofStream</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::channel</span>();
 
 	<span class="comment">// BlockImport</span>
 	<span class="kw">let</span> <span class="ident">import</span> <span class="op">=</span>

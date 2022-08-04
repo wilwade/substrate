@@ -58,6 +58,7 @@
 <span id="52">52</span>
 <span id="53">53</span>
 <span id="54">54</span>
+<span id="55">55</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -79,7 +80,7 @@
 <span class="kw">use</span> <span class="ident">sc_utils::notification</span>::{<span class="ident">NotificationSender</span>, <span class="ident">NotificationStream</span>, <span class="ident">TracingKeyStr</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::justification::BeefySignedCommitment</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::justification::BeefyVersionedFinalityProof</span>;
 
 <span class="doccomment">/// The sending half of the notifications channel(s) used to send</span>
 <span class="doccomment">/// notifications about best BEEFY block from the gadget side.</span>
@@ -91,13 +92,14 @@
 	<span class="ident">NotificationStream</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span>, <span class="ident">BeefyBestBlockTracingKey</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// The sending half of the notifications channel(s) used to send notifications</span>
-<span class="doccomment">/// about signed commitments generated at the end of a BEEFY round.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">NotificationSender</span><span class="op">&lt;</span><span class="ident">BeefySignedCommitment</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="doccomment">/// about versioned finality proof generated at the end of a BEEFY round.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">BeefyVersionedFinalityProofSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">=</span>
+	<span class="ident">NotificationSender</span><span class="op">&lt;</span><span class="ident">BeefyVersionedFinalityProof</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// The receiving half of a notifications channel used to receive notifications</span>
-<span class="doccomment">/// about signed commitments generated at the end of a BEEFY round.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">BeefySignedCommitmentStream</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">=</span>
-	<span class="ident">NotificationStream</span><span class="op">&lt;</span><span class="ident">BeefySignedCommitment</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>, <span class="ident">BeefySignedCommitmentTracingKey</span><span class="op">&gt;</span>;
+<span class="doccomment">/// about versioned finality proof generated at the end of a BEEFY round.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">BeefyVersionedFinalityProofStream</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">=</span>
+	<span class="ident">NotificationStream</span><span class="op">&lt;</span><span class="ident">BeefyVersionedFinalityProof</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>, <span class="ident">BeefyVersionedFinalityProofTracingKey</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Provides tracing key for BEEFY best block stream.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
@@ -106,11 +108,11 @@
 	<span class="kw">const</span> <span class="ident">TRACING_KEY</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;mpsc_beefy_best_block_notification_stream&quot;</span>;
 }
 
-<span class="doccomment">/// Provides tracing key for BEEFY signed commitments stream.</span>
+<span class="doccomment">/// Provides tracing key for BEEFY versioned finality proof stream.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefySignedCommitmentTracingKey</span>;
-<span class="kw">impl</span> <span class="ident">TracingKeyStr</span> <span class="kw">for</span> <span class="ident">BeefySignedCommitmentTracingKey</span> {
-	<span class="kw">const</span> <span class="ident">TRACING_KEY</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;mpsc_beefy_signed_commitments_notification_stream&quot;</span>;
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BeefyVersionedFinalityProofTracingKey</span>;
+<span class="kw">impl</span> <span class="ident">TracingKeyStr</span> <span class="kw">for</span> <span class="ident">BeefyVersionedFinalityProofTracingKey</span> {
+	<span class="kw">const</span> <span class="ident">TRACING_KEY</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;mpsc_beefy_versioned_finality_proof_notification_stream&quot;</span>;
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="beefy_gadget" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>
