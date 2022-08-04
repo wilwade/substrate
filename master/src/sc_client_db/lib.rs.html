@@ -3563,6 +3563,46 @@
 <span id="3557">3557</span>
 <span id="3558">3558</span>
 <span id="3559">3559</span>
+<span id="3560">3560</span>
+<span id="3561">3561</span>
+<span id="3562">3562</span>
+<span id="3563">3563</span>
+<span id="3564">3564</span>
+<span id="3565">3565</span>
+<span id="3566">3566</span>
+<span id="3567">3567</span>
+<span id="3568">3568</span>
+<span id="3569">3569</span>
+<span id="3570">3570</span>
+<span id="3571">3571</span>
+<span id="3572">3572</span>
+<span id="3573">3573</span>
+<span id="3574">3574</span>
+<span id="3575">3575</span>
+<span id="3576">3576</span>
+<span id="3577">3577</span>
+<span id="3578">3578</span>
+<span id="3579">3579</span>
+<span id="3580">3580</span>
+<span id="3581">3581</span>
+<span id="3582">3582</span>
+<span id="3583">3583</span>
+<span id="3584">3584</span>
+<span id="3585">3585</span>
+<span id="3586">3586</span>
+<span id="3587">3587</span>
+<span id="3588">3588</span>
+<span id="3589">3589</span>
+<span id="3590">3590</span>
+<span id="3591">3591</span>
+<span id="3592">3592</span>
+<span id="3593">3593</span>
+<span id="3594">3594</span>
+<span id="3595">3595</span>
+<span id="3596">3596</span>
+<span id="3597">3597</span>
+<span id="3598">3598</span>
+<span id="3599">3599</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -4910,8 +4950,15 @@
 
 			<span class="kw">let</span> <span class="ident">parent_hash</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">pending_block</span>.<span class="ident">header</span>.<span class="ident">parent_hash</span>();
 			<span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">pending_block</span>.<span class="ident">header</span>.<span class="ident">number</span>();
+			<span class="kw">let</span> <span class="ident">highest_leaf</span> <span class="op">=</span> <span class="self">self</span>
+				.<span class="ident">blockchain</span>
+				.<span class="ident">leaves</span>
+				.<span class="ident">read</span>()
+				.<span class="ident">highest_leaf</span>()
+				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">n</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">n</span>)
+				.<span class="ident">unwrap_or</span>(<span class="ident">Zero::zero</span>());
 			<span class="kw">let</span> <span class="ident">existing_header</span> <span class="op">=</span>
-				<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">best_num</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">blockchain</span>.<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">hash</span>))<span class="question-mark">?</span>.<span class="ident">is_some</span>();
+				<span class="ident">number</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">highest_leaf</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">blockchain</span>.<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">hash</span>))<span class="question-mark">?</span>.<span class="ident">is_some</span>();
 
 			<span class="comment">// blocks are keyed by number + hash.</span>
 			<span class="kw">let</span> <span class="ident">lookup_key</span> <span class="op">=</span> <span class="ident">utils::number_and_hash_to_lookup_key</span>(<span class="ident">number</span>, <span class="ident">hash</span>)<span class="question-mark">?</span>;
@@ -7099,7 +7146,24 @@
 			<span class="ident">header</span>.<span class="ident">hash</span>()
 		};
 
-		<span class="kw">let</span> <span class="ident">block3_fork</span> <span class="op">=</span> <span class="ident">insert_header_no_head</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, <span class="number">3</span>, <span class="ident">block2</span>, <span class="ident">Default::default</span>());
+		<span class="kw">let</span> <span class="ident">block3_fork</span> <span class="op">=</span> {
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">begin_operation</span>().<span class="ident">unwrap</span>();
+			<span class="ident">backend</span>.<span class="ident">begin_state_operation</span>(<span class="kw-2">&amp;mut</span> <span class="ident">op</span>, <span class="ident">BlockId::Hash</span>(<span class="ident">block2</span>)).<span class="ident">unwrap</span>();
+			<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">Header</span> {
+				<span class="ident">number</span>: <span class="number">3</span>,
+				<span class="ident">parent_hash</span>: <span class="ident">block2</span>,
+				<span class="ident">state_root</span>: <span class="ident">BlakeTwo256::trie_root</span>(<span class="ident">Vec::new</span>(), <span class="ident">StateVersion::V1</span>),
+				<span class="ident">digest</span>: <span class="ident">Default::default</span>(),
+				<span class="ident">extrinsics_root</span>: <span class="ident">H256::from_low_u64_le</span>(<span class="number">42</span>),
+			};
+
+			<span class="ident">op</span>.<span class="ident">set_block_data</span>(<span class="ident">header</span>.<span class="ident">clone</span>(), <span class="prelude-val">Some</span>(<span class="ident">Vec::new</span>()), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="ident">NewBlockState::Normal</span>)
+				.<span class="ident">unwrap</span>();
+
+			<span class="ident">backend</span>.<span class="ident">commit_operation</span>(<span class="ident">op</span>).<span class="ident">unwrap</span>();
+
+			<span class="ident">header</span>.<span class="ident">hash</span>()
+		};
 
 		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">block1</span>, <span class="number">1</span>));
 		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">block2</span>, <span class="number">2</span>));
@@ -7120,6 +7184,22 @@
 
 		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>.<span class="ident">leaves</span>().<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">block1</span>]);
 		<span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">backend</span>.<span class="ident">blockchain</span>.<span class="ident">leaves</span>.<span class="ident">read</span>().<span class="ident">highest_leaf</span>().<span class="ident">unwrap</span>().<span class="number">0</span>);
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">test_no_duplicated_leaves_allowed</span>() {
+		<span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Backend::new_test</span>(<span class="number">10</span>, <span class="number">10</span>);
+		<span class="kw">let</span> <span class="ident">block0</span> <span class="op">=</span> <span class="ident">insert_header</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, <span class="number">0</span>, <span class="ident">Default::default</span>(), <span class="prelude-val">None</span>, <span class="ident">Default::default</span>());
+		<span class="kw">let</span> <span class="ident">block1</span> <span class="op">=</span> <span class="ident">insert_header</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, <span class="number">1</span>, <span class="ident">block0</span>, <span class="prelude-val">None</span>, <span class="ident">Default::default</span>());
+		<span class="comment">// Add block 2 not as the best block</span>
+		<span class="kw">let</span> <span class="ident">block2</span> <span class="op">=</span> <span class="ident">insert_header_no_head</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, <span class="number">2</span>, <span class="ident">block1</span>, <span class="ident">Default::default</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>().<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">block2</span>]);
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">info</span>().<span class="ident">best_hash</span>, <span class="ident">block1</span>);
+
+		<span class="comment">// Add block 2 as the best block</span>
+		<span class="kw">let</span> <span class="ident">block2</span> <span class="op">=</span> <span class="ident">insert_header</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, <span class="number">2</span>, <span class="ident">block1</span>, <span class="prelude-val">None</span>, <span class="ident">Default::default</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>().<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">block2</span>]);
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">info</span>().<span class="ident">best_hash</span>, <span class="ident">block2</span>);
 	}
 }
 </code></pre></div>
