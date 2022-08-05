@@ -826,6 +826,10 @@
 <span id="820">820</span>
 <span id="821">821</span>
 <span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -915,8 +919,12 @@
 	<span class="doccomment">/// the network.</span>
 	<span class="kw">pub</span> <span class="ident">transaction_pool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">TransactionPool</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
-	<span class="doccomment">/// Name of the protocol to use on the wire. Should be different for each chain.</span>
+	<span class="doccomment">/// Legacy name of the protocol to use on the wire. Should be different for each chain.</span>
 	<span class="kw">pub</span> <span class="ident">protocol_id</span>: <span class="ident">ProtocolId</span>,
+
+	<span class="doccomment">/// Fork ID to distinguish protocols of different hard forks. Part of the standard protocol</span>
+	<span class="doccomment">/// name on the wire.</span>
+	<span class="kw">pub</span> <span class="ident">fork_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Import queue to use.</span>
 	<span class="doccomment">///</span>

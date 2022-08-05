@@ -1373,6 +1373,14 @@
 <span id="1367">1367</span>
 <span id="1368">1368</span>
 <span id="1369">1369</span>
+<span id="1370">1370</span>
+<span id="1371">1371</span>
+<span id="1372">1372</span>
+<span id="1373">1373</span>
+<span id="1374">1374</span>
+<span id="1375">1375</span>
+<span id="1376">1376</span>
+<span id="1377">1377</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1595,7 +1603,9 @@
 					<span class="ident">max_request_size</span>: <span class="ident">protocol</span>.<span class="ident">max_request_size</span>,
 					<span class="ident">max_response_size</span>: <span class="ident">protocol</span>.<span class="ident">max_response_size</span>,
 				},
-				<span class="ident">iter::once</span>((<span class="ident">protocol</span>.<span class="ident">name</span>.<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>(), <span class="ident">protocol_support</span>)),
+				<span class="ident">iter::once</span>(<span class="ident">protocol</span>.<span class="ident">name</span>.<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>())
+					.<span class="ident">chain</span>(<span class="ident">protocol</span>.<span class="ident">fallback_names</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="ident">name</span>.<span class="ident">as_bytes</span>().<span class="ident">to_vec</span>()))
+					.<span class="ident">zip</span>(<span class="ident">iter::repeat</span>(<span class="ident">protocol_support</span>)),
 				<span class="ident">cfg</span>,
 			);
 
@@ -2402,6 +2412,7 @@
 
 				<span class="kw">let</span> <span class="ident">protocol_config</span> <span class="op">=</span> <span class="ident">ProtocolConfig</span> {
 					<span class="ident">name</span>: <span class="ident">From::from</span>(<span class="ident">protocol_name</span>),
+					<span class="ident">fallback_names</span>: <span class="ident">Vec::new</span>(),
 					<span class="ident">max_request_size</span>: <span class="number">1024</span>,
 					<span class="ident">max_response_size</span>: <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>,
 					<span class="ident">request_timeout</span>: <span class="ident">Duration::from_secs</span>(<span class="number">30</span>),
@@ -2502,6 +2513,7 @@
 
 				<span class="kw">let</span> <span class="ident">protocol_config</span> <span class="op">=</span> <span class="ident">ProtocolConfig</span> {
 					<span class="ident">name</span>: <span class="ident">From::from</span>(<span class="ident">protocol_name</span>),
+					<span class="ident">fallback_names</span>: <span class="ident">Vec::new</span>(),
 					<span class="ident">max_request_size</span>: <span class="number">1024</span>,
 					<span class="ident">max_response_size</span>: <span class="number">8</span>, <span class="comment">// &lt;-- important for the test</span>
 					<span class="ident">request_timeout</span>: <span class="ident">Duration::from_secs</span>(<span class="number">30</span>),
@@ -2598,6 +2610,7 @@
 			<span class="kw">let</span> <span class="ident">protocol_configs</span> <span class="op">=</span> <span class="macro">vec!</span>[
 				<span class="ident">ProtocolConfig</span> {
 					<span class="ident">name</span>: <span class="ident">From::from</span>(<span class="ident">protocol_name_1</span>),
+					<span class="ident">fallback_names</span>: <span class="ident">Vec::new</span>(),
 					<span class="ident">max_request_size</span>: <span class="number">1024</span>,
 					<span class="ident">max_response_size</span>: <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>,
 					<span class="ident">request_timeout</span>: <span class="ident">Duration::from_secs</span>(<span class="number">30</span>),
@@ -2605,6 +2618,7 @@
 				},
 				<span class="ident">ProtocolConfig</span> {
 					<span class="ident">name</span>: <span class="ident">From::from</span>(<span class="ident">protocol_name_2</span>),
+					<span class="ident">fallback_names</span>: <span class="ident">Vec::new</span>(),
 					<span class="ident">max_request_size</span>: <span class="number">1024</span>,
 					<span class="ident">max_response_size</span>: <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>,
 					<span class="ident">request_timeout</span>: <span class="ident">Duration::from_secs</span>(<span class="number">30</span>),
@@ -2622,6 +2636,7 @@
 			<span class="kw">let</span> <span class="ident">protocol_configs</span> <span class="op">=</span> <span class="macro">vec!</span>[
 				<span class="ident">ProtocolConfig</span> {
 					<span class="ident">name</span>: <span class="ident">From::from</span>(<span class="ident">protocol_name_1</span>),
+					<span class="ident">fallback_names</span>: <span class="ident">Vec::new</span>(),
 					<span class="ident">max_request_size</span>: <span class="number">1024</span>,
 					<span class="ident">max_response_size</span>: <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>,
 					<span class="ident">request_timeout</span>: <span class="ident">Duration::from_secs</span>(<span class="number">30</span>),
@@ -2629,6 +2644,7 @@
 				},
 				<span class="ident">ProtocolConfig</span> {
 					<span class="ident">name</span>: <span class="ident">From::from</span>(<span class="ident">protocol_name_2</span>),
+					<span class="ident">fallback_names</span>: <span class="ident">Vec::new</span>(),
 					<span class="ident">max_request_size</span>: <span class="number">1024</span>,
 					<span class="ident">max_response_size</span>: <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>,
 					<span class="ident">request_timeout</span>: <span class="ident">Duration::from_secs</span>(<span class="number">30</span>),
