@@ -1809,8 +1809,6 @@
 <span id="1803">1803</span>
 <span id="1804">1804</span>
 <span id="1805">1805</span>
-<span id="1806">1806</span>
-<span id="1807">1807</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3390,8 +3388,6 @@
 			} =&gt; {
 				<span class="comment">// Set number 0 is hardcoded the default set of peers we sync from.</span>
 				<span class="kw">if</span> <span class="ident">set_id</span> <span class="op">==</span> <span class="ident">HARDCODED_PEERSETS_SYNC</span> {
-					<span class="macro">debug_assert!</span>(<span class="ident">negotiated_fallback</span>.<span class="ident">is_none</span>());
-
 					<span class="comment">// `received_handshake` can be either a `Status` message if received from the</span>
 					<span class="comment">// legacy substream ,or a `BlockAnnouncesHandshake` if received from the block</span>
 					<span class="comment">// announces substream.</span>
