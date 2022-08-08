@@ -1815,7 +1815,7 @@
 	<span class="doccomment">/// Pruning window size.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: only finalized blocks are subject for removal!</span>
-	<span class="kw">pub</span> <span class="ident">keep_blocks</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">blocks_pruning</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Block announce validator.</span>
 	<span class="kw">pub</span> <span class="ident">block_announce_validator</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">BlockAnnounceValidator</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// List of notification protocols that the network must support.</span>
@@ -1881,10 +1881,10 @@
 
 	<span class="doccomment">/// Add a full peer.</span>
 	<span class="kw">fn</span> <span class="ident">add_full_peer_with_config</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">config</span>: <span class="ident">FullPeerConfig</span>) {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">test_client_builder</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">config</span>.<span class="ident">keep_blocks</span>, <span class="ident">config</span>.<span class="ident">storage_chain</span>) {
-			(<span class="prelude-val">Some</span>(<span class="ident">keep_blocks</span>), <span class="bool-val">true</span>) =&gt; <span class="ident">TestClientBuilder::with_tx_storage</span>(<span class="ident">keep_blocks</span>),
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">test_client_builder</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">config</span>.<span class="ident">blocks_pruning</span>, <span class="ident">config</span>.<span class="ident">storage_chain</span>) {
+			(<span class="prelude-val">Some</span>(<span class="ident">blocks_pruning</span>), <span class="bool-val">true</span>) =&gt; <span class="ident">TestClientBuilder::with_tx_storage</span>(<span class="ident">blocks_pruning</span>),
 			(<span class="prelude-val">None</span>, <span class="bool-val">true</span>) =&gt; <span class="ident">TestClientBuilder::with_tx_storage</span>(<span class="ident">u32::MAX</span>),
-			(<span class="prelude-val">Some</span>(<span class="ident">keep_blocks</span>), <span class="bool-val">false</span>) =&gt; <span class="ident">TestClientBuilder::with_pruning_window</span>(<span class="ident">keep_blocks</span>),
+			(<span class="prelude-val">Some</span>(<span class="ident">blocks_pruning</span>), <span class="bool-val">false</span>) =&gt; <span class="ident">TestClientBuilder::with_pruning_window</span>(<span class="ident">blocks_pruning</span>),
 			(<span class="prelude-val">None</span>, <span class="bool-val">false</span>) =&gt; <span class="ident">TestClientBuilder::with_default_backend</span>(),
 		};
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">storage</span>) <span class="op">=</span> <span class="ident">config</span>.<span class="ident">extra_storage</span> {

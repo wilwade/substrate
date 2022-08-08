@@ -733,7 +733,7 @@
 		<span class="ident">NodeKeyConfig</span>, <span class="ident">OffchainWorkerConfig</span>, <span class="ident">PrometheusConfig</span>, <span class="ident">PruningMode</span>, <span class="ident">Role</span>, <span class="ident">RpcMethods</span>,
 		<span class="ident">TelemetryEndpoints</span>, <span class="ident">TransactionPoolOptions</span>, <span class="ident">WasmExecutionMethod</span>,
 	},
-	<span class="ident">ChainSpec</span>, <span class="ident">KeepBlocks</span>, <span class="ident">TracingReceiver</span>,
+	<span class="ident">BlocksPruning</span>, <span class="ident">ChainSpec</span>, <span class="ident">TracingReceiver</span>,
 };
 <span class="kw">use</span> <span class="ident">sc_tracing::logging::LoggerBuilder</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">net::SocketAddr</span>, <span class="ident">path::PathBuf</span>};
@@ -959,11 +959,11 @@
 	<span class="doccomment">/// Get the block pruning mode.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// By default this is retrieved from `block_pruning` if it is available. Otherwise its</span>
-	<span class="doccomment">/// `KeepBlocks::All`.</span>
-	<span class="kw">fn</span> <span class="ident">keep_blocks</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">KeepBlocks</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// `BlocksPruning::All`.</span>
+	<span class="kw">fn</span> <span class="ident">blocks_pruning</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">BlocksPruning</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">pruning_params</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">keep_blocks</span>())
-			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">KeepBlocks::All</span>))
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">blocks_pruning</span>())
+			.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">BlocksPruning::All</span>))
 	}
 
 	<span class="doccomment">/// Get the chain ID (string).</span>
@@ -1238,7 +1238,7 @@
 			<span class="ident">state_cache_size</span>: <span class="self">self</span>.<span class="ident">state_cache_size</span>()<span class="question-mark">?</span>,
 			<span class="ident">state_cache_child_ratio</span>: <span class="self">self</span>.<span class="ident">state_cache_child_ratio</span>()<span class="question-mark">?</span>,
 			<span class="ident">state_pruning</span>: <span class="self">self</span>.<span class="ident">state_pruning</span>()<span class="question-mark">?</span>,
-			<span class="ident">keep_blocks</span>: <span class="self">self</span>.<span class="ident">keep_blocks</span>()<span class="question-mark">?</span>,
+			<span class="ident">blocks_pruning</span>: <span class="self">self</span>.<span class="ident">blocks_pruning</span>()<span class="question-mark">?</span>,
 			<span class="ident">wasm_method</span>: <span class="self">self</span>.<span class="ident">wasm_method</span>()<span class="question-mark">?</span>,
 			<span class="ident">wasm_runtime_overrides</span>: <span class="self">self</span>.<span class="ident">wasm_runtime_overrides</span>(),
 			<span class="ident">execution_strategies</span>: <span class="self">self</span>.<span class="ident">execution_strategies</span>(<span class="ident">is_dev</span>, <span class="ident">is_validator</span>)<span class="question-mark">?</span>,

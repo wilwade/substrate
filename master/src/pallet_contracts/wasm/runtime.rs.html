@@ -3448,7 +3448,7 @@
 	<span class="comment">//</span>
 	<span class="comment">// # Parameters</span>
 	<span class="comment">//</span>
-	<span class="comment">// - flags: See [`CallFlags`] for a documenation of the supported flags.</span>
+	<span class="comment">// - flags: See [`CallFlags`] for a documentation of the supported flags.</span>
 	<span class="comment">// - callee_ptr: a pointer to the address of the callee contract.</span>
 	<span class="comment">//   Should be decodable as an `T::AccountId`. Traps otherwise.</span>
 	<span class="comment">// - gas: how much gas to devote to the execution.</span>
@@ -3992,7 +3992,7 @@
 	<span class="comment">// # Note</span>
 	<span class="comment">//</span>
 	<span class="comment">// The state rent functionality was removed. This is stub only exists for</span>
-	<span class="comment">// backwards compatiblity</span>
+	<span class="comment">// backwards compatibility</span>
 	[<span class="ident">seal0</span>] <span class="ident">seal_restore_to</span>(
 		<span class="ident">ctx</span>,
 		<span class="ident">_dest_ptr</span>: <span class="ident">u32</span>,
@@ -4013,7 +4013,7 @@
 	<span class="comment">// # Note</span>
 	<span class="comment">//</span>
 	<span class="comment">// The state rent functionality was removed. This is stub only exists for</span>
-	<span class="comment">// backwards compatiblity</span>
+	<span class="comment">// backwards compatibility</span>
 	[<span class="ident">seal1</span>] <span class="ident">seal_restore_to</span>(
 		<span class="ident">ctx</span>,
 		<span class="ident">_dest_ptr</span>: <span class="ident">u32</span>,
@@ -4096,7 +4096,7 @@
 	<span class="comment">// # Note</span>
 	<span class="comment">//</span>
 	<span class="comment">// The state rent functionality was removed. This is stub only exists for</span>
-	<span class="comment">// backwards compatiblity.</span>
+	<span class="comment">// backwards compatibility.</span>
 	[<span class="ident">seal0</span>] <span class="ident">seal_set_rent_allowance</span>(<span class="ident">ctx</span>, <span class="ident">_value_ptr</span>: <span class="ident">u32</span>, <span class="ident">_value_len</span>: <span class="ident">u32</span>) =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::DebugMessage</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(())
@@ -4107,7 +4107,7 @@
 	<span class="comment">// # Note</span>
 	<span class="comment">//</span>
 	<span class="comment">// The state rent functionality was removed. This is stub only exists for</span>
-	<span class="comment">// backwards compatiblity.</span>
+	<span class="comment">// backwards compatibility.</span>
 	[<span class="ident">seal1</span>] <span class="ident">seal_set_rent_allowance</span>(<span class="ident">ctx</span>, <span class="ident">_value_ptr</span>: <span class="ident">u32</span>) =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::DebugMessage</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(())
@@ -4118,7 +4118,7 @@
 	<span class="comment">// # Note</span>
 	<span class="comment">//</span>
 	<span class="comment">// The state rent functionality was removed. This is stub only exists for</span>
-	<span class="comment">// backwards compatiblity.</span>
+	<span class="comment">// backwards compatibility.</span>
 	[<span class="ident">seal0</span>] <span class="ident">seal_rent_allowance</span>(<span class="ident">ctx</span>, <span class="ident">out_ptr</span>: <span class="ident">u32</span>, <span class="ident">out_len_ptr</span>: <span class="ident">u32</span>) =&gt; {
 		<span class="ident">ctx</span>.<span class="ident">charge_gas</span>(<span class="ident">RuntimeCosts::Balance</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">rent_allowance</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">E::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::max_value</span>().<span class="ident">encode</span>();
@@ -4324,15 +4324,15 @@
 	<span class="comment">//</span>
 	<span class="comment">// # Return Value</span>
 	<span class="comment">//</span>
-	<span class="comment">// Returns `ReturnCode::Success` when the dispatchable was succesfully executed and</span>
-	<span class="comment">// returned `Ok`. When the dispatchable was exeuted but returned an error</span>
+	<span class="comment">// Returns `ReturnCode::Success` when the dispatchable was successfully executed and</span>
+	<span class="comment">// returned `Ok`. When the dispatchable was executed but returned an error</span>
 	<span class="comment">// `ReturnCode::CallRuntimeReturnedError` is returned. The full error is not</span>
 	<span class="comment">// provided because it is not guaranteed to be stable.</span>
 	<span class="comment">//</span>
 	<span class="comment">// # Comparison with `ChainExtension`</span>
 	<span class="comment">//</span>
 	<span class="comment">// Just as a chain extension this API allows the runtime to extend the functionality</span>
-	<span class="comment">// of contracts. While making use of this function is generelly easier it cannot be</span>
+	<span class="comment">// of contracts. While making use of this function is generally easier it cannot be</span>
 	<span class="comment">// used in call cases. Consider writing a chain extension if you need to do perform</span>
 	<span class="comment">// one of the following tasks:</span>
 	<span class="comment">//</span>

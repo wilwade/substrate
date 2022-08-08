@@ -347,7 +347,7 @@
 <span class="doccomment">//! Service configuration.</span>
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_client_api::execution_extensions</span>::{<span class="ident">ExecutionStrategies</span>, <span class="ident">ExecutionStrategy</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_client_db</span>::{<span class="ident">Database</span>, <span class="ident">DatabaseSource</span>, <span class="ident">KeepBlocks</span>, <span class="ident">PruningMode</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_client_db</span>::{<span class="ident">BlocksPruning</span>, <span class="ident">Database</span>, <span class="ident">DatabaseSource</span>, <span class="ident">PruningMode</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor::WasmExecutionMethod</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wasmtime&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_executor::WasmtimeInstantiationStrategy</span>;
@@ -407,7 +407,7 @@
 	<span class="doccomment">/// Number of blocks to keep in the db.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: only finalized blocks are subject for removal!</span>
-	<span class="kw">pub</span> <span class="ident">keep_blocks</span>: <span class="ident">KeepBlocks</span>,
+	<span class="kw">pub</span> <span class="ident">blocks_pruning</span>: <span class="ident">BlocksPruning</span>,
 	<span class="doccomment">/// Chain configuration.</span>
 	<span class="kw">pub</span> <span class="ident">chain_spec</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ChainSpec</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Wasm execution method.</span>

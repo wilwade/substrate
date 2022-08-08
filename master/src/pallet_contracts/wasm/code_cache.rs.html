@@ -452,7 +452,7 @@
 		<span class="kw">use</span> <span class="ident"><span class="self">self</span>::CodeToken</span>::<span class="kw-2">*</span>;
 		<span class="comment">// In case of `Load` we already covered the general costs of</span>
 		<span class="comment">// calling the storage but still need to account for the actual size of the</span>
-		<span class="comment">// contract code. This is why we substract `T::*::(0)`. We need to do this at this</span>
+		<span class="comment">// contract code. This is why we subtract `T::*::(0)`. We need to do this at this</span>
 		<span class="comment">// point because when charging the general weight for calling the contract we not know the</span>
 		<span class="comment">// size of the contract.</span>
 		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
@@ -460,8 +460,8 @@
 			<span class="ident">Load</span>(<span class="ident">len</span>) =&gt; {
 				<span class="kw">let</span> <span class="ident">computation</span> <span class="op">=</span> <span class="ident">T::WeightInfo::call_with_code_per_byte</span>(<span class="ident">len</span>)
 					.<span class="ident">saturating_sub</span>(<span class="ident">T::WeightInfo::call_with_code_per_byte</span>(<span class="number">0</span>));
-				<span class="kw">let</span> <span class="ident">bandwith</span> <span class="op">=</span> <span class="ident">T::ContractAccessWeight::get</span>().<span class="ident">saturating_mul</span>(<span class="ident">len</span>.<span class="ident">into</span>());
-				<span class="ident">computation</span>.<span class="ident">max</span>(<span class="ident">bandwith</span>)
+				<span class="kw">let</span> <span class="ident">bandwidth</span> <span class="op">=</span> <span class="ident">T::ContractAccessWeight::get</span>().<span class="ident">saturating_mul</span>(<span class="ident">len</span>.<span class="ident">into</span>());
+				<span class="ident">computation</span>.<span class="ident">max</span>(<span class="ident">bandwidth</span>)
 			},
 		}
 	}

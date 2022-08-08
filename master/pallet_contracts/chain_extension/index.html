@@ -23,7 +23,7 @@ extensions they can be put into a tuple which is then passed to <a href="../pall
 this <code>type Extensions = (ExtensionA, ExtensionB)</code>.</p>
 <p>However, only extensions implementing <a href="trait.RegisteredChainExtension.html" title="RegisteredChainExtension"><code>RegisteredChainExtension</code></a> can be put into a tuple.
 This is because the <a href="trait.RegisteredChainExtension.html#associatedconstant.ID" title="RegisteredChainExtension::ID"><code>RegisteredChainExtension::ID</code></a> is used to decide which of those extensions
-should should be used when the contract calls a chain extensions. Extensions which are generally
+should be used when the contract calls a chain extensions. Extensions which are generally
 useful should claim their <code>ID</code> with <a href="https://github.com/paritytech/chainextension-registry">the registry</a>
 so that no collisions with other vendors will occur.</p>
 <p><strong>Chain specific extensions must use the reserved <code>ID = 0</code> so that they can’t be registered with

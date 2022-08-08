@@ -512,7 +512,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! However, only extensions implementing [`RegisteredChainExtension`] can be put into a tuple.</span>
 <span class="doccomment">//! This is because the [`RegisteredChainExtension::ID`] is used to decide which of those extensions</span>
-<span class="doccomment">//! should should be used when the contract calls a chain extensions. Extensions which are generally</span>
+<span class="doccomment">//! should be used when the contract calls a chain extensions. Extensions which are generally</span>
 <span class="doccomment">//! useful should claim their `ID` with [the registry](https://github.com/paritytech/chainextension-registry)</span>
 <span class="doccomment">//! so that no collisions with other vendors will occur.</span>
 <span class="doccomment">//!</span>
@@ -689,7 +689,7 @@
 	<span class="doccomment">/// It returns the two least significant bytes of the `id` passed by a contract as the other</span>
 	<span class="doccomment">/// two bytes represent the chain extension itself (the code which is calling this function).</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">func_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
-		(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">id</span> <span class="op">&amp;</span> <span class="number">0x00FF</span>) <span class="kw">as</span> <span class="ident">u16</span>
+		(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">id</span> <span class="op">&amp;</span> <span class="number">0x0000FFFF</span>) <span class="kw">as</span> <span class="ident">u16</span>
 	}
 
 	<span class="doccomment">/// The chain extension id within the `id` passed by a contract.</span>

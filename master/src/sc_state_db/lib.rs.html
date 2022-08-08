@@ -1119,7 +1119,7 @@
 
 <span class="kw">impl</span> <span class="ident">PruningMode</span> {
 	<span class="doccomment">/// Create a mode that keeps given number of blocks.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">keep_blocks</span>(<span class="ident">n</span>: <span class="ident">u32</span>) -&gt; <span class="ident">PruningMode</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">blocks_pruning</span>(<span class="ident">n</span>: <span class="ident">u32</span>) -&gt; <span class="ident">PruningMode</span> {
 		<span class="ident">PruningMode::Constrained</span>(<span class="ident">Constraints</span> { <span class="ident">max_blocks</span>: <span class="prelude-val">Some</span>(<span class="ident">n</span>), <span class="ident">max_mem</span>: <span class="prelude-val">None</span> })
 	}
 
@@ -1727,34 +1727,34 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">pruning_mode_compatibility</span>() {
 		<span class="kw">for</span> (<span class="ident">created</span>, <span class="ident">reopened</span>, <span class="ident">expected</span>) <span class="kw">in</span> [
-			(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>))),
-			(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)), <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>))),
-			(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">128</span>)), <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">128</span>))),
-			(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">512</span>)), <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">512</span>))),
+			(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>))),
+			(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)), <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>))),
+			(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">128</span>)), <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">128</span>))),
+			(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">512</span>)), <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">512</span>))),
 			(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Err</span>(())),
 			(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Err</span>(())),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)), <span class="prelude-val">None</span>, <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>))),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)), <span class="prelude-val">None</span>, <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>))),
 			(
-				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)),
-				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)),
-				<span class="prelude-val">Ok</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)),
+				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)),
+				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)),
+				<span class="prelude-val">Ok</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)),
 			),
 			(
-				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)),
-				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">128</span>)),
-				<span class="prelude-val">Ok</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">128</span>)),
+				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)),
+				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">128</span>)),
+				<span class="prelude-val">Ok</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">128</span>)),
 			),
 			(
-				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)),
-				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">512</span>)),
-				<span class="prelude-val">Ok</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">512</span>)),
+				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)),
+				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">512</span>)),
+				<span class="prelude-val">Ok</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">512</span>)),
 			),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Err</span>(())),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Err</span>(())),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Err</span>(())),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Err</span>(())),
 			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::ArchiveAll</span>)),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)), <span class="prelude-val">Err</span>(())),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">128</span>)), <span class="prelude-val">Err</span>(())),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">512</span>)), <span class="prelude-val">Err</span>(())),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)), <span class="prelude-val">Err</span>(())),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">128</span>)), <span class="prelude-val">Err</span>(())),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">512</span>)), <span class="prelude-val">Err</span>(())),
 			(
 				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>),
 				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>),
@@ -1762,9 +1762,9 @@
 			),
 			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Err</span>(())),
 			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Ok</span>(<span class="ident">PruningMode::ArchiveCanonical</span>)),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">256</span>)), <span class="prelude-val">Err</span>(())),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">128</span>)), <span class="prelude-val">Err</span>(())),
-			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::keep_blocks</span>(<span class="number">512</span>)), <span class="prelude-val">Err</span>(())),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">256</span>)), <span class="prelude-val">Err</span>(())),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">128</span>)), <span class="prelude-val">Err</span>(())),
+			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::blocks_pruning</span>(<span class="number">512</span>)), <span class="prelude-val">Err</span>(())),
 			(<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>), <span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveAll</span>), <span class="prelude-val">Err</span>(())),
 			(
 				<span class="prelude-val">Some</span>(<span class="ident">PruningMode::ArchiveCanonical</span>),
