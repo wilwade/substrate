@@ -1346,41 +1346,6 @@
 <span id="1340">1340</span>
 <span id="1341">1341</span>
 <span id="1342">1342</span>
-<span id="1343">1343</span>
-<span id="1344">1344</span>
-<span id="1345">1345</span>
-<span id="1346">1346</span>
-<span id="1347">1347</span>
-<span id="1348">1348</span>
-<span id="1349">1349</span>
-<span id="1350">1350</span>
-<span id="1351">1351</span>
-<span id="1352">1352</span>
-<span id="1353">1353</span>
-<span id="1354">1354</span>
-<span id="1355">1355</span>
-<span id="1356">1356</span>
-<span id="1357">1357</span>
-<span id="1358">1358</span>
-<span id="1359">1359</span>
-<span id="1360">1360</span>
-<span id="1361">1361</span>
-<span id="1362">1362</span>
-<span id="1363">1363</span>
-<span id="1364">1364</span>
-<span id="1365">1365</span>
-<span id="1366">1366</span>
-<span id="1367">1367</span>
-<span id="1368">1368</span>
-<span id="1369">1369</span>
-<span id="1370">1370</span>
-<span id="1371">1371</span>
-<span id="1372">1372</span>
-<span id="1373">1373</span>
-<span id="1374">1374</span>
-<span id="1375">1375</span>
-<span id="1376">1376</span>
-<span id="1377">1377</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1433,7 +1398,9 @@
 		<span class="ident">NetworkBehaviourAction</span>, <span class="ident">PollParameters</span>,
 	},
 };
-<span class="kw">use</span> <span class="ident">sc_network_common::request_responses</span>::{<span class="ident">IncomingRequest</span>, <span class="ident">OutgoingResponse</span>, <span class="ident">ProtocolConfig</span>};
+<span class="kw">use</span> <span class="ident">sc_network_common::request_responses</span>::{
+	<span class="ident">IfDisconnected</span>, <span class="ident">IncomingRequest</span>, <span class="ident">OutgoingResponse</span>, <span class="ident">ProtocolConfig</span>, <span class="ident">RequestFailure</span>,
+};
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">borrow::Cow</span>,
 	<span class="ident">collections</span>::{<span class="ident">hash_map::Entry</span>, <span class="ident">HashMap</span>},
@@ -1498,26 +1465,6 @@
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">RequestId</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtocolRequestId</span> {
 	<span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">protocol</span>, <span class="ident">request_id</span>): (<span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">RequestId</span>)) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> { <span class="ident">protocol</span>, <span class="ident">request_id</span> }
-	}
-}
-
-<span class="doccomment">/// When sending a request, what to do on a disconnected recipient.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">IfDisconnected</span> {
-	<span class="doccomment">/// Try to connect to the peer.</span>
-	<span class="ident">TryConnect</span>,
-	<span class="doccomment">/// Just fail if the destination is not yet connected.</span>
-	<span class="ident">ImmediateError</span>,
-}
-
-<span class="doccomment">/// Convenience functions for `IfDisconnected`.</span>
-<span class="kw">impl</span> <span class="ident">IfDisconnected</span> {
-	<span class="doccomment">/// Shall we connect to a disconnected peer?</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">should_connect</span>(<span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::TryConnect</span> =&gt; <span class="bool-val">true</span>,
-			<span class="ident"><span class="self">Self</span>::ImmediateError</span> =&gt; <span class="bool-val">false</span>,
-		}
 	}
 }
 
@@ -2168,23 +2115,6 @@
 	<span class="doccomment">/// A protocol has been specified multiple times.</span>
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{0}&quot;</span>)]</span>
 	<span class="ident">DuplicateProtocol</span>(<span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>),
-}
-
-<span class="doccomment">/// Error in a request.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RequestFailure</span> {
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;We are not currently connected to the requested peer.&quot;</span>)]</span>
-	<span class="ident">NotConnected</span>,
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Given protocol hasn&#39;t been registered.&quot;</span>)]</span>
-	<span class="ident">UnknownProtocol</span>,
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Remote has closed the substream before answering, thereby signaling that it considers the request as valid, but refused to answer it.&quot;</span>)]</span>
-	<span class="ident">Refused</span>,
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;The remote replied, but the local node is no longer interested in the response.&quot;</span>)]</span>
-	<span class="ident">Obsolete</span>,
-	<span class="doccomment">/// Problem on the network.</span>
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Problem on the network: {0}&quot;</span>)]</span>
-	<span class="ident">Network</span>(<span class="ident">OutboundFailure</span>),
 }
 
 <span class="doccomment">/// Error when processing a request sent by a remote.</span>

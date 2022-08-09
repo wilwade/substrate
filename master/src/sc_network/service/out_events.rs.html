@@ -318,7 +318,6 @@
 <span id="312">312</span>
 <span id="313">313</span>
 <span id="314">314</span>
-<span id="315">315</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -352,11 +351,10 @@
 <span class="doccomment">//! - Send events by calling [`OutChannels::send`]. Events are cloned for each sender in the</span>
 <span class="doccomment">//! collection.</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Event</span>;
-
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::mpsc</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">ready</span>, <span class="ident">stream::FusedStream</span>};
 <span class="kw">use</span> <span class="ident">parking_lot::Mutex</span>;
 <span class="kw">use</span> <span class="ident">prometheus_endpoint</span>::{<span class="ident">register</span>, <span class="ident">CounterVec</span>, <span class="ident">GaugeVec</span>, <span class="ident">Opts</span>, <span class="ident">PrometheusError</span>, <span class="ident">Registry</span>, <span class="ident">U64</span>};
+<span class="kw">use</span> <span class="ident">sc_network_common::protocol::event::Event</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">cell::RefCell</span>,
 	<span class="ident">fmt</span>,

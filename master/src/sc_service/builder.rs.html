@@ -903,6 +903,40 @@
 <span id="897">897</span>
 <span id="898">898</span>
 <span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -943,7 +977,10 @@
 <span class="kw">use</span> <span class="ident">sc_executor::RuntimeVersionOf</span>;
 <span class="kw">use</span> <span class="ident">sc_keystore::LocalKeystore</span>;
 <span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">config::SyncMode</span>, <span class="ident">NetworkService</span>};
-<span class="kw">use</span> <span class="ident">sc_network_common::sync::warp::WarpSyncProvider</span>;
+<span class="kw">use</span> <span class="ident">sc_network_common</span>::{
+	<span class="ident">service</span>::{<span class="ident">NetworkStateInfo</span>, <span class="ident">NetworkStatusProvider</span>, <span class="ident">NetworkTransaction</span>},
+	<span class="ident">sync::warp::WarpSyncProvider</span>,
+};
 <span class="kw">use</span> <span class="ident">sc_network_light::light_client_requests::handler::LightClientRequestHandler</span>;
 <span class="kw">use</span> <span class="ident">sc_network_sync</span>::{
 	<span class="ident">block_request_handler::BlockRequestHandler</span>, <span class="ident">state_request_handler::StateRequestHandler</span>,
@@ -1224,6 +1261,31 @@
 	)
 }
 
+<span class="doccomment">/// Shared network instance implementing a set of mandatory traits.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SpawnTaskNetwork</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>:
+	<span class="ident">sc_offchain::NetworkProvider</span>
+	<span class="op">+</span> <span class="ident">NetworkStateInfo</span>
+	<span class="op">+</span> <span class="ident">NetworkTransaction</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>
+	<span class="op">+</span> <span class="ident">NetworkStatusProvider</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
+	<span class="op">+</span> <span class="ident">Send</span>
+	<span class="op">+</span> <span class="ident">Sync</span>
+	<span class="op">+</span> <span class="lifetime">&#39;static</span>
+{
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Block</span><span class="op">&gt;</span> <span class="ident">SpawnTaskNetwork</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">T</span>
+<span class="kw">where</span>
+	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
+	<span class="ident">T</span>: <span class="ident">sc_offchain::NetworkProvider</span>
+		<span class="op">+</span> <span class="ident">NetworkStateInfo</span>
+		<span class="op">+</span> <span class="ident">NetworkTransaction</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">NetworkStatusProvider</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">Send</span>
+		<span class="op">+</span> <span class="ident">Sync</span>
+		<span class="op">+</span> <span class="lifetime">&#39;static</span>,
+{
+}
+
 <span class="doccomment">/// Parameters to pass into `build`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SpawnTasksParams</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">TBl</span>: <span class="ident">BlockT</span>, <span class="ident">TCl</span>, <span class="ident">TExPool</span>, <span class="ident">TRpc</span>, <span class="ident">Backend</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The service configuration.</span>
@@ -1242,7 +1304,7 @@
 	<span class="kw">pub</span> <span class="ident">rpc_builder</span>:
 		<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">DenyUnsafe</span>, <span class="ident">SubscriptionTaskExecutor</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RpcModule</span><span class="op">&lt;</span><span class="ident">TRpc</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// A shared network instance.</span>
-	<span class="kw">pub</span> <span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">NetworkService</span><span class="op">&lt;</span><span class="ident">TBl</span>, <span class="op">&lt;</span><span class="ident">TBl</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">SpawnTaskNetwork</span><span class="op">&lt;</span><span class="ident">TBl</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// A Sender for RPC requests.</span>
 	<span class="kw">pub</span> <span class="ident">system_rpc_tx</span>: <span class="ident">TracingUnboundedSender</span><span class="op">&lt;</span><span class="ident">sc_rpc::system::Request</span><span class="op">&lt;</span><span class="ident">TBl</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Telemetry instance for this node.</span>
@@ -1254,7 +1316,7 @@
 	<span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">Configuration</span>,
 	<span class="ident">spawn_handle</span>: <span class="ident">SpawnTaskHandle</span>,
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TCl</span><span class="op">&gt;</span>,
-	<span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">NetworkService</span><span class="op">&lt;</span><span class="ident">TBl</span>, <span class="op">&lt;</span><span class="ident">TBl</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">sc_offchain::NetworkProvider</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">sc_offchain::OffchainWorkers</span><span class="op">&lt;</span><span class="ident">TCl</span>, <span class="ident">TBl</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">TBl</span>: <span class="ident">BlockT</span>,
@@ -1421,13 +1483,14 @@
 	<span class="prelude-val">Ok</span>(<span class="ident">rpc_handlers</span>)
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">transaction_notifications</span><span class="op">&lt;</span><span class="ident">TBl</span>, <span class="ident">TExPool</span><span class="op">&gt;</span>(
-	<span class="ident">transaction_pool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TExPool</span><span class="op">&gt;</span>,
-	<span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">NetworkService</span><span class="op">&lt;</span><span class="ident">TBl</span>, <span class="op">&lt;</span><span class="ident">TBl</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">transaction_notifications</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">ExPool</span>, <span class="ident">Network</span><span class="op">&gt;</span>(
+	<span class="ident">transaction_pool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ExPool</span><span class="op">&gt;</span>,
+	<span class="ident">network</span>: <span class="ident">Network</span>,
 	<span class="ident">telemetry</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TelemetryHandle</span><span class="op">&gt;</span>,
 ) <span class="kw">where</span>
-	<span class="ident">TBl</span>: <span class="ident">BlockT</span>,
-	<span class="ident">TExPool</span>: <span class="ident">MaintainedTransactionPool</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="op">=</span> <span class="ident">TBl</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">TBl</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
+	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
+	<span class="ident">ExPool</span>: <span class="ident">MaintainedTransactionPool</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="op">=</span> <span class="ident">Block</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span>,
+	<span class="ident">Network</span>: <span class="ident">NetworkTransaction</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
 	<span class="comment">// transaction notifications</span>
 	<span class="ident">transaction_pool</span>
@@ -1447,13 +1510,18 @@
 		.<span class="kw">await</span>;
 }
 
-<span class="kw">fn</span> <span class="ident">init_telemetry</span><span class="op">&lt;</span><span class="ident">TBl</span>: <span class="ident">BlockT</span>, <span class="ident">TCl</span>: <span class="ident">BlockBackend</span><span class="op">&lt;</span><span class="ident">TBl</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+<span class="kw">fn</span> <span class="ident">init_telemetry</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Client</span>, <span class="ident">Network</span><span class="op">&gt;</span>(
 	<span class="ident">config</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Configuration</span>,
-	<span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">NetworkService</span><span class="op">&lt;</span><span class="ident">TBl</span>, <span class="op">&lt;</span><span class="ident">TBl</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TCl</span><span class="op">&gt;</span>,
+	<span class="ident">network</span>: <span class="ident">Network</span>,
+	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 	<span class="ident">telemetry</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Telemetry</span>,
 	<span class="ident">sysinfo</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">sc_telemetry::SysInfo</span><span class="op">&gt;</span>,
-) -&gt; <span class="ident">sc_telemetry::Result</span><span class="op">&lt;</span><span class="ident">TelemetryHandle</span><span class="op">&gt;</span> {
+) -&gt; <span class="ident">sc_telemetry::Result</span><span class="op">&lt;</span><span class="ident">TelemetryHandle</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
+	<span class="ident">Client</span>: <span class="ident">BlockBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Network</span>: <span class="ident">NetworkStateInfo</span>,
+{
 	<span class="kw">let</span> <span class="ident">genesis_hash</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">block_hash</span>(<span class="ident">Zero::zero</span>()).<span class="ident">ok</span>().<span class="ident">flatten</span>().<span class="ident">unwrap_or_default</span>();
 	<span class="kw">let</span> <span class="ident">connection_message</span> <span class="op">=</span> <span class="ident">ConnectionMessage</span> {
 		<span class="ident">name</span>: <span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">node_name</span>.<span class="ident">to_owned</span>(),

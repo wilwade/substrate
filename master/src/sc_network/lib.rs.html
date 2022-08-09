@@ -306,34 +306,6 @@
 <span id="300">300</span>
 <span id="301">301</span>
 <span id="302">302</span>
-<span id="303">303</span>
-<span id="304">304</span>
-<span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
-<span id="310">310</span>
-<span id="311">311</span>
-<span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -598,22 +570,26 @@
 
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">inline</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">libp2p</span>::{<span class="ident">multiaddr</span>, <span class="ident">Multiaddr</span>, <span class="ident">PeerId</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">protocol</span>::{
-	<span class="ident">event</span>::{<span class="ident">DhtEvent</span>, <span class="ident">Event</span>, <span class="ident">ObservedRole</span>},
-	<span class="ident">PeerInfo</span>,
-};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_network_common::sync</span>::{
-	<span class="ident">warp</span>::{<span class="ident">WarpSyncPhase</span>, <span class="ident">WarpSyncProgress</span>},
-	<span class="ident">StateDownloadProgress</span>, <span class="ident">SyncState</span>,
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">protocol::PeerInfo</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_network_common</span>::{
+	<span class="ident">protocol::event</span>::{<span class="ident">DhtEvent</span>, <span class="ident">Event</span>, <span class="ident">ObservedRole</span>},
+	<span class="ident">request_responses</span>::{<span class="ident">IfDisconnected</span>, <span class="ident">RequestFailure</span>},
+	<span class="ident">service</span>::{
+		<span class="ident">KademliaKey</span>, <span class="ident">NetworkBlock</span>, <span class="ident">NetworkDHTProvider</span>, <span class="ident">NetworkRequest</span>, <span class="ident">NetworkSigner</span>,
+		<span class="ident">NetworkStateInfo</span>, <span class="ident">NetworkStatus</span>, <span class="ident">NetworkStatusProvider</span>, <span class="ident">NetworkSyncForkRequest</span>,
+		<span class="ident">NetworkTransaction</span>, <span class="ident">Signature</span>, <span class="ident">SigningError</span>,
+	},
+	<span class="ident">sync</span>::{
+		<span class="ident">warp</span>::{<span class="ident">WarpSyncPhase</span>, <span class="ident">WarpSyncProgress</span>},
+		<span class="ident">StateDownloadProgress</span>, <span class="ident">SyncState</span>,
+	},
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">service</span>::{
-	<span class="ident">DecodingError</span>, <span class="ident">IfDisconnected</span>, <span class="ident">KademliaKey</span>, <span class="ident">Keypair</span>, <span class="ident">NetworkService</span>, <span class="ident">NetworkWorker</span>,
-	<span class="ident">NotificationSender</span>, <span class="ident">NotificationSenderReady</span>, <span class="ident">OutboundFailure</span>, <span class="ident">PublicKey</span>, <span class="ident">RequestFailure</span>,
-	<span class="ident">Signature</span>, <span class="ident">SigningError</span>,
+	<span class="ident">DecodingError</span>, <span class="ident">Keypair</span>, <span class="ident">NetworkService</span>, <span class="ident">NetworkWorker</span>, <span class="ident">NotificationSender</span>,
+	<span class="ident">NotificationSenderReady</span>, <span class="ident">OutboundFailure</span>, <span class="ident">PublicKey</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_peerset::ReputationChange</span>;
-<span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">NumberFor</span>};
 
 <span class="doccomment">/// The maximum allowed number of established connections per peer.</span>
 <span class="doccomment">///</span>
@@ -632,38 +608,6 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">ExHashT</span> <span class="kw">for</span> <span class="ident">T</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">std::hash::Hash</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
 {}
-
-<span class="doccomment">/// Trait for providing information about the local network state</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NetworkStateInfo</span> {
-	<span class="doccomment">/// Returns the local external addresses.</span>
-	<span class="kw">fn</span> <span class="ident">external_addresses</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Multiaddr</span><span class="op">&gt;</span>;
-
-	<span class="doccomment">/// Returns the local Peer ID.</span>
-	<span class="kw">fn</span> <span class="ident">local_peer_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">PeerId</span>;
-}
-
-<span class="doccomment">/// Overview status of the network.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NetworkStatus</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Current global sync state.</span>
-	<span class="kw">pub</span> <span class="ident">sync_state</span>: <span class="ident">SyncState</span>,
-	<span class="doccomment">/// Target sync block number.</span>
-	<span class="kw">pub</span> <span class="ident">best_seen_block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// Number of peers participating in syncing.</span>
-	<span class="kw">pub</span> <span class="ident">num_sync_peers</span>: <span class="ident">u32</span>,
-	<span class="doccomment">/// Total number of connected peers</span>
-	<span class="kw">pub</span> <span class="ident">num_connected_peers</span>: <span class="ident">usize</span>,
-	<span class="doccomment">/// Total number of active peers.</span>
-	<span class="kw">pub</span> <span class="ident">num_active_peers</span>: <span class="ident">usize</span>,
-	<span class="doccomment">/// The total number of bytes received.</span>
-	<span class="kw">pub</span> <span class="ident">total_bytes_inbound</span>: <span class="ident">u64</span>,
-	<span class="doccomment">/// The total number of bytes sent.</span>
-	<span class="kw">pub</span> <span class="ident">total_bytes_outbound</span>: <span class="ident">u64</span>,
-	<span class="doccomment">/// State sync in progress.</span>
-	<span class="kw">pub</span> <span class="ident">state_sync</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StateDownloadProgress</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// Warp sync in progress.</span>
-	<span class="kw">pub</span> <span class="ident">warp_sync</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WarpSyncProgress</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-}
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sc_network" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>
 </body></html>

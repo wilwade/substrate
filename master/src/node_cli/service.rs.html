@@ -823,6 +823,7 @@
 <span id="817">817</span>
 <span id="818">818</span>
 <span id="819">819</span>
+<span id="820">820</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -854,7 +855,8 @@
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">ExecutorProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_consensus_babe</span>::{<span class="self">self</span>, <span class="ident">SlotProportion</span>};
 <span class="kw">use</span> <span class="ident">sc_executor::NativeElseWasmExecutor</span>;
-<span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">Event</span>, <span class="ident">NetworkService</span>};
+<span class="kw">use</span> <span class="ident">sc_network::NetworkService</span>;
+<span class="kw">use</span> <span class="ident">sc_network_common</span>::{<span class="ident">protocol::event::Event</span>, <span class="ident">service::NetworkEventStream</span>};
 <span class="kw">use</span> <span class="ident">sc_service</span>::{<span class="ident">config::Configuration</span>, <span class="ident">error::Error</span> <span class="kw">as</span> <span class="ident">ServiceError</span>, <span class="ident">RpcHandlers</span>, <span class="ident">TaskManager</span>};
 <span class="kw">use</span> <span class="ident">sc_telemetry</span>::{<span class="ident">Telemetry</span>, <span class="ident">TelemetryWorker</span>};
 <span class="kw">use</span> <span class="ident">sp_api::ProvideRuntimeApi</span>;

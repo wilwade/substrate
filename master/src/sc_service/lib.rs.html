@@ -578,6 +578,8 @@
 <span id="572">572</span>
 <span id="573">573</span>
 <span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -622,9 +624,11 @@
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">warn</span>};
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">blockchain::HeaderBackend</span>, <span class="ident">BlockBackend</span>, <span class="ident">BlockchainEvents</span>, <span class="ident">ProofProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_network::PeerId</span>;
+<span class="kw">use</span> <span class="ident">sc_network_common::service::NetworkBlock</span>;
 <span class="kw">use</span> <span class="ident">sc_rpc_server::WsConfig</span>;
 <span class="kw">use</span> <span class="ident">sc_utils::mpsc::TracingUnboundedReceiver</span>;
 <span class="kw">use</span> <span class="ident">sp_blockchain::HeaderMetadata</span>;
+<span class="kw">use</span> <span class="ident">sp_consensus::SyncOracle</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">generic::BlockId</span>,
 	<span class="ident">traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span>},

@@ -164,6 +164,7 @@
 <span id="158">158</span>
 <span id="159">159</span>
 <span id="160">160</span>
+<span id="161">161</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -190,7 +191,7 @@
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">info</span>, <span class="ident">trace</span>};
 <span class="kw">use</span> <span class="ident">parity_util_mem::MallocSizeOf</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockchainEvents</span>, <span class="ident">UsageProvider</span>};
-<span class="kw">use</span> <span class="ident">sc_network::NetworkService</span>;
+<span class="kw">use</span> <span class="ident">sc_network_common::service::NetworkStatusProvider</span>;
 <span class="kw">use</span> <span class="ident">sc_transaction_pool_api::TransactionPool</span>;
 <span class="kw">use</span> <span class="ident">sp_blockchain::HeaderMetadata</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">Header</span>};
@@ -219,12 +220,13 @@
 }
 
 <span class="doccomment">/// Builds the informant and returns a `Future` that drives the informant.</span>
-<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">build</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">C</span>, <span class="ident">P</span><span class="op">&gt;</span>(
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">build</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span>, <span class="ident">C</span>, <span class="ident">N</span>, <span class="ident">P</span><span class="op">&gt;</span>(
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
-	<span class="ident">network</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">NetworkService</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="op">&lt;</span><span class="ident">B</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">network</span>: <span class="ident">N</span>,
 	<span class="ident">pool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
 	<span class="ident">format</span>: <span class="ident">OutputFormat</span>,
 ) <span class="kw">where</span>
+	<span class="ident">N</span>: <span class="ident">NetworkStatusProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">C</span>: <span class="ident">UsageProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BlockchainEvents</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="op">&lt;</span><span class="ident">C</span> <span class="kw">as</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Error</span>: <span class="ident">Display</span>,
 	<span class="ident">P</span>: <span class="ident">TransactionPool</span> <span class="op">+</span> <span class="ident">MallocSizeOf</span>,

@@ -2548,6 +2548,7 @@
 <span id="2542">2542</span>
 <span id="2543">2543</span>
 <span id="2544">2544</span>
+<span id="2545">2545</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -2639,7 +2640,8 @@
 <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">prometheus_endpoint</span>::{<span class="ident">register</span>, <span class="ident">CounterVec</span>, <span class="ident">Opts</span>, <span class="ident">PrometheusError</span>, <span class="ident">Registry</span>, <span class="ident">U64</span>};
 <span class="kw">use</span> <span class="ident">rand::seq::SliceRandom</span>;
-<span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">ObservedRole</span>, <span class="ident">PeerId</span>, <span class="ident">ReputationChange</span>};
+<span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">PeerId</span>, <span class="ident">ReputationChange</span>};
+<span class="kw">use</span> <span class="ident">sc_network_common::protocol::event::ObservedRole</span>;
 <span class="kw">use</span> <span class="ident">sc_network_gossip</span>::{<span class="ident">MessageIntent</span>, <span class="ident">ValidatorContext</span>};
 <span class="kw">use</span> <span class="ident">sc_telemetry</span>::{<span class="ident">telemetry</span>, <span class="ident">TelemetryHandle</span>, <span class="ident">CONSENSUS_DEBUG</span>};
 <span class="kw">use</span> <span class="ident">sc_utils::mpsc</span>::{<span class="ident">tracing_unbounded</span>, <span class="ident">TracingUnboundedReceiver</span>, <span class="ident">TracingUnboundedSender</span>};
