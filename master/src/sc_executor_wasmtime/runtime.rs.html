@@ -813,6 +813,12 @@
 <span id="807">807</span>
 <span id="808">808</span>
 <span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -1139,13 +1145,19 @@ directory = \&quot;{cache_dir}\&quot;
 		.<span class="ident">profiler</span>(<span class="ident">profiler</span>)
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">WasmError::Instantiation</span>(<span class="macro">format!</span>(<span class="string">&quot;fail to set profiler: {:#}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>;
 
-	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">DeterministicStackLimit</span> { <span class="ident">native_stack_max</span>, .. }) <span class="op">=</span>
-		<span class="ident">semantics</span>.<span class="ident">deterministic_stack_limit</span>
-	{
-		<span class="ident">config</span>
-			.<span class="ident">max_wasm_stack</span>(<span class="ident">native_stack_max</span> <span class="kw">as</span> <span class="ident">usize</span>)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">WasmError::Other</span>(<span class="macro">format!</span>(<span class="string">&quot;cannot set max wasm stack: {:#}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>;
-	}
+	<span class="kw">let</span> <span class="ident">native_stack_max</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">semantics</span>.<span class="ident">deterministic_stack_limit</span> {
+		<span class="prelude-val">Some</span>(<span class="ident">DeterministicStackLimit</span> { <span class="ident">native_stack_max</span>, .. }) =&gt; <span class="ident">native_stack_max</span>,
+
+		<span class="comment">// In `wasmtime` 0.35 the default stack size limit was changed from 1MB to 512KB.</span>
+		<span class="comment">//</span>
+		<span class="comment">// This broke at least one parachain which depended on the original 1MB limit,</span>
+		<span class="comment">// so here we restore it to what it was originally.</span>
+		<span class="prelude-val">None</span> =&gt; <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>,
+	};
+
+	<span class="ident">config</span>
+		.<span class="ident">max_wasm_stack</span>(<span class="ident">native_stack_max</span> <span class="kw">as</span> <span class="ident">usize</span>)
+		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">WasmError::Other</span>(<span class="macro">format!</span>(<span class="string">&quot;cannot set max wasm stack: {:#}&quot;</span>, <span class="ident">e</span>)))<span class="question-mark">?</span>;
 
 	<span class="ident">config</span>.<span class="ident">parallel_compilation</span>(<span class="ident">semantics</span>.<span class="ident">parallel_compilation</span>);
 
