@@ -2889,6 +2889,10 @@
 <span id="2883">2883</span>
 <span id="2884">2884</span>
 <span id="2885">2885</span>
+<span id="2886">2886</span>
+<span id="2887">2887</span>
+<span id="2888">2888</span>
+<span id="2889">2889</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -4678,9 +4682,11 @@
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>(
 			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param_ty</span> )<span class="op">*</span>
 		) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::dispatch::DispatchResult</span> {
-			<span class="macro-nonterminal">$</span><span class="macro">crate::sp_tracing::enter_span!</span>(<span class="macro-nonterminal">$</span><span class="macro">crate::sp_tracing::trace_span!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>)));
-			{ $( <span class="macro-nonterminal">$</span><span class="kw">impl</span> )<span class="op">*</span> }
-			<span class="prelude-val">Ok</span>(())
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage::with_storage_layer</span>(<span class="op">|</span><span class="op">|</span> {
+				<span class="macro-nonterminal">$</span><span class="macro">crate::sp_tracing::enter_span!</span>(<span class="macro-nonterminal">$</span><span class="macro">crate::sp_tracing::trace_span!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>)));
+				{ $( <span class="macro-nonterminal">$</span><span class="kw">impl</span> )<span class="op">*</span> }
+				<span class="prelude-val">Ok</span>(())
+			})
 		}
 	};
 
@@ -4696,8 +4702,10 @@
 	) =&gt; {
 		$(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">fn_attr</span>]</span>)<span class="op">*</span>
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_ty</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param_ty</span> )<span class="op">*</span> ) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">result</span> {
-			<span class="macro-nonterminal">$</span><span class="macro">crate::sp_tracing::enter_span!</span>(<span class="macro-nonterminal">$</span><span class="macro">crate::sp_tracing::trace_span!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>)));
-			$( <span class="macro-nonterminal">$</span><span class="kw">impl</span> )<span class="op">*</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::storage::with_storage_layer</span>(<span class="op">|</span><span class="op">|</span> {
+				<span class="macro-nonterminal">$</span><span class="macro">crate::sp_tracing::enter_span!</span>(<span class="macro-nonterminal">$</span><span class="macro">crate::sp_tracing::trace_span!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>)));
+				$( <span class="macro-nonterminal">$</span><span class="kw">impl</span> )<span class="op">*</span>
+			})
 		}
 	};
 

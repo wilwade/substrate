@@ -1772,8 +1772,6 @@
 <span id="1766">1766</span>
 <span id="1767">1767</span>
 <span id="1768">1768</span>
-<span id="1769">1769</span>
-<span id="1770">1770</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -2011,7 +2009,10 @@
 		<span class="doccomment">/// reading a key, we simply cannot know how many bytes it is. In other words, this should</span>
 		<span class="doccomment">/// not be used in any environment where resources are strictly bounded (e.g. a parachain),</span>
 		<span class="doccomment">/// but it is acceptable otherwise (relay chain, offchain workers).</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">migrate_until_exhaustion</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">limits</span>: <span class="ident">MigrationLimits</span>) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">migrate_until_exhaustion</span>(
+			<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+			<span class="ident">limits</span>: <span class="ident">MigrationLimits</span>,
+		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 			<span class="macro">log!</span>(<span class="ident">debug</span>, <span class="string">&quot;running migrations on top of {:?} until {:?}&quot;</span>, <span class="self">self</span>, <span class="ident">limits</span>);
 
 			<span class="kw">if</span> <span class="ident">limits</span>.<span class="ident">item</span>.<span class="ident">is_zero</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">limits</span>.<span class="ident">size</span>.<span class="ident">is_zero</span>() {
@@ -2038,7 +2039,7 @@
 		<span class="doccomment">/// Migrate AT MOST ONE KEY. This can be either a top or a child key.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// This function is *the* core of this entire pallet.</span>
-		<span class="kw">fn</span> <span class="ident">migrate_tick</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">fn</span> <span class="ident">migrate_tick</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 			<span class="kw">match</span> (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">progress_top</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">progress_child</span>) {
 				(<span class="ident">Progress::ToStart</span>, <span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">migrate_top</span>(),
 				(<span class="ident">Progress::LastKey</span>(<span class="kw">_</span>), <span class="ident">Progress::LastKey</span>(<span class="kw">_</span>)) =&gt; {
@@ -2077,7 +2078,7 @@
 		<span class="doccomment">/// Migrate the current child key, setting it to its new value, if one exists.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// It updates the dynamic counters.</span>
-		<span class="kw">fn</span> <span class="ident">migrate_child</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">fn</span> <span class="ident">migrate_child</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 			<span class="kw">use</span> <span class="ident">sp_io::default_child_storage</span> <span class="kw">as</span> <span class="ident">child_io</span>;
 			<span class="kw">let</span> (<span class="ident">maybe_current_child</span>, <span class="ident">child_root</span>) <span class="op">=</span> <span class="kw">match</span> (<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">progress_child</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">progress_top</span>)
 			{
@@ -2126,7 +2127,7 @@
 		<span class="doccomment">/// Migrate the current top key, setting it to its new value, if one exists.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// It updates the dynamic counters.</span>
-		<span class="kw">fn</span> <span class="ident">migrate_top</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">fn</span> <span class="ident">migrate_top</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 			<span class="kw">let</span> <span class="ident">maybe_current_top</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">progress_top</span> {
 				<span class="ident">Progress::LastKey</span>(<span class="ident">last_top</span>) =&gt; {
 					<span class="kw">let</span> <span class="ident">maybe_top</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::MaxKeyLen</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
@@ -2207,7 +2208,7 @@
 		<span class="doccomment">/// The auto migration task finished.</span>
 		<span class="ident">AutoMigrationFinished</span>,
 		<span class="doccomment">/// Migration got halted due to an error or miss-configuration.</span>
-		<span class="ident">Halted</span>,
+		<span class="ident">Halted</span> { <span class="ident">error</span>: <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> },
 	}
 
 	<span class="doccomment">/// The outer Pallet struct.</span>
@@ -2292,8 +2293,9 @@
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedMigrationMaxLimits</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">MigrationLimits</span>, <span class="ident">OptionQuery</span><span class="op">&gt;</span>;
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
+	<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="doccomment">/// max signed limits not respected.</span>
+		<span class="doccomment">/// Max signed limits not respected.</span>
 		<span class="ident">MaxSignedLimits</span>,
 		<span class="doccomment">/// A key was longer than the configured maximum.</span>
 		<span class="doccomment">///</span>
@@ -2305,12 +2307,12 @@
 		<span class="ident">KeyTooLong</span>,
 		<span class="doccomment">/// submitter does not have enough funds.</span>
 		<span class="ident">NotEnoughFunds</span>,
-		<span class="doccomment">/// bad witness data provided.</span>
+		<span class="doccomment">/// Bad witness data provided.</span>
 		<span class="ident">BadWitness</span>,
-		<span class="doccomment">/// upper bound of size is exceeded,</span>
-		<span class="ident">SizeUpperBoundExceeded</span>,
 		<span class="doccomment">/// Signed migration is not allowed because the maximum limit is not set yet.</span>
 		<span class="ident">SignedMigrationNotAllowed</span>,
+		<span class="doccomment">/// Bad child root provided.</span>
+		<span class="ident">BadChildRoot</span>,
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::call</span>]</span>
@@ -2393,7 +2395,7 @@
 				<span class="kw">let</span> (<span class="ident">_imbalance</span>, <span class="ident">_remainder</span>) <span class="op">=</span> <span class="ident">T::Currency::slash</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">deposit</span>);
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Slashed</span> { <span class="ident">who</span>, <span class="ident">amount</span>: <span class="ident">deposit</span> });
 				<span class="macro">debug_assert!</span>(<span class="ident">_remainder</span>.<span class="ident">is_zero</span>());
-				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::SizeUpperBoundExceeded</span>.<span class="ident">into</span>())
+				<span class="kw">return</span> <span class="prelude-val">Ok</span>(().<span class="ident">into</span>())
 			}
 
 			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Migrated</span> {
@@ -2410,13 +2412,10 @@
 
 			<span class="ident">MigrationProcess</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">task</span>);
 			<span class="kw">let</span> <span class="ident">post_info</span> <span class="op">=</span> <span class="ident">PostDispatchInfo</span> { <span class="ident">actual_weight</span>, <span class="ident">pays_fee</span>: <span class="ident">Pays::No</span> };
-			<span class="kw">match</span> <span class="ident">migration</span> {
-				<span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">post_info</span>),
-				<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt; {
-					<span class="ident"><span class="self">Self</span>::halt</span>(<span class="kw-2">&amp;</span><span class="ident">error</span>);
-					<span class="prelude-val">Err</span>(<span class="ident">DispatchErrorWithPostInfo</span> { <span class="ident">post_info</span>, <span class="ident">error</span> })
-				},
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">error</span>) <span class="op">=</span> <span class="ident">migration</span> {
+				<span class="ident"><span class="self">Self</span>::halt</span>(<span class="ident">error</span>);
 			}
+			<span class="prelude-val">Ok</span>(<span class="ident">post_info</span>)
 		}
 
 		<span class="doccomment">/// Migrate the list of top keys by iterating each of them one by one.</span>
@@ -2455,7 +2454,7 @@
 				<span class="kw">let</span> (<span class="ident">_imbalance</span>, <span class="ident">_remainder</span>) <span class="op">=</span> <span class="ident">T::Currency::slash</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">deposit</span>);
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Slashed</span> { <span class="ident">who</span>, <span class="ident">amount</span>: <span class="ident">deposit</span> });
 				<span class="macro">debug_assert!</span>(<span class="ident">_remainder</span>.<span class="ident">is_zero</span>());
-				<span class="prelude-val">Err</span>(<span class="string">&quot;wrong witness data&quot;</span>.<span class="ident">into</span>())
+				<span class="prelude-val">Ok</span>(().<span class="ident">into</span>())
 			} <span class="kw">else</span> {
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Migrated</span> {
 					<span class="ident">top</span>: <span class="ident">keys</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>,
@@ -2517,12 +2516,9 @@
 				<span class="kw">let</span> (<span class="ident">_imbalance</span>, <span class="ident">_remainder</span>) <span class="op">=</span> <span class="ident">T::Currency::slash</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">deposit</span>);
 				<span class="macro">debug_assert!</span>(<span class="ident">_remainder</span>.<span class="ident">is_zero</span>());
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Slashed</span> { <span class="ident">who</span>, <span class="ident">amount</span>: <span class="ident">deposit</span> });
-				<span class="prelude-val">Err</span>(<span class="ident">DispatchErrorWithPostInfo</span> {
-					<span class="ident">error</span>: <span class="string">&quot;bad witness&quot;</span>.<span class="ident">into</span>(),
-					<span class="ident">post_info</span>: <span class="ident">PostDispatchInfo</span> {
-						<span class="ident">actual_weight</span>: <span class="prelude-val">Some</span>(<span class="ident">T::WeightInfo::migrate_custom_child_fail</span>()),
-						<span class="ident">pays_fee</span>: <span class="ident">Pays::Yes</span>,
-					},
+				<span class="prelude-val">Ok</span>(<span class="ident">PostDispatchInfo</span> {
+					<span class="ident">actual_weight</span>: <span class="prelude-val">Some</span>(<span class="ident">T::WeightInfo::migrate_custom_child_fail</span>()),
+					<span class="ident">pays_fee</span>: <span class="ident">Pays::Yes</span>,
 				})
 			} <span class="kw">else</span> {
 				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Migrated</span> {
@@ -2582,7 +2578,7 @@
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">limits</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::auto_limits</span>() {
 				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::migration_process</span>();
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">task</span>.<span class="ident">migrate_until_exhaustion</span>(<span class="ident">limits</span>) {
-					<span class="ident"><span class="self">Self</span>::halt</span>(<span class="kw-2">&amp;</span><span class="ident">e</span>);
+					<span class="ident"><span class="self">Self</span>::halt</span>(<span class="ident">e</span>);
 				}
 				<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::dynamic_weight</span>(<span class="ident">task</span>.<span class="ident">dyn_total_items</span>(), <span class="ident">task</span>.<span class="ident">dyn_size</span>);
 
@@ -2625,10 +2621,10 @@
 		}
 
 		<span class="doccomment">/// Put a stop to all ongoing migrations and logs an error.</span>
-		<span class="kw">fn</span> <span class="ident">halt</span><span class="op">&lt;</span><span class="ident">E</span>: <span class="ident">sp_std::fmt::Debug</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(<span class="ident">msg</span>: <span class="kw-2">&amp;</span><span class="ident">E</span>) {
-			<span class="macro">log!</span>(<span class="ident">error</span>, <span class="string">&quot;migration halted due to: {:?}&quot;</span>, <span class="ident">msg</span>);
+		<span class="kw">fn</span> <span class="ident">halt</span>(<span class="ident">error</span>: <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+			<span class="macro">log!</span>(<span class="ident">error</span>, <span class="string">&quot;migration halted due to: {:?}&quot;</span>, <span class="ident">error</span>);
 			<span class="ident">AutoLimits</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::kill</span>();
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Halted</span>);
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Halted</span> { <span class="ident">error</span> });
 		}
 
 		<span class="doccomment">/// Convert a child root key, aka. &quot;Child-bearing top key&quot; into the proper format.</span>
@@ -2647,7 +2643,7 @@
 		<span class="kw">fn</span> <span class="ident">transform_child_key_or_halt</span>(<span class="ident">root</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] {
 			<span class="kw">let</span> <span class="ident">key</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::transform_child_key</span>(<span class="ident">root</span>);
 			<span class="kw">if</span> <span class="ident">key</span>.<span class="ident">is_none</span>() {
-				<span class="ident"><span class="self">Self</span>::halt</span>(<span class="string">&quot;bad child root key&quot;</span>);
+				<span class="ident"><span class="self">Self</span>::halt</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::BadChildRoot</span>);
 			}
 			<span class="ident">key</span>.<span class="ident">unwrap_or_default</span>()
 		}
@@ -2737,8 +2733,16 @@
 					<span class="ident">frame_system::RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
 					<span class="macro">vec!</span>[<span class="string">b&quot;foo&quot;</span>.<span class="ident">to_vec</span>()],
 					<span class="number">1</span>,
-				).<span class="ident">is_err</span>()
-			)
+				).<span class="ident">is_ok</span>()
+			);
+
+			<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::assert_last_event</span>(
+				<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Event::from</span>(<span class="ident"><span class="kw">crate</span>::Event::Slashed</span> {
+					<span class="ident">who</span>: <span class="ident">caller</span>.<span class="ident">clone</span>(),
+					<span class="ident">amount</span>: <span class="ident">T::SignedDepositBase::get</span>()
+						.<span class="ident">saturating_add</span>(<span class="ident">T::SignedDepositPerItem::get</span>().<span class="ident">saturating_mul</span>(<span class="number">1u32</span>.<span class="ident">into</span>())),
+				}).<span class="ident">into</span>(),
+			);
 		}
 		<span class="ident">verify</span> {
 			<span class="macro">assert_eq!</span>(<span class="ident">StateTrieMigration</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::migration_process</span>(), <span class="ident">Default::default</span>());
@@ -2781,7 +2785,7 @@
 					<span class="ident">StateTrieMigration</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::childify</span>(<span class="string">&quot;top&quot;</span>),
 					<span class="macro">vec!</span>[<span class="string">b&quot;foo&quot;</span>.<span class="ident">to_vec</span>()],
 					<span class="number">1</span>,
-				).<span class="ident">is_err</span>()
+				).<span class="ident">is_ok</span>()
 			)
 		}
 		<span class="ident">verify</span> {
@@ -3061,18 +3065,16 @@
 			<span class="ident">SignedMigrationMaxLimits</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">MigrationLimits</span> { <span class="ident">size</span>: <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">20</span>, <span class="ident">item</span>: <span class="number">50</span> });
 
 			<span class="comment">// fails if the top key is too long.</span>
-			<span class="macro">frame_support::assert_err_with_weight!</span>(
-				<span class="ident">StateTrieMigration::continue_migrate</span>(
-					<span class="ident">Origin::signed</span>(<span class="number">1</span>),
-					<span class="ident">MigrationLimits</span> { <span class="ident">item</span>: <span class="number">50</span>, <span class="ident">size</span>: <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">20</span> },
-					<span class="ident">Bounded::max_value</span>(),
-					<span class="ident">MigrationProcess</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::get</span>()
-				),
-				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::KeyTooLong</span>,
-				<span class="prelude-val">Some</span>(<span class="number">2000000</span>),
-			);
+			<span class="macro">frame_support::assert_ok!</span>(<span class="ident">StateTrieMigration::continue_migrate</span>(
+				<span class="ident">Origin::signed</span>(<span class="number">1</span>),
+				<span class="ident">MigrationLimits</span> { <span class="ident">item</span>: <span class="number">50</span>, <span class="ident">size</span>: <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">20</span> },
+				<span class="ident">Bounded::max_value</span>(),
+				<span class="ident">MigrationProcess</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::get</span>()
+			),);
 			<span class="comment">// The auto migration halted.</span>
-			<span class="ident">System::assert_last_event</span>(<span class="ident"><span class="kw">crate</span>::Event::Halted</span> {}.<span class="ident">into</span>());
+			<span class="ident">System::assert_last_event</span>(
+				<span class="ident"><span class="kw">crate</span>::Event::Halted</span> { <span class="ident">error</span>: <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::KeyTooLong</span> }.<span class="ident">into</span>(),
+			);
 			<span class="comment">// Limits are killed.</span>
 			<span class="macro">assert!</span>(<span class="ident">AutoLimits</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">is_none</span>());
 
@@ -3098,18 +3100,16 @@
 			<span class="ident">SignedMigrationMaxLimits</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">MigrationLimits</span> { <span class="ident">size</span>: <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">20</span>, <span class="ident">item</span>: <span class="number">50</span> });
 
 			<span class="comment">// fails if the top key is too long.</span>
-			<span class="macro">frame_support::assert_err_with_weight!</span>(
-				<span class="ident">StateTrieMigration::continue_migrate</span>(
-					<span class="ident">Origin::signed</span>(<span class="number">1</span>),
-					<span class="ident">MigrationLimits</span> { <span class="ident">item</span>: <span class="number">50</span>, <span class="ident">size</span>: <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">20</span> },
-					<span class="ident">Bounded::max_value</span>(),
-					<span class="ident">MigrationProcess</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::get</span>()
-				),
-				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::KeyTooLong</span>,
-				<span class="prelude-val">Some</span>(<span class="number">2000000</span>),
-			);
+			<span class="macro">frame_support::assert_ok!</span>(<span class="ident">StateTrieMigration::continue_migrate</span>(
+				<span class="ident">Origin::signed</span>(<span class="number">1</span>),
+				<span class="ident">MigrationLimits</span> { <span class="ident">item</span>: <span class="number">50</span>, <span class="ident">size</span>: <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">20</span> },
+				<span class="ident">Bounded::max_value</span>(),
+				<span class="ident">MigrationProcess</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::get</span>()
+			));
 			<span class="comment">// The auto migration halted.</span>
-			<span class="ident">System::assert_last_event</span>(<span class="ident"><span class="kw">crate</span>::Event::Halted</span> {}.<span class="ident">into</span>());
+			<span class="ident">System::assert_last_event</span>(
+				<span class="ident"><span class="kw">crate</span>::Event::Halted</span> { <span class="ident">error</span>: <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::KeyTooLong</span> }.<span class="ident">into</span>(),
+			);
 			<span class="comment">// Limits are killed.</span>
 			<span class="macro">assert!</span>(<span class="ident">AutoLimits</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">is_none</span>());
 
@@ -3260,7 +3260,7 @@
 						..<span class="ident">Default::default</span>()
 					}
 				),
-				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::BadWitness</span>
+				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::BadWitness</span>,
 			);
 
 			<span class="comment">// migrate all keys in a series of submissions</span>
@@ -3323,14 +3323,11 @@
 			<span class="macro">assert_eq!</span>(<span class="ident">Balances::free_balance</span>(<span class="kw-2">&amp;</span><span class="number">1</span>), <span class="number">1000</span>);
 
 			<span class="comment">// note that we don&#39;t expect this to be a noop -- we do slash.</span>
-			<span class="macro">frame_support::assert_err!</span>(
-				<span class="ident">StateTrieMigration::migrate_custom_top</span>(
-					<span class="ident">Origin::signed</span>(<span class="number">1</span>),
-					<span class="macro">vec!</span>[<span class="string">b&quot;key1&quot;</span>.<span class="ident">to_vec</span>(), <span class="string">b&quot;key2&quot;</span>.<span class="ident">to_vec</span>(), <span class="string">b&quot;key3&quot;</span>.<span class="ident">to_vec</span>()],
-					<span class="ident">correct_witness</span> <span class="op">-</span> <span class="number">1</span>,
-				),
-				<span class="string">&quot;wrong witness data&quot;</span>
-			);
+			<span class="macro">frame_support::assert_ok!</span>(<span class="ident">StateTrieMigration::migrate_custom_top</span>(
+				<span class="ident">Origin::signed</span>(<span class="number">1</span>),
+				<span class="macro">vec!</span>[<span class="string">b&quot;key1&quot;</span>.<span class="ident">to_vec</span>(), <span class="string">b&quot;key2&quot;</span>.<span class="ident">to_vec</span>(), <span class="string">b&quot;key3&quot;</span>.<span class="ident">to_vec</span>()],
+				<span class="ident">correct_witness</span> <span class="op">-</span> <span class="number">1</span>,
+			),);
 
 			<span class="comment">// no funds should remain reserved.</span>
 			<span class="macro">assert_eq!</span>(<span class="ident">Balances::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="number">1</span>), <span class="number">0</span>);
@@ -3360,13 +3357,12 @@
 			<span class="macro">assert_eq!</span>(<span class="ident">Balances::free_balance</span>(<span class="kw-2">&amp;</span><span class="number">1</span>), <span class="number">1000</span>);
 
 			<span class="comment">// note that we don&#39;t expect this to be a noop -- we do slash.</span>
-			<span class="macro">assert!</span>(<span class="ident">StateTrieMigration::migrate_custom_child</span>(
+			<span class="macro">frame_support::assert_ok!</span>(<span class="ident">StateTrieMigration::migrate_custom_child</span>(
 				<span class="ident">Origin::signed</span>(<span class="number">1</span>),
 				<span class="ident">StateTrieMigration::childify</span>(<span class="string">&quot;chk1&quot;</span>),
 				<span class="macro">vec!</span>[<span class="string">b&quot;key1&quot;</span>.<span class="ident">to_vec</span>(), <span class="string">b&quot;key2&quot;</span>.<span class="ident">to_vec</span>()],
 				<span class="number">999999</span>, <span class="comment">// wrong witness</span>
-			)
-			.<span class="ident">is_err</span>());
+			));
 
 			<span class="comment">// no funds should remain reserved.</span>
 			<span class="macro">assert_eq!</span>(<span class="ident">Balances::reserved_balance</span>(<span class="kw-2">&amp;</span><span class="number">1</span>), <span class="number">0</span>);

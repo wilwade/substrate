@@ -446,6 +446,8 @@
 <span id="440">440</span>
 <span id="441">441</span>
 <span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -693,9 +695,11 @@
 			<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">transactions</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Transactions</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">block</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::RenewedNotFound</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">transactions</span>.<span class="ident">get</span>(<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::RenewedNotFound</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">extrinsic_index</span> <span class="op">=</span>
+				<span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::extrinsic_index</span>().<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::BadContext</span>)<span class="question-mark">?</span>;
+
 			<span class="ident"><span class="self">Self</span>::apply_fee</span>(<span class="ident">sender</span>, <span class="ident">info</span>.<span class="ident">size</span>)<span class="question-mark">?</span>;
 
-			<span class="kw">let</span> <span class="ident">extrinsic_index</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::extrinsic_index</span>().<span class="ident">unwrap</span>();
 			<span class="ident">sp_io::transaction_index::renew</span>(<span class="ident">extrinsic_index</span>, <span class="ident">info</span>.<span class="ident">content_hash</span>.<span class="ident">into</span>());
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="number">0</span>;
