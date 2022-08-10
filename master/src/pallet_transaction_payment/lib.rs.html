@@ -1626,6 +1626,69 @@
 <span id="1620">1620</span>
 <span id="1621">1621</span>
 <span id="1622">1622</span>
+<span id="1623">1623</span>
+<span id="1624">1624</span>
+<span id="1625">1625</span>
+<span id="1626">1626</span>
+<span id="1627">1627</span>
+<span id="1628">1628</span>
+<span id="1629">1629</span>
+<span id="1630">1630</span>
+<span id="1631">1631</span>
+<span id="1632">1632</span>
+<span id="1633">1633</span>
+<span id="1634">1634</span>
+<span id="1635">1635</span>
+<span id="1636">1636</span>
+<span id="1637">1637</span>
+<span id="1638">1638</span>
+<span id="1639">1639</span>
+<span id="1640">1640</span>
+<span id="1641">1641</span>
+<span id="1642">1642</span>
+<span id="1643">1643</span>
+<span id="1644">1644</span>
+<span id="1645">1645</span>
+<span id="1646">1646</span>
+<span id="1647">1647</span>
+<span id="1648">1648</span>
+<span id="1649">1649</span>
+<span id="1650">1650</span>
+<span id="1651">1651</span>
+<span id="1652">1652</span>
+<span id="1653">1653</span>
+<span id="1654">1654</span>
+<span id="1655">1655</span>
+<span id="1656">1656</span>
+<span id="1657">1657</span>
+<span id="1658">1658</span>
+<span id="1659">1659</span>
+<span id="1660">1660</span>
+<span id="1661">1661</span>
+<span id="1662">1662</span>
+<span id="1663">1663</span>
+<span id="1664">1664</span>
+<span id="1665">1665</span>
+<span id="1666">1666</span>
+<span id="1667">1667</span>
+<span id="1668">1668</span>
+<span id="1669">1669</span>
+<span id="1670">1670</span>
+<span id="1671">1671</span>
+<span id="1672">1672</span>
+<span id="1673">1673</span>
+<span id="1674">1674</span>
+<span id="1675">1675</span>
+<span id="1676">1676</span>
+<span id="1677">1677</span>
+<span id="1678">1678</span>
+<span id="1679">1679</span>
+<span id="1680">1680</span>
+<span id="1681">1681</span>
+<span id="1682">1682</span>
+<span id="1683">1683</span>
+<span id="1684">1684</span>
+<span id="1685">1685</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -2071,6 +2134,32 @@
 			<span class="comment">// Unsigned extrinsics have no inclusion fee.</span>
 			<span class="ident">FeeDetails</span> { <span class="ident">inclusion_fee</span>: <span class="prelude-val">None</span>, <span class="ident">tip</span> }
 		}
+	}
+
+	<span class="doccomment">/// Query information of a dispatch class, weight, and fee of a given encoded `Call`.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">query_call_info</span>(<span class="ident">call</span>: <span class="ident">T::Call</span>, <span class="ident">len</span>: <span class="ident">u32</span>) -&gt; <span class="ident">RuntimeDispatchInfo</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
+	<span class="kw">where</span>
+		<span class="ident">T::Call</span>: <span class="ident">Dispatchable</span><span class="op">&lt;</span><span class="ident">Info</span> <span class="op">=</span> <span class="ident">DispatchInfo</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">GetDispatchInfo</span>,
+	{
+		<span class="kw">let</span> <span class="ident">dispatch_info</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T::Call</span> <span class="kw">as</span> <span class="ident">GetDispatchInfo</span><span class="op">&gt;</span><span class="ident">::get_dispatch_info</span>(<span class="kw-2">&amp;</span><span class="ident">call</span>);
+		<span class="kw">let</span> <span class="ident">DispatchInfo</span> { <span class="ident">weight</span>, <span class="ident">class</span>, .. } <span class="op">=</span> <span class="ident">dispatch_info</span>;
+
+		<span class="ident">RuntimeDispatchInfo</span> {
+			<span class="ident">weight</span>,
+			<span class="ident">class</span>,
+			<span class="ident">partial_fee</span>: <span class="ident"><span class="self">Self</span>::compute_fee</span>(<span class="ident">len</span>, <span class="kw-2">&amp;</span><span class="ident">dispatch_info</span>, <span class="number">0u32</span>.<span class="ident">into</span>()),
+		}
+	}
+
+	<span class="doccomment">/// Query fee details of a given encoded `Call`.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">query_call_fee_details</span>(<span class="ident">call</span>: <span class="ident">T::Call</span>, <span class="ident">len</span>: <span class="ident">u32</span>) -&gt; <span class="ident">FeeDetails</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>
+	<span class="kw">where</span>
+		<span class="ident">T::Call</span>: <span class="ident">Dispatchable</span><span class="op">&lt;</span><span class="ident">Info</span> <span class="op">=</span> <span class="ident">DispatchInfo</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">GetDispatchInfo</span>,
+	{
+		<span class="kw">let</span> <span class="ident">dispatch_info</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T::Call</span> <span class="kw">as</span> <span class="ident">GetDispatchInfo</span><span class="op">&gt;</span><span class="ident">::get_dispatch_info</span>(<span class="kw-2">&amp;</span><span class="ident">call</span>);
+		<span class="kw">let</span> <span class="ident">tip</span> <span class="op">=</span> <span class="number">0u32</span>.<span class="ident">into</span>();
+
+		<span class="ident"><span class="self">Self</span>::compute_fee_details</span>(<span class="ident">len</span>, <span class="kw-2">&amp;</span><span class="ident">dispatch_info</span>, <span class="ident">tip</span>)
 	}
 
 	<span class="doccomment">/// Compute the final fee value for a particular transaction.</span>
@@ -2830,6 +2919,43 @@
 			<span class="macro">assert_eq!</span>(
 				<span class="ident">TransactionPayment::query_fee_details</span>(<span class="ident">unsigned_xt</span>, <span class="ident">len</span>),
 				<span class="ident">FeeDetails</span> { <span class="ident">inclusion_fee</span>: <span class="prelude-val">None</span>, <span class="ident">tip</span>: <span class="number">0</span> },
+			);
+		});
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">query_call_info_and_fee_details_works</span>() {
+		<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::Balances</span>(<span class="ident">BalancesCall::transfer</span> { <span class="ident">dest</span>: <span class="number">2</span>, <span class="ident">value</span>: <span class="number">69</span> });
+		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">call</span>.<span class="ident">get_dispatch_info</span>();
+		<span class="kw">let</span> <span class="ident">encoded_call</span> <span class="op">=</span> <span class="ident">call</span>.<span class="ident">encode</span>();
+		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">encoded_call</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+
+		<span class="ident">ExtBuilder::default</span>().<span class="ident">base_weight</span>(<span class="number">5</span>).<span class="ident">weight_fee</span>(<span class="number">2</span>).<span class="ident">build</span>().<span class="ident">execute_with</span>(<span class="op">|</span><span class="op">|</span> {
+			<span class="comment">// all fees should be x1.5</span>
+			<span class="op">&lt;</span><span class="ident">NextFeeMultiplier</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">Multiplier::saturating_from_rational</span>(<span class="number">3</span>, <span class="number">2</span>));
+
+			<span class="macro">assert_eq!</span>(
+				<span class="ident">TransactionPayment::query_call_info</span>(<span class="ident">call</span>.<span class="ident">clone</span>(), <span class="ident">len</span>),
+				<span class="ident">RuntimeDispatchInfo</span> {
+					<span class="ident">weight</span>: <span class="ident">info</span>.<span class="ident">weight</span>,
+					<span class="ident">class</span>: <span class="ident">info</span>.<span class="ident">class</span>,
+					<span class="ident">partial_fee</span>: <span class="number">5</span> <span class="op">*</span> <span class="number">2</span> <span class="comment">/* base * weight_fee */</span>
+						<span class="op">+</span> <span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>  <span class="comment">/* len * 1 */</span>
+						<span class="op">+</span> <span class="ident">info</span>.<span class="ident">weight</span>.<span class="ident">min</span>(<span class="ident">BlockWeights::get</span>().<span class="ident">max_block</span>) <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="number">2</span> <span class="op">*</span> <span class="number">3</span> <span class="op">/</span> <span class="number">2</span> <span class="comment">/* weight */</span>
+				},
+			);
+
+			<span class="macro">assert_eq!</span>(
+				<span class="ident">TransactionPayment::query_call_fee_details</span>(<span class="ident">call</span>, <span class="ident">len</span>),
+				<span class="ident">FeeDetails</span> {
+					<span class="ident">inclusion_fee</span>: <span class="prelude-val">Some</span>(<span class="ident">InclusionFee</span> {
+						<span class="ident">base_fee</span>: <span class="number">5</span> <span class="op">*</span> <span class="number">2</span>,     <span class="comment">/* base * weight_fee */</span>
+						<span class="ident">len_fee</span>: <span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="comment">/* len * 1 */</span>
+						<span class="ident">adjusted_weight_fee</span>: <span class="ident">info</span>.<span class="ident">weight</span>.<span class="ident">min</span>(<span class="ident">BlockWeights::get</span>().<span class="ident">max_block</span>) <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span>
+							<span class="number">2</span> <span class="op">*</span> <span class="number">3</span> <span class="op">/</span> <span class="number">2</span>  <span class="comment">/* weight * weight_fee * multipler */</span>
+					}),
+					<span class="ident">tip</span>: <span class="number">0</span>,
+				},
 			);
 		});
 	}
