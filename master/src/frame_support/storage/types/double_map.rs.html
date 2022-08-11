@@ -966,6 +966,17 @@
 <span id="960">960</span>
 <span id="961">961</span>
 <span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -993,6 +1004,7 @@
 		<span class="ident">KeyLenOf</span>, <span class="ident">StorageAppend</span>, <span class="ident">StorageDecodeLength</span>, <span class="ident">StoragePrefixedMap</span>, <span class="ident">StorageTryAppend</span>,
 	},
 	<span class="ident">traits</span>::{<span class="ident">Get</span>, <span class="ident">GetDefault</span>, <span class="ident">StorageInfo</span>, <span class="ident">StorageInstance</span>},
+	<span class="ident">StorageHasher</span>, <span class="ident">Twox128</span>,
 };
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">EncodeLike</span>, <span class="ident">FullCodec</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">sp_arithmetic::traits::SaturatedConversion</span>;
@@ -1059,10 +1071,10 @@
 	<span class="ident">Key2</span>: <span class="ident">MaxEncodedLen</span>,
 {
 	<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="ident">u32</span> {
-		<span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">Hasher1::max_len</span>::<span class="op">&lt;</span><span class="ident">Key1</span><span class="op">&gt;</span>() <span class="op">+</span>
-			<span class="ident">Hasher2::max_len</span>::<span class="op">&lt;</span><span class="ident">Key2</span><span class="op">&gt;</span>() <span class="op">+</span>
-			<span class="ident">Prefix::pallet_prefix</span>().<span class="ident">len</span>() <span class="op">+</span>
-			<span class="ident">Prefix::STORAGE_PREFIX</span>.<span class="ident">len</span>();
+		<span class="comment">// The `max_len` of both key hashes plus the pallet prefix and storage prefix (which both</span>
+		<span class="comment">// are hashed with `Twox128`).</span>
+		<span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span>
+			<span class="ident">Hasher1::max_len</span>::<span class="op">&lt;</span><span class="ident">Key1</span><span class="op">&gt;</span>() <span class="op">+</span> <span class="ident">Hasher2::max_len</span>::<span class="op">&lt;</span><span class="ident">Key2</span><span class="op">&gt;</span>() <span class="op">+</span> <span class="ident">Twox128::max_len</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>() <span class="op">*</span> <span class="number">2</span>;
 		<span class="ident">z</span> <span class="kw">as</span> <span class="ident">u32</span>
 	}
 }
@@ -1721,6 +1733,16 @@
 		<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="ident">u32</span> {
 			<span class="number">97</span>
 		}
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">keylenof_works</span>() {
+		<span class="comment">// Works with Blake2_128Concat and Twox64Concat.</span>
+		<span class="kw">type</span> <span class="ident">A</span> <span class="op">=</span> <span class="ident">StorageDoubleMap</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">Blake2_128Concat</span>, <span class="ident">u64</span>, <span class="ident">Twox64Concat</span>, <span class="ident">u32</span>, <span class="ident">u32</span><span class="op">&gt;</span>;
+		<span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="number">16</span> <span class="op">*</span> <span class="number">2</span> <span class="comment">// Two Twox128</span>
+			<span class="op">+</span> <span class="number">16</span> <span class="op">+</span> <span class="number">8</span> <span class="comment">// Blake2_128Concat = hash + key</span>
+			<span class="op">+</span> <span class="number">8</span> <span class="op">+</span> <span class="number">4</span>; <span class="comment">// Twox64Concat = hash + key</span>
+		<span class="macro">assert_eq!</span>(<span class="ident">KeyLenOf</span>::<span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span><span class="ident">::get</span>(), <span class="ident">size</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
