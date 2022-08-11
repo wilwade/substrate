@@ -677,10 +677,10 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// 1. The generated functions are not callable from the native side.</span>
 <span class="doccomment">/// 2. The trait as shown above is not implemented for [`Externalities`] and is instead</span>
-<span class="doccomment">/// implemented for `FunctionExecutor` (from `sp-wasm-interface`).</span>
+<span class="doccomment">/// implemented for `FunctionContext` (from `sp-wasm-interface`).</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Disable tracing</span>
-<span class="doccomment">/// By addding `no_tracing` to the list of options you can prevent the wasm-side interface from</span>
+<span class="doccomment">/// By adding `no_tracing` to the list of options you can prevent the wasm-side interface from</span>
 <span class="doccomment">/// generating the default `sp-tracing`-calls. Note that this is rarely needed but only meant</span>
 <span class="doccomment">/// for the case when that would create a circular dependency. You usually _do not_ want to add</span>
 <span class="doccomment">/// this flag, as tracing doesn&#39;t cost you anything by default anyways (it is added as a no-op)</span>
