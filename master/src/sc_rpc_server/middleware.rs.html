@@ -247,6 +247,22 @@
 <span id="241">241</span>
 <span id="242">242</span>
 <span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -273,6 +289,21 @@
 	<span class="ident">U64</span>,
 };
 <span class="kw">use</span> <span class="ident">std::net::SocketAddr</span>;
+
+<span class="doccomment">/// Histogram time buckets in microseconds.</span>
+<span class="kw">const</span> <span class="ident">HISTOGRAM_BUCKETS</span>: [<span class="ident">f64</span>; <span class="number">11</span>] <span class="op">=</span> [
+	<span class="number">5.0</span>,
+	<span class="number">25.0</span>,
+	<span class="number">100.0</span>,
+	<span class="number">500.0</span>,
+	<span class="number">1_000.0</span>,
+	<span class="number">2_500.0</span>,
+	<span class="number">10_000.0</span>,
+	<span class="number">25_000.0</span>,
+	<span class="number">100_000.0</span>,
+	<span class="number">1_000_000.0</span>,
+	<span class="number">10_000_000.0</span>,
+];
 
 <span class="doccomment">/// Metrics for RPC middleware storing information about the number of requests started/completed,</span>
 <span class="doccomment">/// calls started/completed and their timings.</span>
@@ -324,7 +355,8 @@
 						<span class="ident">HistogramOpts::new</span>(
 							<span class="string">&quot;substrate_rpc_calls_time&quot;</span>,
 							<span class="string">&quot;Total time [μs] of processed RPC calls&quot;</span>,
-						),
+						)
+						.<span class="ident">buckets</span>(<span class="ident">HISTOGRAM_BUCKETS</span>.<span class="ident">to_vec</span>()),
 						<span class="kw-2">&amp;</span>[<span class="string">&quot;protocol&quot;</span>, <span class="string">&quot;method&quot;</span>],
 					)<span class="question-mark">?</span>,
 					<span class="ident">metrics_registry</span>,

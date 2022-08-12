@@ -1879,6 +1879,8 @@
 <span id="1873">1873</span>
 <span id="1874">1874</span>
 <span id="1875">1875</span>
+<span id="1876">1876</span>
+<span id="1877">1877</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -2935,7 +2937,9 @@
 					<span class="comment">// Time the extrinsic logic.</span>
 					<span class="macro-nonterminal">$</span><span class="macro">crate::log::trace!</span>(
 						<span class="macro-nonterminal">target</span>: <span class="string">&quot;benchmark&quot;</span>,
-						<span class="string">&quot;Start Benchmark: {:?}&quot;</span>, <span class="ident">c</span>
+						<span class="string">&quot;Start Benchmark: {} ({:?})&quot;</span>,
+						<span class="ident">extrinsic</span>,
+						<span class="ident">c</span>
 					);
 
 					<span class="kw">let</span> <span class="ident">start_pov</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::benchmarking::proof_size</span>();
