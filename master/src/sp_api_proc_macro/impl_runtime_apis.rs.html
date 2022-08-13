@@ -722,39 +722,6 @@
 <span id="716">716</span>
 <span id="717">717</span>
 <span id="718">718</span>
-<span id="719">719</span>
-<span id="720">720</span>
-<span id="721">721</span>
-<span id="722">722</span>
-<span id="723">723</span>
-<span id="724">724</span>
-<span id="725">725</span>
-<span id="726">726</span>
-<span id="727">727</span>
-<span id="728">728</span>
-<span id="729">729</span>
-<span id="730">730</span>
-<span id="731">731</span>
-<span id="732">732</span>
-<span id="733">733</span>
-<span id="734">734</span>
-<span id="735">735</span>
-<span id="736">736</span>
-<span id="737">737</span>
-<span id="738">738</span>
-<span id="739">739</span>
-<span id="740">740</span>
-<span id="741">741</span>
-<span id="742">742</span>
-<span id="743">743</span>
-<span id="744">744</span>
-<span id="745">745</span>
-<span id="746">746</span>
-<span id="747">747</span>
-<span id="748">748</span>
-<span id="749">749</span>
-<span id="750">750</span>
-<span id="751">751</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -774,12 +741,12 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils</span>::{
 	<span class="ident">extract_all_signature_types</span>, <span class="ident">extract_block_type_from_trait_path</span>, <span class="ident">extract_impl_trait</span>,
-	<span class="ident">extract_parameter_names_types_and_borrows</span>, <span class="ident">generate_call_api_at_fn_name</span>, <span class="ident">generate_crate_access</span>,
-	<span class="ident">generate_hidden_includes</span>, <span class="ident">generate_method_runtime_api_impl_name</span>,
-	<span class="ident">generate_native_call_generator_fn_name</span>, <span class="ident">generate_runtime_mod_name_for_trait</span>,
-	<span class="ident">prefix_function_with_trait</span>, <span class="ident">return_type_extract_type</span>, <span class="ident">AllowSelfRefInParameters</span>,
-	<span class="ident">RequireQualifiedTraitPath</span>,
+	<span class="ident">extract_parameter_names_types_and_borrows</span>, <span class="ident">generate_crate_access</span>, <span class="ident">generate_hidden_includes</span>,
+	<span class="ident">generate_runtime_mod_name_for_trait</span>, <span class="ident">parse_runtime_api_version</span>, <span class="ident">prefix_function_with_trait</span>,
+	<span class="ident">versioned_trait_name</span>, <span class="ident">AllowSelfRefInParameters</span>, <span class="ident">RequireQualifiedTraitPath</span>,
 };
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::common::API_VERSION_ATTRIBUTE</span>;
 
 <span class="kw">use</span> <span class="ident">proc_macro2</span>::{<span class="ident">Span</span>, <span class="ident">TokenStream</span>};
 
@@ -790,8 +757,7 @@
 	<span class="ident">parse</span>::{<span class="ident">Error</span>, <span class="ident">Parse</span>, <span class="ident">ParseStream</span>, <span class="prelude-ty">Result</span>},
 	<span class="ident">parse_macro_input</span>, <span class="ident">parse_quote</span>,
 	<span class="ident">spanned::Spanned</span>,
-	<span class="ident">Attribute</span>, <span class="ident">GenericArgument</span>, <span class="ident">Ident</span>, <span class="ident">ImplItem</span>, <span class="ident">ItemImpl</span>, <span class="ident">Path</span>, <span class="ident">PathArguments</span>, <span class="ident">Signature</span>, <span class="ident">Type</span>,
-	<span class="ident">TypePath</span>,
+	<span class="ident">Attribute</span>, <span class="ident">Ident</span>, <span class="ident">ImplItem</span>, <span class="ident">ItemImpl</span>, <span class="ident">Path</span>, <span class="ident">Signature</span>, <span class="ident">Type</span>, <span class="ident">TypePath</span>,
 };
 
 <span class="kw">use</span> <span class="ident">std::collections::HashSet</span>;
@@ -862,8 +828,10 @@
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">impl_calls</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 
 	<span class="kw">for</span> <span class="ident">impl_</span> <span class="kw">in</span> <span class="ident">impls</span> {
+		<span class="kw">let</span> <span class="ident">trait_api_ver</span> <span class="op">=</span> <span class="ident">extract_api_version</span>(<span class="kw-2">&amp;</span><span class="ident">impl_</span>.<span class="ident">attrs</span>, <span class="ident">impl_</span>.<span class="ident">span</span>())<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">impl_trait_path</span> <span class="op">=</span> <span class="ident">extract_impl_trait</span>(<span class="ident">impl_</span>, <span class="ident">RequireQualifiedTraitPath::Yes</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">impl_trait</span> <span class="op">=</span> <span class="ident">extend_with_runtime_decl_path</span>(<span class="ident">impl_trait_path</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> <span class="ident">impl_trait</span> <span class="op">=</span> <span class="ident">extend_with_api_version</span>(<span class="ident">impl_trait</span>, <span class="ident">trait_api_ver</span>);
 		<span class="kw">let</span> <span class="ident">impl_trait_ident</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">impl_trait_path</span>
 			.<span class="ident">segments</span>
 			.<span class="ident">last</span>()
@@ -1083,35 +1051,6 @@
 
 		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">test</span>))]</span>
 		<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>: #<span class="ident">crate_::BlockT</span>, <span class="ident">C</span>: #<span class="ident">crate_::CallApiAt</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">RuntimeApiImpl</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">C</span><span class="op">&gt;</span> {
-			<span class="kw">fn</span> <span class="ident">call_api_at</span><span class="op">&lt;</span>
-				<span class="ident">R</span>: #<span class="ident">crate_::Encode</span> <span class="op">+</span> #<span class="ident">crate_::Decode</span> <span class="op">+</span> <span class="ident">std::cmp::PartialEq</span>,
-				<span class="ident">F</span>: <span class="ident">FnOnce</span>(
-					<span class="kw-2">&amp;</span><span class="ident">C</span>,
-					<span class="kw-2">&amp;</span><span class="ident">std::cell::RefCell</span><span class="op">&lt;</span>#<span class="ident">crate_::OverlayedChanges</span><span class="op">&gt;</span>,
-					<span class="kw-2">&amp;</span><span class="ident">std::cell::RefCell</span><span class="op">&lt;</span>#<span class="ident">crate_::StorageTransactionCache</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">C::StateBackend</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-					<span class="kw-2">&amp;</span><span class="ident">std::option::Option</span><span class="op">&lt;</span>#<span class="ident">crate_::ProofRecorder</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-				) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">E</span><span class="op">&gt;</span>,
-				<span class="ident">E</span>,
-			<span class="op">&gt;</span>(
-				<span class="kw-2">&amp;</span><span class="self">self</span>,
-				<span class="ident">call_api_at</span>: <span class="ident">F</span>,
-			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">E</span><span class="op">&gt;</span> {
-				<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">std::cell::RefCell::borrow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">commit_on_success</span>) {
-					#<span class="ident">crate_::OverlayedChanges::start_transaction</span>(
-						<span class="kw-2">&amp;mut</span> <span class="ident">std::cell::RefCell::borrow_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>)
-					);
-				}
-				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">call_api_at</span>(
-					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">call</span>,
-					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>,
-					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">storage_transaction_cache</span>,
-					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">recorder</span>,
-				);
-
-				<span class="self">self</span>.<span class="ident">commit_or_rollback</span>(<span class="ident">std::result::Result::is_ok</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>));
-				<span class="ident">res</span>
-			}
-
 			<span class="kw">fn</span> <span class="ident">commit_or_rollback</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">commit</span>: <span class="ident">bool</span>) {
 				<span class="kw">let</span> <span class="ident">proof</span> <span class="op">=</span> <span class="string">&quot;\
 					We only close a transaction when we opened one ourself.
@@ -1155,6 +1094,24 @@
 	<span class="ident">trait_</span>
 }
 
+<span class="kw">fn</span> <span class="ident">extend_with_api_version</span>(<span class="kw-2">mut</span> <span class="ident">trait_</span>: <span class="ident">Path</span>, <span class="ident">version</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>) -&gt; <span class="ident">Path</span> {
+	<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">v</span>) <span class="op">=</span> <span class="ident">version</span> {
+		<span class="ident">v</span>
+	} <span class="kw">else</span> {
+		<span class="comment">// nothing to do</span>
+		<span class="kw">return</span> <span class="ident">trait_</span>
+	};
+
+	<span class="kw">let</span> <span class="ident">trait_name</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">trait_</span>
+		.<span class="ident">segments</span>
+		.<span class="ident">last_mut</span>()
+		.<span class="ident">expect</span>(<span class="string">&quot;Trait path should always contain at least one item; qed&quot;</span>)
+		.<span class="ident">ident</span>;
+	<span class="kw-2">*</span><span class="ident">trait_name</span> <span class="op">=</span> <span class="ident">versioned_trait_name</span>(<span class="ident">trait_name</span>, <span class="ident">version</span>);
+
+	<span class="ident">trait_</span>
+}
+
 <span class="doccomment">/// Generates the implementations of the apis for the runtime.</span>
 <span class="kw">fn</span> <span class="ident">generate_api_impl_for_runtime</span>(<span class="ident">impls</span>: <span class="kw-2">&amp;</span>[<span class="ident">ItemImpl</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">impls_prepared</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
@@ -1162,9 +1119,12 @@
 	<span class="comment">// We put `runtime` before each trait to get the trait that is intended for the runtime and</span>
 	<span class="comment">// we put the `RuntimeBlock` as first argument for the trait generics.</span>
 	<span class="kw">for</span> <span class="ident">impl_</span> <span class="kw">in</span> <span class="ident">impls</span>.<span class="ident">iter</span>() {
+		<span class="kw">let</span> <span class="ident">trait_api_ver</span> <span class="op">=</span> <span class="ident">extract_api_version</span>(<span class="kw-2">&amp;</span><span class="ident">impl_</span>.<span class="ident">attrs</span>, <span class="ident">impl_</span>.<span class="ident">span</span>())<span class="question-mark">?</span>;
+
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">impl_</span> <span class="op">=</span> <span class="ident">impl_</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">trait_</span> <span class="op">=</span> <span class="ident">extract_impl_trait</span>(<span class="kw-2">&amp;</span><span class="ident">impl_</span>, <span class="ident">RequireQualifiedTraitPath::Yes</span>)<span class="question-mark">?</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">trait_</span> <span class="op">=</span> <span class="ident">extend_with_runtime_decl_path</span>(<span class="ident">trait_</span>);
+		<span class="kw">let</span> <span class="ident">trait_</span> <span class="op">=</span> <span class="ident">extend_with_api_version</span>(<span class="ident">trait_</span>, <span class="ident">trait_api_ver</span>);
 
 		<span class="ident">impl_</span>.<span class="ident">trait_</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>().<span class="number">1</span> <span class="op">=</span> <span class="ident">trait_</span>;
 		<span class="ident">impl_</span>.<span class="ident">attrs</span> <span class="op">=</span> <span class="ident">filter_cfg_attrs</span>(<span class="kw-2">&amp;</span><span class="ident">impl_</span>.<span class="ident">attrs</span>);
@@ -1181,10 +1141,61 @@
 <span class="doccomment">/// with code that calls into the runtime.</span>
 <span class="kw">struct</span> <span class="ident">ApiRuntimeImplToApiRuntimeApiImpl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="ident">runtime_block</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TypePath</span>,
-	<span class="ident">runtime_mod_path</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Path</span>,
-	<span class="ident">runtime_type</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Type</span>,
-	<span class="ident">trait_generic_arguments</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">GenericArgument</span>],
-	<span class="ident">impl_trait</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Ident</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ApiRuntimeImplToApiRuntimeApiImpl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Process the given item implementation.</span>
+	<span class="kw">fn</span> <span class="ident">process</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">input</span>: <span class="ident">ItemImpl</span>) -&gt; <span class="ident">ItemImpl</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">fold_item_impl</span>(<span class="ident">input</span>);
+
+		<span class="kw">let</span> <span class="ident">crate_</span> <span class="op">=</span> <span class="ident">generate_crate_access</span>(<span class="ident">HIDDEN_INCLUDES_ID</span>);
+
+		<span class="comment">// Delete all functions, because all of them are default implemented by</span>
+		<span class="comment">// `decl_runtime_apis!`. We only need to implement the `__runtime_api_internal_call_api_at`</span>
+		<span class="comment">// function.</span>
+		<span class="ident">input</span>.<span class="ident">items</span>.<span class="ident">clear</span>();
+		<span class="ident">input</span>.<span class="ident">items</span>.<span class="ident">push</span>(<span class="macro">parse_quote!</span> {
+			<span class="kw">fn</span> <span class="ident">__runtime_api_internal_call_api_at</span>(
+				<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="ident">at</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span><span class="ident">__SR_API_BLOCK__</span><span class="op">&gt;</span>,
+				<span class="ident">context</span>: #<span class="ident">crate_::ExecutionContext</span>,
+				<span class="ident">params</span>: <span class="ident">std::vec::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+				<span class="ident">fn_name</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(#<span class="ident">crate_::RuntimeVersion</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">std::vec::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">std::cell::RefCell::borrow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">commit_on_success</span>) {
+					#<span class="ident">crate_::OverlayedChanges::start_transaction</span>(
+						<span class="kw-2">&amp;mut</span> <span class="ident">std::cell::RefCell::borrow_mut</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>)
+					);
+				}
+
+				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> (<span class="op">|</span><span class="op">|</span> {
+				<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> #<span class="ident">crate_::CallApiAt</span>::<span class="op">&lt;</span><span class="ident">__SR_API_BLOCK__</span><span class="op">&gt;</span><span class="ident">::runtime_version_at</span>(<span class="self">self</span>.<span class="ident">call</span>, <span class="ident">at</span>)<span class="question-mark">?</span>;
+
+				<span class="kw">let</span> <span class="ident">params</span> <span class="op">=</span> #<span class="ident">crate_::CallApiAtParams</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">fn</span>() -&gt; <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span> {
+					<span class="ident">at</span>,
+					<span class="ident">function</span>: (<span class="kw-2">*</span><span class="ident">fn_name</span>)(<span class="ident">version</span>),
+					<span class="ident">native_call</span>: <span class="prelude-val">None</span>,
+					<span class="ident">arguments</span>: <span class="ident">params</span>,
+					<span class="ident">overlayed_changes</span>: <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">changes</span>,
+					<span class="ident">storage_transaction_cache</span>: <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">storage_transaction_cache</span>,
+					<span class="ident">context</span>,
+					<span class="ident">recorder</span>: <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">recorder</span>,
+				};
+
+				#<span class="ident">crate_::CallApiAt</span>::<span class="op">&lt;</span><span class="ident">__SR_API_BLOCK__</span><span class="op">&gt;</span><span class="ident">::call_api_at</span>::<span class="op">&lt;</span>#<span class="ident">crate_::NeverNativeValue</span>, <span class="kw">_</span><span class="op">&gt;</span>(
+					<span class="self">self</span>.<span class="ident">call</span>,
+					<span class="ident">params</span>,
+				)
+			})();
+
+				<span class="self">self</span>.<span class="ident">commit_or_rollback</span>(<span class="ident">std::result::Result::is_ok</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>));
+
+				<span class="ident">res</span>.<span class="ident">map</span>(#<span class="ident">crate_::NativeOrEncoded::into_encoded</span>)
+			}
+		});
+
+		<span class="ident">input</span>
+	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Fold</span> <span class="kw">for</span> <span class="ident">ApiRuntimeImplToApiRuntimeApiImpl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -1193,108 +1204,6 @@
 			<span class="kw">if</span> <span class="ident">input</span> <span class="op">==</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">runtime_block</span> { <span class="macro">parse_quote!</span>(<span class="ident">__SR_API_BLOCK__</span>) } <span class="kw">else</span> { <span class="ident">input</span> };
 
 		<span class="ident">fold::fold_type_path</span>(<span class="self">self</span>, <span class="ident">new_ty_path</span>)
-	}
-
-	<span class="kw">fn</span> <span class="ident">fold_impl_item_method</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">input</span>: <span class="ident">syn::ImplItemMethod</span>) -&gt; <span class="ident">syn::ImplItemMethod</span> {
-		<span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> {
-			<span class="kw">let</span> <span class="ident">runtime_mod_path</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">runtime_mod_path</span>;
-			<span class="kw">let</span> <span class="ident">runtime</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">runtime_type</span>;
-			<span class="kw">let</span> <span class="ident">native_call_generator_ident</span> <span class="op">=</span>
-				<span class="ident">generate_native_call_generator_fn_name</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">ident</span>);
-			<span class="kw">let</span> <span class="ident">call_api_at_call</span> <span class="op">=</span> <span class="ident">generate_call_api_at_fn_name</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">ident</span>);
-			<span class="kw">let</span> <span class="ident">trait_generic_arguments</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">trait_generic_arguments</span>;
-			<span class="kw">let</span> <span class="ident">crate_</span> <span class="op">=</span> <span class="ident">generate_crate_access</span>(<span class="ident">HIDDEN_INCLUDES_ID</span>);
-
-			<span class="comment">// Generate the access to the native parameters</span>
-			<span class="kw">let</span> <span class="ident">param_tuple_access</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">inputs</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> {
-				<span class="macro">vec!</span>[<span class="macro">quote!</span>(<span class="ident">p</span>)]
-			} <span class="kw">else</span> {
-				<span class="ident">input</span>
-					.<span class="ident">sig</span>
-					.<span class="ident">inputs</span>
-					.<span class="ident">iter</span>()
-					.<span class="ident">enumerate</span>()
-					.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="kw">_</span>)<span class="op">|</span> {
-						<span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">syn::Index::from</span>(<span class="ident">i</span>);
-						<span class="macro">quote!</span>( <span class="ident">p</span>.#<span class="ident">i</span> )
-					})
-					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
-			};
-
-			<span class="kw">let</span> (<span class="ident">param_types</span>, <span class="ident">error</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">extract_parameter_names_types_and_borrows</span>(
-				<span class="kw-2">&amp;</span><span class="ident">input</span>.<span class="ident">sig</span>,
-				<span class="ident">AllowSelfRefInParameters::No</span>,
-			) {
-				<span class="prelude-val">Ok</span>(<span class="ident">res</span>) =&gt; (
-					<span class="ident">res</span>.<span class="ident">into_iter</span>()
-						.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> {
-							<span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">v</span>.<span class="number">1</span>;
-							<span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">v</span>.<span class="number">2</span>;
-							<span class="macro">quote!</span>( #<span class="ident">borrow</span> #<span class="ident">ty</span> )
-						})
-						.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
-					<span class="prelude-val">None</span>,
-				),
-				<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; (<span class="ident">Vec::new</span>(), <span class="prelude-val">Some</span>(<span class="ident">e</span>.<span class="ident">to_compile_error</span>())),
-			};
-
-			<span class="comment">// Rewrite the input parameters.</span>
-			<span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">inputs</span> <span class="op">=</span> <span class="macro">parse_quote!</span> {
-				<span class="kw-2">&amp;</span><span class="self">self</span>,
-				<span class="ident">at</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span><span class="ident">__SR_API_BLOCK__</span><span class="op">&gt;</span>,
-				<span class="ident">context</span>: #<span class="ident">crate_::ExecutionContext</span>,
-				<span class="ident">params</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>( #( #<span class="ident">param_types</span> ),<span class="op">*</span> )<span class="op">&gt;</span>,
-				<span class="ident">params_encoded</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-			};
-
-			<span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">ident</span> <span class="op">=</span>
-				<span class="ident">generate_method_runtime_api_impl_name</span>(<span class="self">self</span>.<span class="ident">impl_trait</span>, <span class="kw-2">&amp;</span><span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">ident</span>);
-			<span class="kw">let</span> <span class="ident">ret_type</span> <span class="op">=</span> <span class="ident">return_type_extract_type</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">output</span>);
-
-			<span class="comment">// Generate the correct return type.</span>
-			<span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">output</span> <span class="op">=</span> <span class="macro">parse_quote!</span>(
-				-&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span>#<span class="ident">ret_type</span><span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span>
-			);
-
-			<span class="comment">// Generate the new method implementation that calls into the runtime.</span>
-			<span class="macro">parse_quote!</span>(
-				{
-					<span class="comment">// Get the error to the user (if we have one).</span>
-					#<span class="ident">error</span>
-
-					<span class="self">self</span>.<span class="ident">call_api_at</span>(
-						<span class="op">|</span>
-							<span class="ident">call_runtime_at</span>,
-							<span class="ident">changes</span>,
-							<span class="ident">storage_transaction_cache</span>,
-							<span class="ident">recorder</span>
-						<span class="op">|</span> {
-							#<span class="ident">runtime_mod_path</span> #<span class="ident">call_api_at_call</span>(
-								<span class="ident">call_runtime_at</span>,
-								<span class="ident">at</span>,
-								<span class="ident">params_encoded</span>,
-								<span class="ident">changes</span>,
-								<span class="ident">storage_transaction_cache</span>,
-								<span class="ident">params</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> {
-									#<span class="ident">runtime_mod_path</span> #<span class="ident">native_call_generator_ident</span> ::
-										<span class="op">&lt;</span>#<span class="ident">runtime</span>, <span class="ident">__SR_API_BLOCK__</span> #(, #<span class="ident">trait_generic_arguments</span> )<span class="kw-2">*</span><span class="op">&gt;</span> (
-										#( #<span class="ident">param_tuple_access</span> ),<span class="op">*</span>
-									)
-								}),
-								<span class="ident">context</span>,
-								<span class="ident">recorder</span>,
-							)
-						}
-					)
-				}
-			)
-		};
-
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">fold::fold_impl_item_method</span>(<span class="self">self</span>, <span class="ident">input</span>);
-		<span class="comment">// We need to set the block, after we modified the rest of the ast, otherwise we would</span>
-		<span class="comment">// modify our generated block as well.</span>
-		<span class="ident">input</span>.<span class="ident">block</span> <span class="op">=</span> <span class="ident">block</span>;
-		<span class="ident">input</span>
 	}
 
 	<span class="kw">fn</span> <span class="ident">fold_item_impl</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">input</span>: <span class="ident">ItemImpl</span>) -&gt; <span class="ident">ItemImpl</span> {
@@ -1351,45 +1260,55 @@
 
 	<span class="kw">for</span> <span class="ident">impl_</span> <span class="kw">in</span> <span class="ident">impls</span> {
 		<span class="kw">let</span> <span class="ident">impl_trait_path</span> <span class="op">=</span> <span class="ident">extract_impl_trait</span>(<span class="ident">impl_</span>, <span class="ident">RequireQualifiedTraitPath::Yes</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">impl_trait</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">impl_trait_path</span>
-			.<span class="ident">segments</span>
-			.<span class="ident">last</span>()
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::new</span>(<span class="ident">impl_trait_path</span>.<span class="ident">span</span>(), <span class="string">&quot;Empty trait path not possible!&quot;</span>))<span class="question-mark">?</span>
-			.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">runtime_block</span> <span class="op">=</span> <span class="ident">extract_block_type_from_trait_path</span>(<span class="ident">impl_trait_path</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">runtime_type</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">impl_</span>.<span class="ident">self_ty</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">runtime_mod_path</span> <span class="op">=</span> <span class="ident">extend_with_runtime_decl_path</span>(<span class="ident">impl_trait_path</span>.<span class="ident">clone</span>());
 		<span class="comment">// remove the trait to get just the module path</span>
 		<span class="ident">runtime_mod_path</span>.<span class="ident">segments</span>.<span class="ident">pop</span>();
 
-		<span class="kw">let</span> <span class="ident">trait_generic_arguments</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">impl_trait</span>.<span class="ident">arguments</span> {
-			<span class="ident">PathArguments::Parenthesized</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">PathArguments::None</span> =&gt; <span class="macro">vec!</span>[],
-			<span class="ident">PathArguments::AngleBracketed</span>(<span class="kw-2">ref</span> <span class="ident">b</span>) =&gt; <span class="ident">b</span>.<span class="ident">args</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>(),
-		};
+		<span class="kw">let</span> <span class="ident">processed_impl</span> <span class="op">=</span>
+			<span class="ident">ApiRuntimeImplToApiRuntimeApiImpl</span> { <span class="ident">runtime_block</span> }.<span class="ident">process</span>(<span class="ident">impl_</span>.<span class="ident">clone</span>());
 
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visitor</span> <span class="op">=</span> <span class="ident">ApiRuntimeImplToApiRuntimeApiImpl</span> {
-			<span class="ident">runtime_block</span>,
-			<span class="ident">runtime_mod_path</span>: <span class="kw-2">&amp;</span><span class="ident">runtime_mod_path</span>,
-			<span class="ident">runtime_type</span>,
-			<span class="ident">trait_generic_arguments</span>: <span class="kw-2">&amp;</span><span class="ident">trait_generic_arguments</span>,
-			<span class="ident">impl_trait</span>: <span class="kw-2">&amp;</span><span class="ident">impl_trait</span>.<span class="ident">ident</span>,
-		};
-
-		<span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">visitor</span>.<span class="ident">fold_item_impl</span>(<span class="ident">impl_</span>.<span class="ident">clone</span>()));
+		<span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">processed_impl</span>);
 	}
 	<span class="prelude-val">Ok</span>(<span class="macro">quote!</span>( #( #<span class="ident">result</span> )<span class="op">*</span> ))
+}
+
+<span class="kw">fn</span> <span class="ident">populate_runtime_api_versions</span>(
+	<span class="ident">result</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>,
+	<span class="ident">sections</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>,
+	<span class="ident">attrs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Attribute</span><span class="op">&gt;</span>,
+	<span class="ident">id</span>: <span class="ident">Path</span>,
+	<span class="ident">version</span>: <span class="ident">TokenStream</span>,
+	<span class="ident">crate_access</span>: <span class="kw-2">&amp;</span><span class="ident">TokenStream</span>,
+) {
+	<span class="ident">result</span>.<span class="ident">push</span>(<span class="macro">quote!</span>(
+			#( #<span class="ident">attrs</span> )<span class="op">*</span>
+			(#<span class="ident">id</span>, #<span class="ident">version</span>)
+	));
+
+	<span class="ident">sections</span>.<span class="ident">push</span>(<span class="macro">quote!</span>(
+		#( #<span class="ident">attrs</span> )<span class="op">*</span>
+		<span class="kw">const</span> <span class="kw">_</span>: () <span class="op">=</span> {
+			<span class="comment">// All sections with the same name are going to be merged by concatenation.</span>
+			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>
+			<span class="attribute">#[<span class="ident">link_section</span> <span class="op">=</span> <span class="string">&quot;runtime_apis&quot;</span>]</span>
+			<span class="kw">static</span> <span class="ident">SECTION_CONTENTS</span>: [<span class="ident">u8</span>; <span class="number">12</span>] <span class="op">=</span> #<span class="ident">crate_access::serialize_runtime_api_info</span>(#<span class="ident">id</span>, #<span class="ident">version</span>);
+		};
+	));
 }
 
 <span class="doccomment">/// Generates `RUNTIME_API_VERSIONS` that holds all version information about the implemented</span>
 <span class="doccomment">/// runtime apis.</span>
 <span class="kw">fn</span> <span class="ident">generate_runtime_api_versions</span>(<span class="ident">impls</span>: <span class="kw-2">&amp;</span>[<span class="ident">ItemImpl</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">impls</span>.<span class="ident">len</span>());
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sections</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">impls</span>.<span class="ident">len</span>());
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span><span class="ident">::with_capacity</span>(<span class="ident">impls</span>.<span class="ident">len</span>());
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sections</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span><span class="ident">::with_capacity</span>(<span class="ident">impls</span>.<span class="ident">len</span>());
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">processed_traits</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
 
 	<span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">generate_crate_access</span>(<span class="ident">HIDDEN_INCLUDES_ID</span>);
 
 	<span class="kw">for</span> <span class="ident">impl_</span> <span class="kw">in</span> <span class="ident">impls</span> {
+		<span class="kw">let</span> <span class="ident">api_ver</span> <span class="op">=</span> <span class="ident">extract_api_version</span>(<span class="kw-2">&amp;</span><span class="ident">impl_</span>.<span class="ident">attrs</span>, <span class="ident">impl_</span>.<span class="ident">span</span>())<span class="question-mark">?</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span> <span class="kw">as</span> <span class="ident">u32</span>);
+
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">extend_with_runtime_decl_path</span>(
 			<span class="ident">extract_impl_trait</span>(<span class="ident">impl_</span>, <span class="ident">RequireQualifiedTraitPath::Yes</span>)<span class="question-mark">?</span>.<span class="ident">clone</span>(),
 		);
@@ -1412,23 +1331,11 @@
 		}
 
 		<span class="kw">let</span> <span class="ident">id</span>: <span class="ident">Path</span> <span class="op">=</span> <span class="macro">parse_quote!</span>( #<span class="ident">path</span> <span class="ident">ID</span> );
-		<span class="kw">let</span> <span class="ident">version</span>: <span class="ident">Path</span> <span class="op">=</span> <span class="macro">parse_quote!</span>( #<span class="ident">path</span> <span class="ident">VERSION</span> );
+		<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="macro">quote!</span>( #<span class="ident">path</span> <span class="ident">VERSION</span> );
 		<span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">filter_cfg_attrs</span>(<span class="kw-2">&amp;</span><span class="ident">impl_</span>.<span class="ident">attrs</span>);
 
-		<span class="ident">result</span>.<span class="ident">push</span>(<span class="macro">quote!</span>(
-			#( #<span class="ident">attrs</span> )<span class="op">*</span>
-			(#<span class="ident">id</span>, #<span class="ident">version</span>)
-		));
-
-		<span class="ident">sections</span>.<span class="ident">push</span>(<span class="macro">quote!</span>(
-			#( #<span class="ident">attrs</span> )<span class="op">*</span>
-			<span class="kw">const</span> <span class="kw">_</span>: () <span class="op">=</span> {
-				<span class="comment">// All sections with the same name are going to be merged by concatenation.</span>
-				<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>))]</span>
-				<span class="attribute">#[<span class="ident">link_section</span> <span class="op">=</span> <span class="string">&quot;runtime_apis&quot;</span>]</span>
-				<span class="kw">static</span> <span class="ident">SECTION_CONTENTS</span>: [<span class="ident">u8</span>; <span class="number">12</span>] <span class="op">=</span> #<span class="ident">c::serialize_runtime_api_info</span>(#<span class="ident">id</span>, #<span class="ident">version</span>);
-			};
-		));
+		<span class="kw">let</span> <span class="ident">api_ver</span> <span class="op">=</span> <span class="ident">api_ver</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="macro">quote!</span>( #<span class="ident">a</span> )).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">version</span>);
+		<span class="ident">populate_runtime_api_versions</span>(<span class="kw-2">&amp;mut</span> <span class="ident">result</span>, <span class="kw-2">&amp;mut</span> <span class="ident">sections</span>, <span class="ident">attrs</span>, <span class="ident">id</span>, <span class="ident">api_ver</span>, <span class="kw-2">&amp;</span><span class="ident">c</span>)
 	}
 
 	<span class="prelude-val">Ok</span>(<span class="macro">quote!</span>(
@@ -1481,6 +1388,33 @@
 <span class="comment">// Filters all attributes except the cfg ones.</span>
 <span class="kw">fn</span> <span class="ident">filter_cfg_attrs</span>(<span class="ident">attrs</span>: <span class="kw-2">&amp;</span>[<span class="ident">Attribute</span>]) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Attribute</span><span class="op">&gt;</span> {
 	<span class="ident">attrs</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="string">&quot;cfg&quot;</span>)).<span class="ident">cloned</span>().<span class="ident">collect</span>()
+}
+
+<span class="comment">// Extracts the value of `API_VERSION_ATTRIBUTE` and handles errors.</span>
+<span class="comment">// Returns:</span>
+<span class="comment">// - Err if the version is malformed</span>
+<span class="comment">// - Some(u64) if the version is set</span>
+<span class="comment">// - None if the version is not set (this is valid).</span>
+<span class="kw">fn</span> <span class="ident">extract_api_version</span>(<span class="ident">attrs</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Attribute</span><span class="op">&gt;</span>, <span class="ident">span</span>: <span class="ident">Span</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="comment">// First fetch all `API_VERSION_ATTRIBUTE` values (should be only one)</span>
+	<span class="kw">let</span> <span class="ident">api_ver</span> <span class="op">=</span> <span class="ident">attrs</span>
+		.<span class="ident">iter</span>()
+		.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">path</span>.<span class="ident">is_ident</span>(<span class="ident">API_VERSION_ATTRIBUTE</span>))
+		.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+
+	<span class="kw">if</span> <span class="ident">api_ver</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1</span> {
+		<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new</span>(
+			<span class="ident">span</span>,
+			<span class="macro">format!</span>(
+				<span class="string">&quot;Found multiple #[{}] attributes for an API implementation. \
+				Each runtime API can have only one version.&quot;</span>,
+				<span class="ident">API_VERSION_ATTRIBUTE</span>
+			),
+		))
+	}
+
+	<span class="comment">// Parse the runtime version if there exists one.</span>
+	<span class="ident">api_ver</span>.<span class="ident">first</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">parse_runtime_api_version</span>(<span class="ident">v</span>)).<span class="ident">transpose</span>()
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

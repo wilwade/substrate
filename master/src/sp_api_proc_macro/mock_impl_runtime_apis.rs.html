@@ -437,6 +437,58 @@
 <span id="431">431</span>
 <span id="432">432</span>
 <span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -457,8 +509,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::utils</span>::{
 	<span class="ident">extract_block_type_from_trait_path</span>, <span class="ident">extract_impl_trait</span>,
 	<span class="ident">extract_parameter_names_types_and_borrows</span>, <span class="ident">generate_crate_access</span>, <span class="ident">generate_hidden_includes</span>,
-	<span class="ident">generate_method_runtime_api_impl_name</span>, <span class="ident">return_type_extract_type</span>, <span class="ident">AllowSelfRefInParameters</span>,
-	<span class="ident">RequireQualifiedTraitPath</span>,
+	<span class="ident">return_type_extract_type</span>, <span class="ident">AllowSelfRefInParameters</span>, <span class="ident">RequireQualifiedTraitPath</span>,
 };
 
 <span class="kw">use</span> <span class="ident">proc_macro2</span>::{<span class="ident">Span</span>, <span class="ident">TokenStream</span>};
@@ -470,7 +521,7 @@
 	<span class="ident">parse</span>::{<span class="ident">Error</span>, <span class="ident">Parse</span>, <span class="ident">ParseStream</span>, <span class="prelude-ty">Result</span>},
 	<span class="ident">parse_macro_input</span>, <span class="ident">parse_quote</span>,
 	<span class="ident">spanned::Spanned</span>,
-	<span class="ident">Attribute</span>, <span class="ident">Ident</span>, <span class="ident">ItemImpl</span>, <span class="ident">Pat</span>, <span class="ident">Type</span>, <span class="ident">TypePath</span>,
+	<span class="ident">Attribute</span>, <span class="ident">ItemImpl</span>, <span class="ident">Pat</span>, <span class="ident">Type</span>, <span class="ident">TypePath</span>,
 };
 
 <span class="doccomment">/// Unique identifier used to make the hidden includes unique for this macro.</span>
@@ -479,7 +530,7 @@
 <span class="doccomment">/// The `advanced` attribute.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// If this attribute is given to a function, the function gets access to the `BlockId` as first</span>
-<span class="doccomment">/// parameter and needs to return a `Result` with the appropiate error type.</span>
+<span class="doccomment">/// parameter and needs to return a `Result` with the appropriate error type.</span>
 <span class="kw">const</span> <span class="ident">ADVANCED_ATTRIBUTE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;advanced&quot;</span>;
 
 <span class="doccomment">/// The structure used for parsing the runtime api implementations.</span>
@@ -565,34 +616,63 @@
 		}
 
 		<span class="kw">impl</span> #<span class="ident">crate_::Core</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span> <span class="kw">for</span> #<span class="ident">self_ty</span> {
-			<span class="kw">fn</span> <span class="ident">Core_version_runtime_api_impl</span>(
+			<span class="kw">fn</span> <span class="ident">__runtime_api_internal_call_api_at</span>(
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				<span class="kw">_</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
 				<span class="kw">_</span>: #<span class="ident">crate_::ExecutionContext</span>,
-				<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
-				<span class="kw">_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span>#<span class="ident">crate_::RuntimeVersion</span><span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
-				<span class="macro">unimplemented!</span>(<span class="string">&quot;Not required for testing!&quot;</span>)
+				<span class="kw">_</span>: <span class="ident">std::vec::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(#<span class="ident">crate_::RuntimeVersion</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">std::vec::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="macro">unimplemented!</span>(<span class="string">&quot;`__runtime_api_internal_call_api_at` not implemented for runtime api mocks&quot;</span>)
 			}
 
-			<span class="kw">fn</span> <span class="ident">Core_execute_block_runtime_api_impl</span>(
+			<span class="kw">fn</span> <span class="ident">version</span>(
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				<span class="kw">_</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
-				<span class="kw">_</span>: #<span class="ident">crate_::ExecutionContext</span>,
-				<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
-				<span class="kw">_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
-				<span class="macro">unimplemented!</span>(<span class="string">&quot;Not required for testing!&quot;</span>)
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::RuntimeVersion</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="macro">unimplemented!</span>(<span class="string">&quot;`Core::version` not implemented for runtime api mocks&quot;</span>)
 			}
 
-			<span class="kw">fn</span> <span class="ident">Core_initialize_block_runtime_api_impl</span>(
+			<span class="kw">fn</span> <span class="ident">version_with_context</span>(
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				<span class="kw">_</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
 				<span class="kw">_</span>: #<span class="ident">crate_::ExecutionContext</span>,
-				<span class="kw">_</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="op">&lt;</span>#<span class="ident">block_type</span> <span class="kw">as</span> #<span class="ident">crate_::BlockT</span><span class="op">&gt;</span><span class="ident">::Header</span><span class="op">&gt;</span>,
-				<span class="kw">_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
-				<span class="macro">unimplemented!</span>(<span class="string">&quot;Not required for testing!&quot;</span>)
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::RuntimeVersion</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="macro">unimplemented!</span>(<span class="string">&quot;`Core::version` not implemented for runtime api mocks&quot;</span>)
+			}
+
+			<span class="kw">fn</span> <span class="ident">execute_block</span>(
+				<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
+				<span class="kw">_</span>: #<span class="ident">block_type</span>,
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="macro">unimplemented!</span>(<span class="string">&quot;`Core::execute_block` not implemented for runtime api mocks&quot;</span>)
+			}
+
+			<span class="kw">fn</span> <span class="ident">execute_block_with_context</span>(
+				<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
+				<span class="kw">_</span>: #<span class="ident">crate_::ExecutionContext</span>,
+				<span class="kw">_</span>: #<span class="ident">block_type</span>,
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="macro">unimplemented!</span>(<span class="string">&quot;`Core::execute_block` not implemented for runtime api mocks&quot;</span>)
+			}
+
+			<span class="kw">fn</span> <span class="ident">initialize_block</span>(
+				<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="op">&lt;</span>#<span class="ident">block_type</span> <span class="kw">as</span> #<span class="ident">crate_::BlockT</span><span class="op">&gt;</span><span class="ident">::Header</span>,
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="macro">unimplemented!</span>(<span class="string">&quot;`Core::initialize_block` not implemented for runtime api mocks&quot;</span>)
+			}
+
+			<span class="kw">fn</span> <span class="ident">initialize_block_with_context</span>(
+				<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
+				<span class="kw">_</span>: #<span class="ident">crate_::ExecutionContext</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="op">&lt;</span>#<span class="ident">block_type</span> <span class="kw">as</span> #<span class="ident">crate_::BlockT</span><span class="op">&gt;</span><span class="ident">::Header</span>,
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="macro">unimplemented!</span>(<span class="string">&quot;`Core::initialize_block` not implemented for runtime api mocks&quot;</span>)
 			}
 		}
 	))
@@ -655,14 +735,53 @@
 	}
 }
 
-<span class="doccomment">/// Auxialiry structure to fold a runtime api trait implementation into the expected format.</span>
+<span class="doccomment">/// Auxiliary structure to fold a runtime api trait implementation into the expected format.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This renames the methods, changes the method parameters and extracts the error type.</span>
 <span class="kw">struct</span> <span class="ident">FoldRuntimeApiImpl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The block type that is being used.</span>
 	<span class="ident">block_type</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TypePath</span>,
-	<span class="doccomment">/// The identifier of the trait being implemented.</span>
-	<span class="ident">impl_trait</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Ident</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">FoldRuntimeApiImpl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Process the given [`syn::ItemImpl`].</span>
+	<span class="kw">fn</span> <span class="ident">process</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">impl_item</span>: <span class="ident">syn::ItemImpl</span>) -&gt; <span class="ident">syn::ItemImpl</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">impl_item</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">fold_item_impl</span>(<span class="ident">impl_item</span>);
+
+		<span class="kw">let</span> <span class="ident">crate_</span> <span class="op">=</span> <span class="ident">generate_crate_access</span>(<span class="ident">HIDDEN_INCLUDES_ID</span>);
+
+		<span class="comment">// We also need to overwrite all the `_with_context` methods. To do this,</span>
+		<span class="comment">// we clone all methods and add them again with the new name plus one more argument.</span>
+		<span class="ident">impl_item</span>.<span class="ident">items</span>.<span class="ident">extend</span>(<span class="ident">impl_item</span>.<span class="ident">items</span>.<span class="ident">clone</span>().<span class="ident">into_iter</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="ident">syn::ImplItem::Method</span>(<span class="kw-2">mut</span> <span class="ident">m</span>) <span class="op">=</span> <span class="ident">i</span> {
+				<span class="ident">m</span>.<span class="ident">sig</span>.<span class="ident">ident</span> <span class="op">=</span> <span class="macro">quote::format_ident!</span>(<span class="string">&quot;{}_with_context&quot;</span>, <span class="ident">m</span>.<span class="ident">sig</span>.<span class="ident">ident</span>);
+				<span class="ident">m</span>.<span class="ident">sig</span>.<span class="ident">inputs</span>.<span class="ident">insert</span>(<span class="number">2</span>, <span class="macro">parse_quote!</span>( <span class="kw">_</span>: #<span class="ident">crate_::ExecutionContext</span> ));
+
+				<span class="prelude-val">Some</span>(<span class="ident">m</span>.<span class="ident">into</span>())
+			} <span class="kw">else</span> {
+				<span class="prelude-val">None</span>
+			}
+		}));
+
+		<span class="kw">let</span> <span class="ident">block_type</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">block_type</span>;
+
+		<span class="ident">impl_item</span>.<span class="ident">items</span>.<span class="ident">push</span>(<span class="macro">parse_quote!</span> {
+			<span class="kw">fn</span> <span class="ident">__runtime_api_internal_call_api_at</span>(
+				<span class="kw-2">&amp;</span><span class="self">self</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span>#<span class="ident">crate_::BlockId</span><span class="op">&lt;</span>#<span class="ident">block_type</span><span class="op">&gt;</span>,
+				<span class="kw">_</span>: #<span class="ident">crate_::ExecutionContext</span>,
+				<span class="kw">_</span>: <span class="ident">std::vec::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+				<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(#<span class="ident">crate_::RuntimeVersion</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
+			) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">std::vec::Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span> {
+				<span class="macro">unimplemented!</span>(
+					<span class="string">&quot;`__runtime_api_internal_call_api_at` not implemented for runtime api mocks. \
+					 Calling deprecated methods is not supported by mocked runtime api.&quot;</span>
+				)
+			}
+		});
+
+		<span class="ident">impl_item</span>
+	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Fold</span> <span class="kw">for</span> <span class="ident">FoldRuntimeApiImpl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
@@ -716,13 +835,8 @@
 			<span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">inputs</span> <span class="op">=</span> <span class="macro">parse_quote!</span> {
 				<span class="kw-2">&amp;</span><span class="self">self</span>,
 				#<span class="ident">at_param_name</span>: #<span class="ident">block_id_type</span>,
-				<span class="kw">_</span>: #<span class="ident">crate_::ExecutionContext</span>,
-				<span class="ident">___params___sp___api___</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>( #( #<span class="ident">param_types</span> ),<span class="op">*</span> )<span class="op">&gt;</span>,
-				<span class="kw">_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+				#( #<span class="ident">param_names</span>: #<span class="ident">param_types</span> ),<span class="op">*</span>
 			};
-
-			<span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">ident</span> <span class="op">=</span>
-				<span class="ident">generate_method_runtime_api_impl_name</span>(<span class="self">self</span>.<span class="ident">impl_trait</span>, <span class="kw-2">&amp;</span><span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">ident</span>);
 
 			<span class="comment">// When using advanced, the user needs to declare the correct return type on its own,</span>
 			<span class="comment">// otherwise do it for the user.</span>
@@ -731,7 +845,7 @@
 
 				<span class="comment">// Generate the correct return type.</span>
 				<span class="ident">input</span>.<span class="ident">sig</span>.<span class="ident">output</span> <span class="op">=</span> <span class="macro">parse_quote!</span>(
-					-&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">crate_::NativeOrEncoded</span><span class="op">&lt;</span>#<span class="ident">ret_type</span><span class="op">&gt;</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span>
+					-&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>#<span class="ident">ret_type</span>, #<span class="ident">crate_::ApiError</span><span class="op">&gt;</span>
 				);
 			}
 
@@ -743,7 +857,7 @@
 				<span class="macro">quote!</span> {
 					<span class="kw">let</span> <span class="ident">__fn_implementation__</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> #<span class="ident">orig_block</span>;
 
-					<span class="prelude-val">Ok</span>(#<span class="ident">crate_::NativeOrEncoded::Native</span>(<span class="ident">__fn_implementation__</span>()))
+					<span class="prelude-val">Ok</span>(<span class="ident">__fn_implementation__</span>())
 				}
 			};
 
@@ -752,9 +866,6 @@
 				{
 					<span class="comment">// Get the error to the user (if we have one).</span>
 					#( #<span class="ident">errors</span> )<span class="op">*</span>
-
-					<span class="kw">let</span> (#( #<span class="ident">param_names</span> ),<span class="kw-2">*</span>) <span class="op">=</span> <span class="ident">___params___sp___api___</span>
-						.<span class="ident">expect</span>(<span class="string">&quot;Mocked runtime apis don&#39;t support calling deprecated api versions&quot;</span>);
 
 					#<span class="ident">construct_return_value</span>
 				}
@@ -790,11 +901,6 @@
 
 	<span class="kw">for</span> <span class="ident">impl_</span> <span class="kw">in</span> <span class="ident">impls</span> {
 		<span class="kw">let</span> <span class="ident">impl_trait_path</span> <span class="op">=</span> <span class="ident">extract_impl_trait</span>(<span class="ident">impl_</span>, <span class="ident">RequireQualifiedTraitPath::No</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">impl_trait</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">impl_trait_path</span>
-			.<span class="ident">segments</span>
-			.<span class="ident">last</span>()
-			.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::new</span>(<span class="ident">impl_trait_path</span>.<span class="ident">span</span>(), <span class="string">&quot;Empty trait path not possible!&quot;</span>))<span class="question-mark">?</span>
-			.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">block_type</span> <span class="op">=</span> <span class="ident">extract_block_type_from_trait_path</span>(<span class="ident">impl_trait_path</span>)<span class="question-mark">?</span>;
 
 		<span class="ident">self_ty</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">self_ty</span>.<span class="ident">take</span>() {
@@ -834,9 +940,7 @@
 			<span class="prelude-val">None</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">block_type</span>.<span class="ident">clone</span>()),
 		};
 
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visitor</span> <span class="op">=</span> <span class="ident">FoldRuntimeApiImpl</span> { <span class="ident">block_type</span>, <span class="ident">impl_trait</span>: <span class="kw-2">&amp;</span><span class="ident">impl_trait</span>.<span class="ident">ident</span> };
-
-		<span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">visitor</span>.<span class="ident">fold_item_impl</span>(<span class="ident">impl_</span>.<span class="ident">clone</span>()));
+		<span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">FoldRuntimeApiImpl</span> { <span class="ident">block_type</span> }.<span class="ident">process</span>(<span class="ident">impl_</span>.<span class="ident">clone</span>()));
 	}
 
 	<span class="prelude-val">Ok</span>(<span class="ident">GeneratedRuntimeApiImpls</span> {
