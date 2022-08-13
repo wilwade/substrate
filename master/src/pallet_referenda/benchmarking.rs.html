@@ -552,7 +552,7 @@
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Pallet</span> <span class="kw">as</span> <span class="ident">Referenda</span>;
 <span class="kw">use</span> <span class="ident">assert_matches::assert_matches</span>;
-<span class="kw">use</span> <span class="ident">frame_benchmarking</span>::{<span class="ident">account</span>, <span class="ident">benchmarks</span>, <span class="ident">whitelist_account</span>};
+<span class="kw">use</span> <span class="ident">frame_benchmarking</span>::{<span class="ident">account</span>, <span class="ident">benchmarks_instance_pallet</span>, <span class="ident">whitelist_account</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">assert_ok</span>,
 	<span class="ident">traits</span>::{<span class="ident">Currency</span>, <span class="ident">EnsureOrigin</span>},
@@ -563,157 +563,157 @@
 <span class="kw">const</span> <span class="ident">SEED</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="kw">fn</span> <span class="ident">assert_last_event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">generic_event</span>: <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Event</span>) {
+<span class="kw">fn</span> <span class="ident">assert_last_event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">generic_event</span>: <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Event</span>) {
 	<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::assert_last_event</span>(<span class="ident">generic_event</span>.<span class="ident">into</span>());
 }
 
-<span class="kw">fn</span> <span class="ident">funded_account</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>, <span class="ident">index</span>: <span class="ident">u32</span>) -&gt; <span class="ident">T::AccountId</span> {
+<span class="kw">fn</span> <span class="ident">funded_account</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>, <span class="ident">index</span>: <span class="ident">u32</span>) -&gt; <span class="ident">T::AccountId</span> {
 	<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="ident">name</span>, <span class="ident">index</span>, <span class="ident">SEED</span>);
-	<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>());
+	<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::max_value</span>());
 	<span class="ident">caller</span>
 }
 
-<span class="kw">fn</span> <span class="ident">create_referendum</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; (<span class="ident">T::AccountId</span>, <span class="ident">ReferendumIndex</span>) {
-	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">funded_account</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="string">&quot;caller&quot;</span>, <span class="number">0</span>);
+<span class="kw">fn</span> <span class="ident">create_referendum</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>() -&gt; (<span class="ident">T::AccountId</span>, <span class="ident">ReferendumIndex</span>) {
+	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">funded_account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="string">&quot;caller&quot;</span>, <span class="number">0</span>);
 	<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
-	<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::submit</span>(
+	<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::submit</span>(
 		<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
 		<span class="ident">Box::new</span>(<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>()),
 		<span class="ident">T::Hashing::hash_of</span>(<span class="kw-2">&amp;</span><span class="number">0</span>),
 		<span class="ident">DispatchTime::After</span>(<span class="number">0u32</span>.<span class="ident">into</span>())
 	));
-	<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">ReferendumCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>() <span class="op">-</span> <span class="number">1</span>;
+	<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">ReferendumCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>() <span class="op">-</span> <span class="number">1</span>;
 	(<span class="ident">caller</span>, <span class="ident">index</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">place_deposit</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
-	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">funded_account</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="string">&quot;caller&quot;</span>, <span class="number">0</span>);
+<span class="kw">fn</span> <span class="ident">place_deposit</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
+	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">funded_account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="string">&quot;caller&quot;</span>, <span class="number">0</span>);
 	<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
-	<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::place_decision_deposit</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>).<span class="ident">into</span>(), <span class="ident">index</span>));
+	<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::place_decision_deposit</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>).<span class="ident">into</span>(), <span class="ident">index</span>));
 }
 
-<span class="kw">fn</span> <span class="ident">nudge</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
-	<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>(), <span class="ident">index</span>));
+<span class="kw">fn</span> <span class="ident">nudge</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
+	<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>(), <span class="ident">index</span>));
 }
 
-<span class="kw">fn</span> <span class="ident">fill_queue</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(
+<span class="kw">fn</span> <span class="ident">fill_queue</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 	<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>,
 	<span class="ident">spaces</span>: <span class="ident">u32</span>,
 	<span class="ident">pass_after</span>: <span class="ident">u32</span>,
 ) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ReferendumIndex</span><span class="op">&gt;</span> {
 	<span class="comment">// First, create enough other referendums to fill the track.</span>
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">others</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-	<span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>).<span class="ident">max_deciding</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+	<span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>).<span class="ident">max_deciding</span> {
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 		<span class="ident">others</span>.<span class="ident">push</span>(<span class="ident">index</span>);
 	}
 
 	<span class="comment">// We will also need enough referenda which are queued and passing, we want `MaxQueued - 1`</span>
 	<span class="comment">// in order to force the maximum amount of work to insert ours into the queue.</span>
 	<span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="ident">spaces</span>..<span class="ident">T::MaxQueued::get</span>() {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">make_passing_after</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="ident">Perbill::from_percent</span>(<span class="ident">pass_after</span>));
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing_after</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="ident">Perbill::from_percent</span>(<span class="ident">pass_after</span>));
 		<span class="ident">others</span>.<span class="ident">push</span>(<span class="ident">index</span>);
 	}
 
 	<span class="comment">// Skip to when they can start being decided.</span>
-	<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+	<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 
 	<span class="comment">// Manually nudge the other referenda first to ensure that they begin.</span>
-	<span class="ident">others</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">i</span><span class="op">|</span> <span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">i</span>));
+	<span class="ident">others</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">i</span><span class="op">|</span> <span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">i</span>));
 
 	<span class="ident">others</span>
 }
 
-<span class="kw">fn</span> <span class="ident">info</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+<span class="kw">fn</span> <span class="ident">info</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">TrackInfoOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 	<span class="ident">T::Tracks::info</span>(<span class="ident">status</span>.<span class="ident">track</span>).<span class="ident">expect</span>(<span class="string">&quot;Id value returned from T::Tracks&quot;</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">make_passing_after</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>, <span class="ident">period_portion</span>: <span class="ident">Perbill</span>) {
+<span class="kw">fn</span> <span class="ident">make_passing_after</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>, <span class="ident">period_portion</span>: <span class="ident">Perbill</span>) {
 	<span class="comment">// We add an extra 1 percent to handle any perbill rounding errors which may cause</span>
 	<span class="comment">// a proposal to not actually pass.</span>
-	<span class="kw">let</span> <span class="ident">support</span> <span class="op">=</span> <span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>)
+	<span class="kw">let</span> <span class="ident">support</span> <span class="op">=</span> <span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>)
 		.<span class="ident">min_support</span>
 		.<span class="ident">threshold</span>(<span class="ident">period_portion</span>)
 		.<span class="ident">saturating_add</span>(<span class="ident">Perbill::from_percent</span>(<span class="number">1</span>));
-	<span class="kw">let</span> <span class="ident">approval</span> <span class="op">=</span> <span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>)
+	<span class="kw">let</span> <span class="ident">approval</span> <span class="op">=</span> <span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>)
 		.<span class="ident">min_approval</span>
 		.<span class="ident">threshold</span>(<span class="ident">period_portion</span>)
 		.<span class="ident">saturating_add</span>(<span class="ident">Perbill::from_percent</span>(<span class="number">1</span>));
-	<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::access_poll</span>(<span class="ident">index</span>, <span class="op">|</span><span class="ident">status</span><span class="op">|</span> {
+	<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::access_poll</span>(<span class="ident">index</span>, <span class="op">|</span><span class="ident">status</span><span class="op">|</span> {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="ident">PollStatus::Ongoing</span>(<span class="ident">tally</span>, <span class="ident">class</span>) <span class="op">=</span> <span class="ident">status</span> {
 			<span class="kw-2">*</span><span class="ident">tally</span> <span class="op">=</span> <span class="ident">T::Tally::from_requirements</span>(<span class="ident">support</span>, <span class="ident">approval</span>, <span class="ident">class</span>);
 		}
 	});
 }
 
-<span class="kw">fn</span> <span class="ident">make_passing</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
-	<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::access_poll</span>(<span class="ident">index</span>, <span class="op">|</span><span class="ident">status</span><span class="op">|</span> {
+<span class="kw">fn</span> <span class="ident">make_passing</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
+	<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::access_poll</span>(<span class="ident">index</span>, <span class="op">|</span><span class="ident">status</span><span class="op">|</span> {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="ident">PollStatus::Ongoing</span>(<span class="ident">tally</span>, <span class="ident">class</span>) <span class="op">=</span> <span class="ident">status</span> {
 			<span class="kw-2">*</span><span class="ident">tally</span> <span class="op">=</span> <span class="ident">T::Tally::unanimity</span>(<span class="ident">class</span>);
 		}
 	});
 }
 
-<span class="kw">fn</span> <span class="ident">make_failing</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
-	<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::access_poll</span>(<span class="ident">index</span>, <span class="op">|</span><span class="ident">status</span><span class="op">|</span> {
+<span class="kw">fn</span> <span class="ident">make_failing</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
+	<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::access_poll</span>(<span class="ident">index</span>, <span class="op">|</span><span class="ident">status</span><span class="op">|</span> {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="ident">PollStatus::Ongoing</span>(<span class="ident">tally</span>, <span class="ident">class</span>) <span class="op">=</span> <span class="ident">status</span> {
 			<span class="kw-2">*</span><span class="ident">tally</span> <span class="op">=</span> <span class="ident">T::Tally::rejection</span>(<span class="ident">class</span>);
 		}
 	});
 }
 
-<span class="kw">fn</span> <span class="ident">skip_prepare_period</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
-	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
-	<span class="kw">let</span> <span class="ident">prepare_period_over</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">submitted</span> <span class="op">+</span> <span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>).<span class="ident">prepare_period</span>;
+<span class="kw">fn</span> <span class="ident">skip_prepare_period</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
+	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+	<span class="kw">let</span> <span class="ident">prepare_period_over</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">submitted</span> <span class="op">+</span> <span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>).<span class="ident">prepare_period</span>;
 	<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_block_number</span>(<span class="ident">prepare_period_over</span>);
 }
 
-<span class="kw">fn</span> <span class="ident">skip_decision_period</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
-	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
-	<span class="kw">let</span> <span class="ident">decision_period_over</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">deciding</span>.<span class="ident">unwrap</span>().<span class="ident">since</span> <span class="op">+</span> <span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>).<span class="ident">decision_period</span>;
+<span class="kw">fn</span> <span class="ident">skip_decision_period</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
+	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+	<span class="kw">let</span> <span class="ident">decision_period_over</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">deciding</span>.<span class="ident">unwrap</span>().<span class="ident">since</span> <span class="op">+</span> <span class="ident">info</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>).<span class="ident">decision_period</span>;
 	<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_block_number</span>(<span class="ident">decision_period_over</span>);
 }
 
-<span class="kw">fn</span> <span class="ident">skip_confirm_period</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
-	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+<span class="kw">fn</span> <span class="ident">skip_confirm_period</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
+	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 	<span class="kw">let</span> <span class="ident">confirm_period_over</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">deciding</span>.<span class="ident">unwrap</span>().<span class="ident">confirming</span>.<span class="ident">unwrap</span>();
 	<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_block_number</span>(<span class="ident">confirm_period_over</span>);
 }
 
-<span class="kw">fn</span> <span class="ident">skip_timeout_period</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
-	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+<span class="kw">fn</span> <span class="ident">skip_timeout_period</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) {
+	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 	<span class="kw">let</span> <span class="ident">timeout_period_over</span> <span class="op">=</span> <span class="ident">status</span>.<span class="ident">submitted</span> <span class="op">+</span> <span class="ident">T::UndecidingTimeout::get</span>();
 	<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_block_number</span>(<span class="ident">timeout_period_over</span>);
 }
 
-<span class="kw">fn</span> <span class="ident">alarm_time</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="ident">T::BlockNumber</span> {
-	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+<span class="kw">fn</span> <span class="ident">alarm_time</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="ident">T::BlockNumber</span> {
+	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 	<span class="ident">status</span>.<span class="ident">alarm</span>.<span class="ident">unwrap</span>().<span class="number">0</span>
 }
 
-<span class="kw">fn</span> <span class="ident">is_confirming</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="ident">bool</span> {
-	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+<span class="kw">fn</span> <span class="ident">is_confirming</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="ident">bool</span> {
+	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 	<span class="macro">matches!</span>(
 		<span class="ident">status</span>,
 		<span class="ident">ReferendumStatus</span> { <span class="ident">deciding</span>: <span class="prelude-val">Some</span>(<span class="ident">DecidingStatus</span> { <span class="ident">confirming</span>: <span class="prelude-val">Some</span>(<span class="kw">_</span>), .. }), .. }
 	)
 }
 
-<span class="kw">fn</span> <span class="ident">is_not_confirming</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="ident">bool</span> {
-	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+<span class="kw">fn</span> <span class="ident">is_not_confirming</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ReferendumIndex</span>) -&gt; <span class="ident">bool</span> {
+	<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 	<span class="macro">matches!</span>(
 		<span class="ident">status</span>,
 		<span class="ident">ReferendumStatus</span> { <span class="ident">deciding</span>: <span class="prelude-val">Some</span>(<span class="ident">DecidingStatus</span> { <span class="ident">confirming</span>: <span class="prelude-val">None</span>, .. }), .. }
 	)
 }
 
-<span class="macro">benchmarks!</span> {
+<span class="macro">benchmarks_instance_pallet!</span> {
 	<span class="ident">submit</span> {
-		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">funded_account</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="string">&quot;caller&quot;</span>, <span class="number">0</span>);
+		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">funded_account</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="string">&quot;caller&quot;</span>, <span class="number">0</span>);
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
 	}: <span class="kw">_</span>(
 		<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>),
@@ -721,105 +721,105 @@
 		<span class="ident">T::Hashing::hash_of</span>(<span class="kw-2">&amp;</span><span class="number">0</span>),
 		<span class="ident">DispatchTime::After</span>(<span class="number">0u32</span>.<span class="ident">into</span>())
 	) <span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">ReferendumCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">checked_sub</span>(<span class="number">1</span>).<span class="ident">unwrap</span>();
-		<span class="macro">assert_matches!</span>(<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Ongoing</span>(<span class="kw">_</span>)));
+		<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">ReferendumCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">checked_sub</span>(<span class="number">1</span>).<span class="ident">unwrap</span>();
+		<span class="macro">assert_matches!</span>(<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Ongoing</span>(<span class="kw">_</span>)));
 	}
 
 	<span class="ident">place_decision_deposit_preparing</span> {
-		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
 	}: <span class="ident">place_decision_deposit</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">decision_deposit</span>.<span class="ident">is_some</span>());
+		<span class="macro">assert!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">decision_deposit</span>.<span class="ident">is_some</span>());
 	}
 
 	<span class="ident">place_decision_deposit_queued</span> {
-		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">1</span>, <span class="number">90</span>);
+		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">1</span>, <span class="number">90</span>);
 	}: <span class="ident">place_decision_deposit</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>)[<span class="number">0</span>], (<span class="ident">index</span>, <span class="number">0u32</span>.<span class="ident">into</span>()));
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>)[<span class="number">0</span>], (<span class="ident">index</span>, <span class="number">0u32</span>.<span class="ident">into</span>()));
 	}
 
 	<span class="ident">place_decision_deposit_not_queued</span> {
-		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">90</span>);
+		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">90</span>);
 	}: <span class="ident">place_decision_deposit</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
-		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">index</span>));
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
+		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">index</span>));
 	}
 
 	<span class="ident">place_decision_deposit_passing</span> {
-		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">place_decision_deposit</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
 	}
 
 	<span class="ident">place_decision_deposit_failing</span> {
-		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">place_decision_deposit</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="ident">is_not_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert!</span>(<span class="ident">is_not_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
 	}
 
 	<span class="ident">refund_decision_deposit</span> {
-		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::cancel</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">index</span>));
+		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::cancel</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">index</span>));
 	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_matches!</span>(<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Cancelled</span>(<span class="kw">_</span>, <span class="kw">_</span>, <span class="prelude-val">None</span>)));
+		<span class="macro">assert_matches!</span>(<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Cancelled</span>(<span class="kw">_</span>, <span class="kw">_</span>, <span class="prelude-val">None</span>)));
 	}
 
 	<span class="ident">cancel</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">T::Origin</span><span class="op">&gt;</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_matches!</span>(<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Cancelled</span>(..)));
+		<span class="macro">assert_matches!</span>(<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Cancelled</span>(..)));
 	}
 
 	<span class="ident">kill</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">T::Origin</span><span class="op">&gt;</span>(<span class="ident">T::KillOrigin::successful_origin</span>(), <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_matches!</span>(<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Killed</span>(..)));
+		<span class="macro">assert_matches!</span>(<span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">ReferendumInfo::Killed</span>(..)));
 	}
 
 	<span class="ident">one_fewer_deciding_queue_empty</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::cancel</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">index</span>));
-		<span class="macro">assert_eq!</span>(<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>), <span class="number">1</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::cancel</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">index</span>));
+		<span class="macro">assert_eq!</span>(<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>), <span class="number">1</span>);
 	}: <span class="ident">one_fewer_deciding</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">track</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_eq!</span>(<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>), <span class="number">0</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>), <span class="number">0</span>);
 	}
 
 	<span class="ident">one_fewer_deciding_failing</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
 		<span class="comment">// No spaces free in the queue.</span>
-		<span class="kw">let</span> <span class="ident">queued</span> <span class="op">=</span> <span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">90</span>);
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::cancel</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">queued</span>[<span class="number">0</span>]));
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
-		<span class="kw">let</span> <span class="ident">deciding_count</span> <span class="op">=</span> <span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>);
+		<span class="kw">let</span> <span class="ident">queued</span> <span class="op">=</span> <span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">90</span>);
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::cancel</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">queued</span>[<span class="number">0</span>]));
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
+		<span class="kw">let</span> <span class="ident">deciding_count</span> <span class="op">=</span> <span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>);
 	}: <span class="ident">one_fewer_deciding</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">track</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_eq!</span>(<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>), <span class="ident">deciding_count</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>() <span class="op">-</span> <span class="number">1</span>);
-		<span class="macro">assert!</span>(<span class="ident">queued</span>.<span class="ident">into_iter</span>().<span class="ident">skip</span>(<span class="number">1</span>).<span class="ident">all</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">i</span>)
+		<span class="macro">assert_eq!</span>(<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>), <span class="ident">deciding_count</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>() <span class="op">-</span> <span class="number">1</span>);
+		<span class="macro">assert!</span>(<span class="ident">queued</span>.<span class="ident">into_iter</span>().<span class="ident">skip</span>(<span class="number">1</span>).<span class="ident">all</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">i</span>)
 			.<span class="ident">unwrap</span>()
 			.<span class="ident">deciding</span>
 			.<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">d</span>.<span class="ident">confirming</span>.<span class="ident">is_none</span>())
@@ -827,18 +827,18 @@
 	}
 
 	<span class="ident">one_fewer_deciding_passing</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
 		<span class="comment">// No spaces free in the queue.</span>
-		<span class="kw">let</span> <span class="ident">queued</span> <span class="op">=</span> <span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">0</span>);
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::cancel</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">queued</span>[<span class="number">0</span>]));
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
-		<span class="kw">let</span> <span class="ident">deciding_count</span> <span class="op">=</span> <span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>);
+		<span class="kw">let</span> <span class="ident">queued</span> <span class="op">=</span> <span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">0</span>);
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert_ok!</span>(<span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::cancel</span>(<span class="ident">T::CancelOrigin::successful_origin</span>(), <span class="ident">queued</span>[<span class="number">0</span>]));
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
+		<span class="kw">let</span> <span class="ident">deciding_count</span> <span class="op">=</span> <span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>);
 	}: <span class="ident">one_fewer_deciding</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">track</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_eq!</span>(<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>), <span class="ident">deciding_count</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>() <span class="op">-</span> <span class="number">1</span>);
-		<span class="macro">assert!</span>(<span class="ident">queued</span>.<span class="ident">into_iter</span>().<span class="ident">skip</span>(<span class="number">1</span>).<span class="ident">all</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">i</span>)
+		<span class="macro">assert_eq!</span>(<span class="ident">DecidingCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>), <span class="ident">deciding_count</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>() <span class="op">-</span> <span class="number">1</span>);
+		<span class="macro">assert!</span>(<span class="ident">queued</span>.<span class="ident">into_iter</span>().<span class="ident">skip</span>(<span class="number">1</span>).<span class="ident">all</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">i</span>)
 			.<span class="ident">unwrap</span>()
 			.<span class="ident">deciding</span>
 			.<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">d</span>.<span class="ident">confirming</span>.<span class="ident">is_some</span>())
@@ -847,43 +847,43 @@
 
 	<span class="ident">nudge_referendum_requeued_insertion</span> {
 		<span class="comment">// First create our referendum and place the deposit. It will be failing.</span>
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">90</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">90</span>);
 
 		<span class="comment">// Now nudge ours, with the track now full and the queue full of referenda with votes,</span>
 		<span class="comment">// ours will not be in the queue.</span>
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">index</span>));
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">index</span>));
 
 		<span class="comment">// Now alter the voting, so that ours goes into pole-position and shifts others down.</span>
-		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>);
+		<span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">t</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
 		<span class="macro">assert_eq!</span>(<span class="ident">t</span>[<span class="ident">t</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>].<span class="number">0</span>, <span class="ident">index</span>);
 	}
 
 	<span class="ident">nudge_referendum_requeued_slide</span> {
 		<span class="comment">// First create our referendum and place the deposit. It will be failing.</span>
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">1</span>, <span class="number">90</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">1</span>, <span class="number">90</span>);
 
 		<span class="comment">// Now nudge ours, with the track now full, ours will be queued, but with no votes, it</span>
 		<span class="comment">// will have the worst position.</span>
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>)[<span class="number">0</span>], (<span class="ident">index</span>, <span class="number">0u32</span>.<span class="ident">into</span>()));
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>)[<span class="number">0</span>], (<span class="ident">index</span>, <span class="number">0u32</span>.<span class="ident">into</span>()));
 
 		<span class="comment">// Now alter the voting, so that ours leap-frogs all into the best position.</span>
-		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>);
+		<span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">t</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
 		<span class="macro">assert_eq!</span>(<span class="ident">t</span>[<span class="ident">t</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>].<span class="number">0</span>, <span class="ident">index</span>);
 	}
@@ -894,159 +894,159 @@
 		<span class="comment">// insertion at the beginning.</span>
 
 		<span class="comment">// First create our referendum and place the deposit. It will be failing.</span>
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">1</span>, <span class="number">0</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">1</span>, <span class="number">0</span>);
 
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>() <span class="op">-</span> <span class="number">1</span>);
-		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span> <span class="op">&gt;</span> <span class="number">0u32</span>.<span class="ident">into</span>()));
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>() <span class="op">-</span> <span class="number">1</span>);
+		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span> <span class="op">&gt;</span> <span class="number">0u32</span>.<span class="ident">into</span>()));
 
 		<span class="comment">// Then nudge ours, with the track now full, ours will be queued.</span>
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>)[<span class="number">0</span>], (<span class="ident">index</span>, <span class="number">0u32</span>.<span class="ident">into</span>()));
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>)[<span class="number">0</span>], (<span class="ident">index</span>, <span class="number">0u32</span>.<span class="ident">into</span>()));
 	}
 
 	<span class="ident">nudge_referendum_not_queued</span> {
 		<span class="comment">// First create our referendum and place the deposit. It will be failing.</span>
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">0</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">fill_queue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="number">0</span>, <span class="number">0</span>);
 
-		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
-		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span> <span class="op">&gt;</span> <span class="number">0u32</span>.<span class="ident">into</span>()));
+		<span class="kw">let</span> <span class="ident">track</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>().<span class="ident">track</span>;
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
+		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span> <span class="op">&gt;</span> <span class="number">0u32</span>.<span class="ident">into</span>()));
 
 		<span class="comment">// Then nudge ours, with the track now full, ours will be queued.</span>
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
-		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">index</span>));
+		<span class="macro">assert_eq!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">T::MaxQueued::get</span>());
+		<span class="macro">assert!</span>(<span class="ident">TrackQueue</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">track</span>).<span class="ident">into_iter</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">index</span>));
 	}
 
 	<span class="ident">nudge_referendum_no_deposit</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_matches!</span>(<span class="ident">status</span>, <span class="ident">ReferendumStatus</span> { <span class="ident">deciding</span>: <span class="prelude-val">None</span>, .. });
 	}
 
 	<span class="ident">nudge_referendum_preparing</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">Referenda</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::ensure_ongoing</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_matches!</span>(<span class="ident">status</span>, <span class="ident">ReferendumStatus</span> { <span class="ident">deciding</span>: <span class="prelude-val">None</span>, .. });
 	}
 
 	<span class="ident">nudge_referendum_timed_out</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">skip_timeout_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">skip_timeout_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_matches!</span>(<span class="ident">info</span>, <span class="ident">ReferendumInfo::TimedOut</span>(..));
 	}
 
 	<span class="ident">nudge_referendum_begin_deciding_failing</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="ident">is_not_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert!</span>(<span class="ident">is_not_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
 	}
 
 	<span class="ident">nudge_referendum_begin_deciding_passing</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
 	}
 
 	<span class="ident">nudge_referendum_begin_confirming</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
-		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
 	}
 
 	<span class="ident">nudge_referendum_end_confirming</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
-		<span class="ident">make_failing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="ident">make_failing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
 	}
 
 	<span class="ident">nudge_referendum_continue_not_confirming</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
-		<span class="kw">let</span> <span class="ident">old_alarm</span> <span class="op">=</span> <span class="ident">alarm_time</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">make_passing_after</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="ident">Perbill::from_percent</span>(<span class="number">50</span>));
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="kw">let</span> <span class="ident">old_alarm</span> <span class="op">=</span> <span class="ident">alarm_time</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing_after</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>, <span class="ident">Perbill::from_percent</span>(<span class="number">50</span>));
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert_ne!</span>(<span class="ident">old_alarm</span>, <span class="ident">alarm_time</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert_ne!</span>(<span class="ident">old_alarm</span>, <span class="ident">alarm_time</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
 	}
 
 	<span class="ident">nudge_referendum_continue_confirming</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
-		<span class="kw">let</span> <span class="ident">old_alarm</span> <span class="op">=</span> <span class="ident">alarm_time</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="kw">let</span> <span class="ident">old_alarm</span> <span class="op">=</span> <span class="ident">alarm_time</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>));
+		<span class="macro">assert!</span>(<span class="ident">is_confirming</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>));
 	}
 
 	<span class="ident">nudge_referendum_approved</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_confirm_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_passing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_confirm_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_matches!</span>(<span class="ident">info</span>, <span class="ident">ReferendumInfo::Approved</span>(..));
 	}
 
 	<span class="ident">nudge_referendum_rejected</span> {
-		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">make_failing</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
-		<span class="ident">skip_decision_period</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="kw">let</span> (<span class="ident">_caller</span>, <span class="ident">index</span>) <span class="op">=</span> <span class="ident">create_referendum</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>();
+		<span class="ident">place_deposit</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_prepare_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">make_failing</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">nudge</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
+		<span class="ident">skip_decision_period</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">index</span>);
 	}: <span class="ident">nudge_referendum</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">index</span>)
 	<span class="ident">verify</span> {
-		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
+		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">ReferendumInfoFor</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_matches!</span>(<span class="ident">info</span>, <span class="ident">ReferendumInfo::Rejected</span>(..));
 	}
 

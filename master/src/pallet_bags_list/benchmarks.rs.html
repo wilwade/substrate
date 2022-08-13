@@ -219,7 +219,7 @@
 <span class="kw">use</span> <span class="ident">frame_system::RawOrigin</span> <span class="kw">as</span> <span class="ident">SystemOrigin</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::One</span>;
 
-<span class="macro">frame_benchmarking::benchmarks!</span> {
+<span class="macro">frame_benchmarking::benchmarks_instance_pallet!</span> {
 	<span class="ident">rebag_non_terminal</span> {
 		<span class="comment">// An expensive case for rebag-ing (rebag a non-terminal node):</span>
 		<span class="comment">//</span>
@@ -291,7 +291,7 @@
 
 		<span class="comment">// clear any pre-existing storage.</span>
 		<span class="comment">// NOTE: safe to call outside block production</span>
-		<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::unsafe_clear</span>();
+		<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::unsafe_clear</span>();
 
 		<span class="comment">// define our origin and destination thresholds.</span>
 		<span class="kw">let</span> <span class="ident">origin_bag_thresh</span> <span class="op">=</span> <span class="ident">T::BagThresholds::get</span>()[<span class="number">0</span>];
@@ -340,7 +340,7 @@
 
 		<span class="comment">// clear any pre-existing storage.</span>
 		<span class="comment">// NOTE: safe to call outside block production</span>
-		<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::unsafe_clear</span>();
+		<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::unsafe_clear</span>();
 
 		<span class="kw">let</span> <span class="ident">bag_thresh</span> <span class="op">=</span> <span class="ident">T::BagThresholds::get</span>()[<span class="number">0</span>];
 
