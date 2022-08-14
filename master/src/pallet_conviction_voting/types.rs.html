@@ -247,6 +247,9 @@
 <span id="241">241</span>
 <span id="242">242</span>
 <span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -342,6 +345,9 @@
 		<span class="kw">let</span> <span class="ident">ayes</span> <span class="op">=</span> <span class="ident">approval</span>.<span class="ident">mul_ceil</span>(<span class="ident">support</span>);
 		<span class="self">Self</span> { <span class="ident">ayes</span>, <span class="ident">nays</span>: <span class="ident">support</span> <span class="op">-</span> <span class="ident">ayes</span>, <span class="ident">support</span>, <span class="ident">dummy</span>: <span class="ident">PhantomData</span> }
 	}
+
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">setup</span>(<span class="kw">_</span>: <span class="ident">Class</span>, <span class="kw">_</span>: <span class="ident">Perbill</span>) {}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span>

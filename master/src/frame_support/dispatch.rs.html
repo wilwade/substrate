@@ -5102,7 +5102,7 @@
 			<span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mod_type</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">trait_instance</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">instance</span>)<span class="question-mark">?</span><span class="op">&gt;</span> <span class="kw">where</span> $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">other_where_bounds</span> )<span class="op">*</span>
 		{
 			<span class="kw">fn</span> <span class="ident">count</span>() -&gt; <span class="ident">usize</span> { <span class="number">1</span> }
-			<span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="ident">acc</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::sp_std::vec::Vec</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::PalletInfoData</span><span class="op">&gt;</span>) {
+			<span class="kw">fn</span> <span class="ident">infos</span>() -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::sp_std::vec::Vec</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::PalletInfoData</span><span class="op">&gt;</span> {
 				<span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::PalletInfoAccess</span>;
 				<span class="kw">let</span> <span class="ident">item</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::traits::PalletInfoData</span> {
 					<span class="ident">index</span>: <span class="ident"><span class="self">Self</span>::index</span>(),
@@ -5110,7 +5110,7 @@
 					<span class="ident">module_name</span>: <span class="ident"><span class="self">Self</span>::module_name</span>(),
 					<span class="ident">crate_version</span>: <span class="ident"><span class="self">Self</span>::crate_version</span>(),
 				};
-				<span class="ident">acc</span>.<span class="ident">push</span>(<span class="ident">item</span>);
+				<span class="macro">vec!</span>[<span class="ident">item</span>]
 			}
 		}
 

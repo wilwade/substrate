@@ -180,6 +180,19 @@
 <span id="174">174</span>
 <span id="175">175</span>
 <span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -288,6 +301,19 @@
 	<span class="kw">fn</span> <span class="ident">rejection</span>(<span class="ident">class</span>: <span class="ident">Class</span>) -&gt; <span class="self">Self</span>;
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">from_requirements</span>(<span class="ident">support</span>: <span class="ident">Perbill</span>, <span class="ident">approval</span>: <span class="ident">Perbill</span>, <span class="ident">class</span>: <span class="ident">Class</span>) -&gt; <span class="self">Self</span>;
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+	<span class="doccomment">/// A function that should be called before any use of the `runtime-benchmarks` gated functions</span>
+	<span class="doccomment">/// of the `VoteTally` trait.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Should be used to set up any needed state in a Pallet which implements `VoteTally` so that</span>
+	<span class="doccomment">/// benchmarks that execute will complete successfully. `class` can be used to set up a</span>
+	<span class="doccomment">/// particular class of voters, and `granularity` is used to determine the weight of one vote</span>
+	<span class="doccomment">/// relative to total unanimity.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// For example, in the case where there are a number of unique voters, and each voter has equal</span>
+	<span class="doccomment">/// voting weight, a granularity of `Perbill::from_rational(1, 1000)` should create `1_000`</span>
+	<span class="doccomment">/// users.</span>
+	<span class="kw">fn</span> <span class="ident">setup</span>(<span class="ident">class</span>: <span class="ident">Class</span>, <span class="ident">granularity</span>: <span class="ident">Perbill</span>);
 }
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PollStatus</span><span class="op">&lt;</span><span class="ident">Tally</span>, <span class="ident">Moment</span>, <span class="ident">Class</span><span class="op">&gt;</span> {
 	<span class="prelude-val">None</span>,

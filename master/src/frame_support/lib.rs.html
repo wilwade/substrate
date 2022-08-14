@@ -2518,6 +2518,16 @@
 <span id="2512">2512</span>
 <span id="2513">2513</span>
 <span id="2514">2514</span>
+<span id="2515">2515</span>
+<span id="2516">2516</span>
+<span id="2517">2517</span>
+<span id="2518">2518</span>
+<span id="2519">2519</span>
+<span id="2520">2520</span>
+<span id="2521">2521</span>
+<span id="2522">2522</span>
+<span id="2523">2523</span>
+<span id="2524">2524</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2536,6 +2546,16 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="doccomment">//! Support code for the runtime.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## Note on Tuple Traits</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Many of the traits defined in [`traits`] have auto-implementations on tuples as well. Usually,</span>
+<span class="doccomment">//! the tuple is a function of number of pallets in the runtime. By default, the traits are</span>
+<span class="doccomment">//! implemented for tuples of up to 64 items.</span>
+<span class="comment">//</span>
+<span class="comment">// If you have more pallets in your runtime, or for any other reason need more, enabled `tuples-96`</span>
+<span class="comment">// or the `tuples-128` complication flag. Note that these features *will increase* the compilation</span>
+<span class="comment">// of this crate.</span>
 
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 

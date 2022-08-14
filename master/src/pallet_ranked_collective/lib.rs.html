@@ -634,6 +634,87 @@
 <span id="628">628</span>
 <span id="629">629</span>
 <span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+<span id="698">698</span>
+<span id="699">699</span>
+<span id="700">700</span>
+<span id="701">701</span>
+<span id="702">702</span>
+<span id="703">703</span>
+<span id="704">704</span>
+<span id="705">705</span>
+<span id="706">706</span>
+<span id="707">707</span>
+<span id="708">708</span>
+<span id="709">709</span>
+<span id="710">710</span>
+<span id="711">711</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -721,16 +802,16 @@
 	<span class="ident">Decode</span>,
 	<span class="ident">MaxEncodedLen</span>,
 )]</span>
-<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">M</span>))]</span>
+<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">T</span>, <span class="ident">I</span>, <span class="ident">M</span>))]</span>
 <span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>())]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Tally</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">GetMaxVoters</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Tally</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>, <span class="ident">M</span>: <span class="ident">GetMaxVoters</span><span class="op">&gt;</span> {
 	<span class="ident">bare_ayes</span>: <span class="ident">MemberIndex</span>,
 	<span class="ident">ayes</span>: <span class="ident">Votes</span>,
 	<span class="ident">nays</span>: <span class="ident">Votes</span>,
-	<span class="ident">dummy</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
+	<span class="ident">dummy</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span>(<span class="ident">T</span>, <span class="ident">I</span>, <span class="ident">M</span>)<span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">GetMaxVoters</span><span class="op">&gt;</span> <span class="ident">Tally</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span>, <span class="ident">M</span>: <span class="ident">GetMaxVoters</span><span class="op">&gt;</span> <span class="ident">Tally</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>, <span class="ident">M</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_parts</span>(<span class="ident">bare_ayes</span>: <span class="ident">MemberIndex</span>, <span class="ident">ayes</span>: <span class="ident">Votes</span>, <span class="ident">nays</span>: <span class="ident">Votes</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident">Tally</span> { <span class="ident">bare_ayes</span>, <span class="ident">ayes</span>, <span class="ident">nays</span>, <span class="ident">dummy</span>: <span class="ident">PhantomData</span> }
 	}
@@ -743,10 +824,10 @@
 
 <span class="comment">// All functions of VoteTally now include the class as a param.</span>
 
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TallyOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Tally</span><span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TallyOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Tally</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>, <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PollIndexOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Polls</span> <span class="kw">as</span> <span class="ident">Polling</span><span class="op">&lt;</span><span class="ident">TallyOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Index</span>;
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">GetMaxVoters</span><span class="op">&gt;</span> <span class="ident">VoteTally</span><span class="op">&lt;</span><span class="ident">Votes</span>, <span class="ident">Rank</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Tally</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span>, <span class="ident">M</span>: <span class="ident">GetMaxVoters</span><span class="op">&gt;</span> <span class="ident">VoteTally</span><span class="op">&lt;</span><span class="ident">Votes</span>, <span class="ident">Rank</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Tally</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span>, <span class="ident">M</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">new</span>(<span class="kw">_</span>: <span class="ident">Rank</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> { <span class="ident">bare_ayes</span>: <span class="number">0</span>, <span class="ident">ayes</span>: <span class="number">0</span>, <span class="ident">nays</span>: <span class="number">0</span>, <span class="ident">dummy</span>: <span class="ident">PhantomData</span> }
 	}
@@ -778,6 +859,20 @@
 		<span class="kw">let</span> <span class="ident">ayes</span> <span class="op">=</span> <span class="ident">support</span> <span class="op">*</span> <span class="ident">c</span>;
 		<span class="kw">let</span> <span class="ident">nays</span> <span class="op">=</span> ((<span class="ident">ayes</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="op">*</span> <span class="number">1_000_000_000u64</span> <span class="op">/</span> <span class="ident">approval</span>.<span class="ident">deconstruct</span>() <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">u32</span> <span class="op">-</span> <span class="ident">ayes</span>;
 		<span class="self">Self</span> { <span class="ident">bare_ayes</span>: <span class="ident">ayes</span>, <span class="ident">ayes</span>, <span class="ident">nays</span>, <span class="ident">dummy</span>: <span class="ident">PhantomData</span> }
+	}
+
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">setup</span>(<span class="ident">class</span>: <span class="ident">Rank</span>, <span class="ident">granularity</span>: <span class="ident">Perbill</span>) {
+		<span class="kw">if</span> <span class="ident">M::get_max_voters</span>(<span class="ident">class</span>) <span class="op">==</span> <span class="number">0</span> {
+			<span class="kw">let</span> <span class="ident">max_voters</span> <span class="op">=</span> <span class="ident">granularity</span>.<span class="ident">saturating_reciprocal_mul</span>(<span class="number">1u32</span>);
+			<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">max_voters</span> {
+				<span class="kw">let</span> <span class="ident">who</span>: <span class="ident">T::AccountId</span> <span class="op">=</span>
+					<span class="ident">frame_benchmarking::account</span>(<span class="string">&quot;ranked_collective_benchmarking&quot;</span>, <span class="ident">i</span>, <span class="number">0</span>);
+				<span class="ident"><span class="kw">crate</span>::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::do_add_member_to_rank</span>(<span class="ident">who</span>, <span class="ident">class</span>)
+					.<span class="ident">expect</span>(<span class="string">&quot;could not add members for benchmarks&quot;</span>);
+			}
+			<span class="macro">assert_eq!</span>(<span class="ident">M::get_max_voters</span>(<span class="ident">class</span>), <span class="ident">max_voters</span>);
+		}
 	}
 }
 
@@ -877,6 +972,19 @@
 		<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">IndexToId</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">MIN_RANK</span>, <span class="number">0</span>).<span class="ident">ok_or</span>(())<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">frame_system::RawOrigin::Signed</span>(<span class="ident">who</span>).<span class="ident">into</span>())
 	}
+
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">successful_origin</span>() -&gt; <span class="ident">T::Origin</span> {
+		<span class="kw">match</span> <span class="ident"><span class="self">Self</span>::try_successful_origin</span>() {
+			<span class="prelude-val">Ok</span>(<span class="ident">o</span>) =&gt; <span class="ident">o</span>,
+			<span class="prelude-val">Err</span>(()) =&gt; {
+				<span class="kw">let</span> <span class="ident">who</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">frame_benchmarking::whitelisted_caller</span>();
+				<span class="ident"><span class="kw">crate</span>::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::do_add_member_to_rank</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">MIN_RANK</span>)
+					.<span class="ident">expect</span>(<span class="string">&quot;failed to add ranked member&quot;</span>);
+				<span class="ident">frame_system::RawOrigin::Signed</span>(<span class="ident">who</span>).<span class="ident">into</span>()
+			},
+		}
+	}
 }
 
 <span class="doccomment">/// Guard to ensure that the given origin is a member of the collective. The account ID of the</span>
@@ -900,6 +1008,19 @@
 		<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">IndexToId</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">MIN_RANK</span>, <span class="number">0</span>).<span class="ident">ok_or</span>(())<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">frame_system::RawOrigin::Signed</span>(<span class="ident">who</span>).<span class="ident">into</span>())
 	}
+
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">successful_origin</span>() -&gt; <span class="ident">T::Origin</span> {
+		<span class="kw">match</span> <span class="ident"><span class="self">Self</span>::try_successful_origin</span>() {
+			<span class="prelude-val">Ok</span>(<span class="ident">o</span>) =&gt; <span class="ident">o</span>,
+			<span class="prelude-val">Err</span>(()) =&gt; {
+				<span class="kw">let</span> <span class="ident">who</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">frame_benchmarking::whitelisted_caller</span>();
+				<span class="ident"><span class="kw">crate</span>::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::do_add_member_to_rank</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">MIN_RANK</span>)
+					.<span class="ident">expect</span>(<span class="string">&quot;failed to add ranked member&quot;</span>);
+				<span class="ident">frame_system::RawOrigin::Signed</span>(<span class="ident">who</span>).<span class="ident">into</span>()
+			},
+		}
+	}
 }
 
 <span class="doccomment">/// Guard to ensure that the given origin is a member of the collective. The pair of including both</span>
@@ -922,6 +1043,19 @@
 	<span class="kw">fn</span> <span class="ident">try_successful_origin</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T::Origin</span>, ()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">IndexToId</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">MIN_RANK</span>, <span class="number">0</span>).<span class="ident">ok_or</span>(())<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="ident">frame_system::RawOrigin::Signed</span>(<span class="ident">who</span>).<span class="ident">into</span>())
+	}
+
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">successful_origin</span>() -&gt; <span class="ident">T::Origin</span> {
+		<span class="kw">match</span> <span class="ident"><span class="self">Self</span>::try_successful_origin</span>() {
+			<span class="prelude-val">Ok</span>(<span class="ident">o</span>) =&gt; <span class="ident">o</span>,
+			<span class="prelude-val">Err</span>(()) =&gt; {
+				<span class="kw">let</span> <span class="ident">who</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">frame_benchmarking::whitelisted_caller</span>();
+				<span class="ident"><span class="kw">crate</span>::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::do_add_member_to_rank</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">MIN_RANK</span>)
+					.<span class="ident">expect</span>(<span class="string">&quot;failed to add ranked member&quot;</span>);
+				<span class="ident">frame_system::RawOrigin::Signed</span>(<span class="ident">who</span>).<span class="ident">into</span>()
+			},
+		}
 	}
 }
 
@@ -1051,17 +1185,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::add_member</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_member</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">who</span>: <span class="ident">T::AccountId</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::PromoteOrigin::ensure_origin</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
-			<span class="macro">ensure!</span>(<span class="op">!</span><span class="ident">Members</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::AlreadyMember</span>);
-			<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="number">0</span>);
-			<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">checked_add</span>(<span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">Overflow</span>)<span class="question-mark">?</span>;
-
-			<span class="ident">Members</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">MemberRecord</span> { <span class="ident">rank</span>: <span class="number">0</span> });
-			<span class="ident">IdToIndex</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">index</span>);
-			<span class="ident">IndexToId</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="number">0</span>, <span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>);
-			<span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="number">0</span>, <span class="ident">count</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MemberAdded</span> { <span class="ident">who</span> });
-
-			<span class="prelude-val">Ok</span>(())
+			<span class="ident"><span class="self">Self</span>::do_add_member</span>(<span class="ident">who</span>)
 		}
 
 		<span class="doccomment">/// Increment the rank of an existing member by one.</span>
@@ -1073,17 +1197,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::promote_member</span>(<span class="number">0</span>))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">promote_member</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">who</span>: <span class="ident">T::AccountId</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">max_rank</span> <span class="op">=</span> <span class="ident">T::PromoteOrigin::ensure_origin</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="ident">record</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::ensure_member</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>)<span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="ident">rank</span> <span class="op">=</span> <span class="ident">record</span>.<span class="ident">rank</span>.<span class="ident">checked_add</span>(<span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">Overflow</span>)<span class="question-mark">?</span>;
-			<span class="macro">ensure!</span>(<span class="ident">max_rank</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">rank</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoPermission</span>);
-			<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">rank</span>);
-			<span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">rank</span>, <span class="ident">index</span>.<span class="ident">checked_add</span>(<span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">Overflow</span>)<span class="question-mark">?</span>);
-			<span class="ident">IdToIndex</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">rank</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">index</span>);
-			<span class="ident">IndexToId</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">rank</span>, <span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>);
-			<span class="ident">Members</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">MemberRecord</span> { <span class="ident">rank</span> });
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::RankChanged</span> { <span class="ident">who</span>, <span class="ident">rank</span> });
-
-			<span class="prelude-val">Ok</span>(())
+			<span class="ident"><span class="self">Self</span>::do_promote_member</span>(<span class="ident">who</span>, <span class="prelude-val">Some</span>(<span class="ident">max_rank</span>))
 		}
 
 		<span class="doccomment">/// Decrement the rank of an existing member by one. If the member is already at rank zero,</span>
@@ -1260,6 +1374,54 @@
 				<span class="ident">IndexToId</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">rank</span>, <span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">last</span>);
 			}
 			<span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::mutate</span>(<span class="ident">rank</span>, <span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="ident">r</span>.<span class="ident">saturating_dec</span>());
+			<span class="prelude-val">Ok</span>(())
+		}
+
+		<span class="doccomment">/// Adds a member into the ranked collective at level 0.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// No origin checks are executed.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_add_member</span>(<span class="ident">who</span>: <span class="ident">T::AccountId</span>) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="macro">ensure!</span>(<span class="op">!</span><span class="ident">Members</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::AlreadyMember</span>);
+			<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="number">0</span>);
+			<span class="kw">let</span> <span class="ident">count</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">checked_add</span>(<span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">Overflow</span>)<span class="question-mark">?</span>;
+
+			<span class="ident">Members</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">MemberRecord</span> { <span class="ident">rank</span>: <span class="number">0</span> });
+			<span class="ident">IdToIndex</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">index</span>);
+			<span class="ident">IndexToId</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="number">0</span>, <span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>);
+			<span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="number">0</span>, <span class="ident">count</span>);
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MemberAdded</span> { <span class="ident">who</span> });
+			<span class="prelude-val">Ok</span>(())
+		}
+
+		<span class="doccomment">/// Promotes a member in the ranked collective into the next role.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// A `maybe_max_rank` may be provided to check that the member does not get promoted beyond</span>
+		<span class="doccomment">/// a certain rank. Is `None` is provided, then the rank will be incremented without checks.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_promote_member</span>(
+			<span class="ident">who</span>: <span class="ident">T::AccountId</span>,
+			<span class="ident">maybe_max_rank</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rank</span><span class="op">&gt;</span>,
+		) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="kw">let</span> <span class="ident">record</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::ensure_member</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">rank</span> <span class="op">=</span> <span class="ident">record</span>.<span class="ident">rank</span>.<span class="ident">checked_add</span>(<span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">Overflow</span>)<span class="question-mark">?</span>;
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">max_rank</span>) <span class="op">=</span> <span class="ident">maybe_max_rank</span> {
+				<span class="macro">ensure!</span>(<span class="ident">max_rank</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">rank</span>, <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::NoPermission</span>);
+			}
+			<span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">rank</span>);
+			<span class="ident">MemberCount</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">rank</span>, <span class="ident">index</span>.<span class="ident">checked_add</span>(<span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">Overflow</span>)<span class="question-mark">?</span>);
+			<span class="ident">IdToIndex</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">rank</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">index</span>);
+			<span class="ident">IndexToId</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">rank</span>, <span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>);
+			<span class="ident">Members</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">MemberRecord</span> { <span class="ident">rank</span> });
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::RankChanged</span> { <span class="ident">who</span>, <span class="ident">rank</span> });
+			<span class="prelude-val">Ok</span>(())
+		}
+
+		<span class="doccomment">/// Add a member to the rank collective, and continue to promote them until a certain rank</span>
+		<span class="doccomment">/// is reached.</span>
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_add_member_to_rank</span>(<span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">rank</span>: <span class="ident">Rank</span>) -&gt; <span class="ident">DispatchResult</span> {
+			<span class="ident"><span class="self">Self</span>::do_add_member</span>(<span class="ident">who</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
+			<span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">rank</span> {
+				<span class="ident"><span class="self">Self</span>::do_promote_member</span>(<span class="ident">who</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+			}
 			<span class="prelude-val">Ok</span>(())
 		}
 	}

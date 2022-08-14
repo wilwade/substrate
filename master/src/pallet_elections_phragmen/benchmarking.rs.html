@@ -536,7 +536,7 @@
 	<span class="kw">let</span> <span class="ident">account</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">account</span>(<span class="ident">name</span>, <span class="ident">index</span>, <span class="number">0</span>);
 	<span class="comment">// Fund each account with at-least his stake but still a sane amount as to not mess up</span>
 	<span class="comment">// the vote calculation.</span>
-	<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">default_stake</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">MAX_VOTERS</span>) <span class="op">*</span> <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">BALANCE_FACTOR</span>);
+	<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">default_stake</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">T::MaxVoters::get</span>()) <span class="op">*</span> <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">BALANCE_FACTOR</span>);
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">account</span>, <span class="ident">amount</span>);
 	<span class="comment">// important to increase the total issuance since T::CurrencyToVote will need it to be sane for</span>
 	<span class="comment">// phragmen to work.</span>
@@ -730,7 +730,7 @@
 
 	<span class="ident">submit_candidacy</span> {
 		<span class="comment">// number of already existing candidates.</span>
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">MAX_CANDIDATES</span>;
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">T::MaxCandidates::get</span>();
 		<span class="comment">// we fix the number of members to the number of desired members and runners-up. We&#39;ll be in</span>
 		<span class="comment">// this state almost always.</span>
 		<span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">T::DesiredMembers::get</span>() <span class="op">+</span> <span class="ident">T::DesiredRunnersUp::get</span>();
@@ -761,7 +761,7 @@
 		<span class="comment">// this will check members, runners-up and candidate for removal. Members and runners-up are</span>
 		<span class="comment">// limited by the runtime bound, nonetheless we fill them by `m`.</span>
 		<span class="comment">// number of already existing candidates.</span>
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">MAX_CANDIDATES</span>;
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">T::MaxCandidates::get</span>();
 		<span class="comment">// we fix the number of members to the number of desired members and runners-up. We&#39;ll be in</span>
 		<span class="comment">// this state almost always.</span>
 		<span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">T::DesiredMembers::get</span>() <span class="op">+</span> <span class="ident">T::DesiredRunnersUp::get</span>();
@@ -862,14 +862,14 @@
 
 	<span class="ident">clean_defunct_voters</span> {
 		<span class="comment">// total number of voters.</span>
-		<span class="kw">let</span> <span class="ident">v</span> <span class="kw">in</span> (<span class="ident">MAX_VOTERS</span> <span class="op">/</span> <span class="number">2</span>) .. <span class="ident">MAX_VOTERS</span>;
+		<span class="kw">let</span> <span class="ident">v</span> <span class="kw">in</span> (<span class="ident">T::MaxVoters::get</span>() <span class="op">/</span> <span class="number">2</span>) .. <span class="ident">T::MaxVoters::get</span>();
 		<span class="comment">// those that are defunct and need removal.</span>
-		<span class="kw">let</span> <span class="ident">d</span> <span class="kw">in</span> <span class="number">1</span> .. (<span class="ident">MAX_VOTERS</span> <span class="op">/</span> <span class="number">2</span>);
+		<span class="kw">let</span> <span class="ident">d</span> <span class="kw">in</span> <span class="number">1</span> .. (<span class="ident">T::MaxVoters::get</span>() <span class="op">/</span> <span class="number">2</span>);
 
 		<span class="comment">// remove any previous stuff.</span>
 		<span class="ident">clean</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
 
-		<span class="kw">let</span> <span class="ident">all_candidates</span> <span class="op">=</span> <span class="ident">submit_candidates</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">MAX_CANDIDATES</span>, <span class="string">&quot;candidates&quot;</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">all_candidates</span> <span class="op">=</span> <span class="ident">submit_candidates</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">T::MaxCandidates::get</span>(), <span class="string">&quot;candidates&quot;</span>)<span class="question-mark">?</span>;
 		<span class="ident">distribute_voters</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">all_candidates</span>, <span class="ident">v</span>, <span class="ident">MAXIMUM_VOTE</span>)<span class="question-mark">?</span>;
 
 		<span class="comment">// all candidates leave.</span>
@@ -889,9 +889,9 @@
 		<span class="comment">// members, this is hard-coded in the runtime and cannot be trivially changed at this stage.</span>
 		<span class="comment">// Yet, change the number of voters, candidates and edge per voter to see the impact. Note</span>
 		<span class="comment">// that we give all candidates a self vote to make sure they are all considered.</span>
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">MAX_CANDIDATES</span>;
-		<span class="kw">let</span> <span class="ident">v</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">MAX_VOTERS</span>;
-		<span class="kw">let</span> <span class="ident">e</span> <span class="kw">in</span> <span class="ident">MAX_VOTERS</span> .. <span class="ident">MAX_VOTERS</span> <span class="op">*</span> <span class="ident">MAXIMUM_VOTE</span> <span class="kw">as</span> <span class="ident">u32</span>;
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">T::MaxCandidates::get</span>();
+		<span class="kw">let</span> <span class="ident">v</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">T::MaxVoters::get</span>();
+		<span class="kw">let</span> <span class="ident">e</span> <span class="kw">in</span> (<span class="ident">T::MaxVoters::get</span>()) .. <span class="ident">T::MaxVoters::get</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">*</span> <span class="ident">MAXIMUM_VOTE</span> <span class="kw">as</span> <span class="ident">u32</span>;
 		<span class="ident">clean</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
 
 		<span class="comment">// so we have a situation with v and e. we want e to basically always be in the range of `e</span>
@@ -925,9 +925,9 @@
 
 	<span class="attribute">#[<span class="ident">extra</span>]</span>
 	<span class="ident">election_phragmen_c_e</span> {
-		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">MAX_CANDIDATES</span>;
-		<span class="kw">let</span> <span class="ident">e</span> <span class="kw">in</span> <span class="ident">MAX_VOTERS</span> .. <span class="ident">MAX_VOTERS</span> <span class="op">*</span> <span class="ident">MAXIMUM_VOTE</span> <span class="kw">as</span> <span class="ident">u32</span>;
-		<span class="kw">let</span> <span class="ident">fixed_v</span> <span class="op">=</span> <span class="ident">MAX_VOTERS</span>;
+		<span class="kw">let</span> <span class="ident">c</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">T::MaxCandidates::get</span>();
+		<span class="kw">let</span> <span class="ident">e</span> <span class="kw">in</span> (<span class="ident">T::MaxVoters::get</span>()) .. <span class="ident">T::MaxVoters::get</span>() <span class="op">*</span> <span class="ident">MAXIMUM_VOTE</span> <span class="kw">as</span> <span class="ident">u32</span>;
+		<span class="kw">let</span> <span class="ident">fixed_v</span> <span class="op">=</span> <span class="ident">T::MaxVoters::get</span>();
 		<span class="ident">clean</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
 
 		<span class="kw">let</span> <span class="ident">votes_per_voter</span> <span class="op">=</span> <span class="ident">e</span> <span class="op">/</span> <span class="ident">fixed_v</span>;
@@ -959,7 +959,7 @@
 	<span class="attribute">#[<span class="ident">extra</span>]</span>
 	<span class="ident">election_phragmen_v</span> {
 		<span class="kw">let</span> <span class="ident">v</span> <span class="kw">in</span> <span class="number">4</span> .. <span class="number">16</span>;
-		<span class="kw">let</span> <span class="ident">fixed_c</span> <span class="op">=</span> <span class="ident">MAX_CANDIDATES</span> <span class="op">/</span> <span class="number">10</span>;
+		<span class="kw">let</span> <span class="ident">fixed_c</span> <span class="op">=</span> <span class="ident">T::MaxCandidates::get</span>() <span class="op">/</span> <span class="number">10</span>;
 		<span class="kw">let</span> <span class="ident">fixed_e</span> <span class="op">=</span> <span class="number">64</span>;
 		<span class="ident">clean</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
 

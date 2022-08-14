@@ -296,23 +296,6 @@
 <span id="290">290</span>
 <span id="291">291</span>
 <span id="292">292</span>
-<span id="293">293</span>
-<span id="294">294</span>
-<span id="295">295</span>
-<span id="296">296</span>
-<span id="297">297</span>
-<span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
-<span id="302">302</span>
-<span id="303">303</span>
-<span id="304">304</span>
-<span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -333,6 +316,7 @@
 <span class="doccomment">//! Traits for managing information attached to pallets and their constituents.</span>
 
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+<span class="kw">use</span> <span class="ident">impl_trait_for_tuples::impl_for_tuples</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::RuntimeDebug</span>;
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
@@ -385,40 +369,22 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// You probably don&#39;t want this function but `infos()` instead.</span>
 	<span class="kw">fn</span> <span class="ident">count</span>() -&gt; <span class="ident">usize</span> {
-		<span class="number">0</span>
+		<span class="comment">// for backwards compatibility with XCM-3, Mark is deprecated.</span>
+		<span class="ident"><span class="self">Self</span>::infos</span>().<span class="ident">len</span>()
 	}
-
-	<span class="doccomment">/// Extend the given vector by all of the pallets&#39; information that this type represents.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// You probably don&#39;t want this function but `infos()` instead.</span>
-	<span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="ident">_accumulator</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PalletInfoData</span><span class="op">&gt;</span>) {}
 
 	<span class="doccomment">/// All of the pallets&#39; information that this type represents.</span>
+	<span class="kw">fn</span> <span class="ident">infos</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PalletInfoData</span><span class="op">&gt;</span>;
+}
+
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">all</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tuples-96&quot;</span>), <span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tuples-128&quot;</span>)), <span class="ident">impl_for_tuples</span>(<span class="number">64</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tuples-96&quot;</span>, <span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tuples-128&quot;</span>)), <span class="ident">impl_for_tuples</span>(<span class="number">96</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tuples-128&quot;</span>, <span class="ident">impl_for_tuples</span>(<span class="number">128</span>))]</span>
+<span class="kw">impl</span> <span class="ident">PalletsInfoAccess</span> <span class="kw">for</span> <span class="ident">Tuple</span> {
 	<span class="kw">fn</span> <span class="ident">infos</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PalletInfoData</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident"><span class="self">Self</span>::count</span>());
-		<span class="ident"><span class="self">Self</span>::accumulate</span>(<span class="kw-2">&amp;mut</span> <span class="ident">result</span>);
-		<span class="ident">result</span>
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">PalletsInfoAccess</span> <span class="kw">for</span> () {}
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PalletsInfoAccess</span><span class="op">&gt;</span> <span class="ident">PalletsInfoAccess</span> <span class="kw">for</span> (<span class="ident">T</span>,) {
-	<span class="kw">fn</span> <span class="ident">count</span>() -&gt; <span class="ident">usize</span> {
-		<span class="ident">T::count</span>()
-	}
-	<span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="ident">acc</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PalletInfoData</span><span class="op">&gt;</span>) {
-		<span class="ident">T::accumulate</span>(<span class="ident">acc</span>)
-	}
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T1</span>: <span class="ident">PalletsInfoAccess</span>, <span class="ident">T2</span>: <span class="ident">PalletsInfoAccess</span><span class="op">&gt;</span> <span class="ident">PalletsInfoAccess</span> <span class="kw">for</span> (<span class="ident">T1</span>, <span class="ident">T2</span>) {
-	<span class="kw">fn</span> <span class="ident">count</span>() -&gt; <span class="ident">usize</span> {
-		<span class="ident">T1::count</span>() <span class="op">+</span> <span class="ident">T2::count</span>()
-	}
-	<span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="ident">acc</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PalletInfoData</span><span class="op">&gt;</span>) {
-		<span class="comment">// The AllPallets type tuplises the pallets in reverse order, so we unreverse them here.</span>
-		<span class="ident">T2::accumulate</span>(<span class="ident">acc</span>);
-		<span class="ident">T1::accumulate</span>(<span class="ident">acc</span>);
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+		<span class="macro">for_tuples!</span>( #( <span class="ident">res</span>.<span class="ident">extend</span>(<span class="ident">Tuple::infos</span>()); )<span class="op">*</span> );
+		<span class="ident">res</span>
 	}
 }
 
