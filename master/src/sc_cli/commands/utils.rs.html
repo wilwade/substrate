@@ -381,7 +381,7 @@
 			<span class="ident">uri</span>.<span class="ident">into</span>()
 		}
 	} <span class="kw">else</span> {
-		<span class="ident">rpassword::read_password_from_tty</span>(<span class="prelude-val">Some</span>(<span class="string">&quot;URI: &quot;</span>))<span class="question-mark">?</span>
+		<span class="ident">rpassword::prompt_password</span>(<span class="string">&quot;URI: &quot;</span>)<span class="question-mark">?</span>
 	};
 
 	<span class="prelude-val">Ok</span>(<span class="ident">uri</span>)

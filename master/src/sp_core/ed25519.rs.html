@@ -707,15 +707,6 @@
 <span id="701">701</span>
 <span id="702">702</span>
 <span id="703">703</span>
-<span id="704">704</span>
-<span id="705">705</span>
-<span id="706">706</span>
-<span id="707">707</span>
-<span id="708">708</span>
-<span id="709">709</span>
-<span id="710">710</span>
-<span id="711">711</span>
-<span id="712">712</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -757,7 +748,9 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">bip39</span>::{<span class="ident">Language</span>, <span class="ident">Mnemonic</span>, <span class="ident">MnemonicType</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">ed25519_dalek</span>::{<span class="ident">Signer</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">Verifier</span> <span class="kw">as</span> <span class="kw">_</span>};
+<span class="kw">use</span> <span class="ident">core::convert::TryFrom</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">ed25519_zebra</span>::{<span class="ident">SigningKey</span>, <span class="ident">VerificationKey</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de</span>, <span class="ident">Deserialize</span>, <span class="ident">Deserializer</span>, <span class="ident">Serialize</span>, <span class="ident">Serializer</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime_interface::pass_by::PassByInner</span>;
@@ -793,17 +786,10 @@
 
 <span class="doccomment">/// A key pair.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pair</span>(<span class="ident">ed25519_dalek::Keypair</span>);
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
-<span class="kw">impl</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">Pair</span> {
-	<span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">Pair</span>(<span class="ident">ed25519_dalek::Keypair</span> {
-			<span class="ident">public</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">public</span>,
-			<span class="ident">secret</span>: <span class="ident">ed25519_dalek::SecretKey::from_bytes</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">secret</span>.<span class="ident">as_bytes</span>())
-				.<span class="ident">expect</span>(<span class="string">&quot;key is always the correct size; qed&quot;</span>),
-		})
-	}
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pair</span> {
+	<span class="ident">public</span>: <span class="ident">VerificationKey</span>,
+	<span class="ident">secret</span>: <span class="ident">SigningKey</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>; <span class="number">32</span>]<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Public</span> {
@@ -1174,10 +1160,10 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// You should never need to use this; generate(), generate_with_phrase</span>
 	<span class="kw">fn</span> <span class="ident">from_seed_slice</span>(<span class="ident">seed_slice</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Pair</span>, <span class="ident">SecretStringError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">secret</span> <span class="op">=</span> <span class="ident">ed25519_dalek::SecretKey::from_bytes</span>(<span class="ident">seed_slice</span>)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">SecretStringError::InvalidSeedLength</span>)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">public</span> <span class="op">=</span> <span class="ident">ed25519_dalek::PublicKey::from</span>(<span class="kw-2">&amp;</span><span class="ident">secret</span>);
-		<span class="prelude-val">Ok</span>(<span class="ident">Pair</span>(<span class="ident">ed25519_dalek::Keypair</span> { <span class="ident">secret</span>, <span class="ident">public</span> }))
+		<span class="kw">let</span> <span class="ident">secret</span> <span class="op">=</span>
+			<span class="ident">SigningKey::try_from</span>(<span class="ident">seed_slice</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">SecretStringError::InvalidSeedLength</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">public</span> <span class="op">=</span> <span class="ident">VerificationKey::from</span>(<span class="kw-2">&amp;</span><span class="ident">secret</span>);
+		<span class="prelude-val">Ok</span>(<span class="ident">Pair</span> { <span class="ident">secret</span>, <span class="ident">public</span> })
 	}
 
 	<span class="doccomment">/// Derive a child key from a series of given junctions.</span>
@@ -1186,7 +1172,7 @@
 		<span class="ident">path</span>: <span class="ident">Iter</span>,
 		<span class="ident">_seed</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Seed</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Pair</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Seed</span><span class="op">&gt;</span>), <span class="ident">DeriveError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">secret</span>.<span class="ident">to_bytes</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">secret</span>.<span class="ident">into</span>();
 		<span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">path</span> {
 			<span class="kw">match</span> <span class="ident">j</span> {
 				<span class="ident">DeriveJunction::Soft</span>(<span class="ident">_cc</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">DeriveError::SoftKeyInPath</span>),
@@ -1198,16 +1184,12 @@
 
 	<span class="doccomment">/// Get the public key.</span>
 	<span class="kw">fn</span> <span class="ident">public</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Public</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">32</span>];
-		<span class="kw">let</span> <span class="ident">pk</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">public</span>.<span class="ident">as_bytes</span>();
-		<span class="ident">r</span>.<span class="ident">copy_from_slice</span>(<span class="ident">pk</span>);
-		<span class="ident">Public</span>(<span class="ident">r</span>)
+		<span class="ident">Public</span>(<span class="self">self</span>.<span class="ident">public</span>.<span class="ident">into</span>())
 	}
 
 	<span class="doccomment">/// Sign a message.</span>
 	<span class="kw">fn</span> <span class="ident">sign</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">message</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">Signature</span> {
-		<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sign</span>(<span class="ident">message</span>).<span class="ident">to_bytes</span>();
-		<span class="ident">Signature::from_raw</span>(<span class="ident">r</span>)
+		<span class="ident">Signature::from_raw</span>(<span class="self">self</span>.<span class="ident">secret</span>.<span class="ident">sign</span>(<span class="ident">message</span>).<span class="ident">into</span>())
 	}
 
 	<span class="doccomment">/// Verify a signature on a message. Returns true if the signature is good.</span>
@@ -1220,17 +1202,17 @@
 	<span class="doccomment">/// This doesn&#39;t use the type system to ensure that `sig` and `pubkey` are the correct</span>
 	<span class="doccomment">/// size. Use it only if you&#39;re coming from byte buffers and need the speed.</span>
 	<span class="kw">fn</span> <span class="ident">verify_weak</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>, <span class="ident">M</span>: <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">sig</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">message</span>: <span class="ident">M</span>, <span class="ident">pubkey</span>: <span class="ident">P</span>) -&gt; <span class="ident">bool</span> {
-		<span class="kw">let</span> <span class="ident">public_key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ed25519_dalek::PublicKey::from_bytes</span>(<span class="ident">pubkey</span>.<span class="ident">as_ref</span>()) {
+		<span class="kw">let</span> <span class="ident">public_key</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">VerificationKey::try_from</span>(<span class="ident">pubkey</span>.<span class="ident">as_ref</span>()) {
 			<span class="prelude-val">Ok</span>(<span class="ident">pk</span>) =&gt; <span class="ident">pk</span>,
 			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="bool-val">false</span>,
 		};
 
-		<span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ed25519_dalek::Signature::try_from</span>(<span class="ident">sig</span>) {
+		<span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ed25519_zebra::Signature::try_from</span>(<span class="ident">sig</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident">s</span>) =&gt; <span class="ident">s</span>,
 			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="bool-val">false</span>,
 		};
 
-		<span class="ident">public_key</span>.<span class="ident">verify</span>(<span class="ident">message</span>.<span class="ident">as_ref</span>(), <span class="kw-2">&amp;</span><span class="ident">sig</span>).<span class="ident">is_ok</span>()
+		<span class="ident">public_key</span>.<span class="ident">verify</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>, <span class="ident">message</span>.<span class="ident">as_ref</span>()).<span class="ident">is_ok</span>()
 	}
 
 	<span class="doccomment">/// Return a vec filled with raw data.</span>
@@ -1242,8 +1224,8 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full_crypto&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">Pair</span> {
 	<span class="doccomment">/// Get the seed for this key.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">seed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Seed</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">secret</span>.<span class="ident">as_bytes</span>()
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">seed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Seed</span> {
+		<span class="self">self</span>.<span class="ident">secret</span>.<span class="ident">into</span>()
 	}
 
 	<span class="doccomment">/// Exactly as `from_string` except that if no matches are found then, the the first 32</span>
@@ -1295,12 +1277,12 @@
 	<span class="kw">fn</span> <span class="ident">seed_and_derive_should_work</span>() {
 		<span class="kw">let</span> <span class="ident">seed</span> <span class="op">=</span> <span class="macro">hex!</span>(<span class="string">&quot;9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60&quot;</span>);
 		<span class="kw">let</span> <span class="ident">pair</span> <span class="op">=</span> <span class="ident">Pair::from_seed</span>(<span class="kw-2">&amp;</span><span class="ident">seed</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">pair</span>.<span class="ident">seed</span>(), <span class="kw-2">&amp;</span><span class="ident">seed</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">pair</span>.<span class="ident">seed</span>(), <span class="ident">seed</span>);
 		<span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">DeriveJunction::Hard</span>([<span class="number">0u8</span>; <span class="number">32</span>])];
 		<span class="kw">let</span> <span class="ident">derived</span> <span class="op">=</span> <span class="ident">pair</span>.<span class="ident">derive</span>(<span class="ident">path</span>.<span class="ident">into_iter</span>(), <span class="prelude-val">None</span>).<span class="ident">ok</span>().<span class="ident">unwrap</span>().<span class="number">0</span>;
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">derived</span>.<span class="ident">seed</span>(),
-			<span class="kw-2">&amp;</span><span class="macro">hex!</span>(<span class="string">&quot;ede3354e133f9c8e337ddd6ee5415ed4b4ffe5fc7d21e933f4930a3730e5b21c&quot;</span>)
+			<span class="macro">hex!</span>(<span class="string">&quot;ede3354e133f9c8e337ddd6ee5415ed4b4ffe5fc7d21e933f4930a3730e5b21c&quot;</span>)
 		);
 	}
 
