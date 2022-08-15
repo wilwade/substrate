@@ -426,12 +426,6 @@
 <span id="420">420</span>
 <span id="421">421</span>
 <span id="422">422</span>
-<span id="423">423</span>
-<span id="424">424</span>
-<span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -541,8 +535,7 @@
 	) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">entrypoint</span> <span class="op">=</span> <span class="ident">func</span>
 			.<span class="ident">typed</span>::<span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>), <span class="ident">u64</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">ctx</span>)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Invalid signature for direct entry point&quot;</span>)<span class="question-mark">?</span>
-			.<span class="ident">clone</span>();
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Invalid signature for direct entry point&quot;</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">call_type</span>: <span class="ident">EntryPointType::Direct</span> { <span class="ident">entrypoint</span> } })
 	}
 
@@ -553,8 +546,7 @@
 	) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">dispatcher</span> <span class="op">=</span> <span class="ident">dispatcher</span>
 			.<span class="ident">typed</span>::<span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">u32</span>), <span class="ident">u64</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">ctx</span>)
-			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Invalid signature for wrapped entry point&quot;</span>)<span class="question-mark">?</span>
-			.<span class="ident">clone</span>();
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Invalid signature for wrapped entry point&quot;</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">call_type</span>: <span class="ident">EntryPointType::Wrapped</span> { <span class="ident">func</span>, <span class="ident">dispatcher</span> } })
 	}
 }
@@ -648,9 +640,8 @@
 						<span class="ident">Error::from</span>(<span class="macro">format!</span>(<span class="string">&quot;Exported method {} is not found&quot;</span>, <span class="ident">method</span>))
 					})<span class="question-mark">?</span>;
 				<span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">extern_func</span>(<span class="kw-2">&amp;</span><span class="ident">export</span>)
-					.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::from</span>(<span class="macro">format!</span>(<span class="string">&quot;Export {} is not a function&quot;</span>, <span class="ident">method</span>)))<span class="question-mark">?</span>
-					.<span class="ident">clone</span>();
-				<span class="ident">EntryPoint::direct</span>(<span class="ident">func</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">store</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+					.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::from</span>(<span class="macro">format!</span>(<span class="string">&quot;Export {} is not a function&quot;</span>, <span class="ident">method</span>)))<span class="question-mark">?</span>;
+				<span class="ident">EntryPoint::direct</span>(<span class="kw-2">*</span><span class="ident">func</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">store</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
 					<span class="ident">Error::from</span>(<span class="macro">format!</span>(<span class="string">&quot;Exported function &#39;{}&#39; has invalid signature.&quot;</span>, <span class="ident">method</span>))
 				})<span class="question-mark">?</span>
 			},
@@ -665,10 +656,9 @@
 				<span class="kw">let</span> <span class="ident">func</span> <span class="op">=</span> <span class="ident">val</span>
 					.<span class="ident">funcref</span>()
 					.<span class="ident">ok_or</span>(<span class="ident">Error::TableElementIsNotAFunction</span>(<span class="ident">func_ref</span>))<span class="question-mark">?</span>
-					.<span class="ident">ok_or</span>(<span class="ident">Error::FunctionRefIsNull</span>(<span class="ident">func_ref</span>))<span class="question-mark">?</span>
-					.<span class="ident">clone</span>();
+					.<span class="ident">ok_or</span>(<span class="ident">Error::FunctionRefIsNull</span>(<span class="ident">func_ref</span>))<span class="question-mark">?</span>;
 
-				<span class="ident">EntryPoint::direct</span>(<span class="ident">func</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">store</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+				<span class="ident">EntryPoint::direct</span>(<span class="kw-2">*</span><span class="ident">func</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">store</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
 					<span class="ident">Error::from</span>(<span class="macro">format!</span>(
 						<span class="string">&quot;Function @{} in exported table has invalid signature for direct call.&quot;</span>,
 						<span class="ident">func_ref</span>,
@@ -686,10 +676,9 @@
 				<span class="kw">let</span> <span class="ident">dispatcher</span> <span class="op">=</span> <span class="ident">val</span>
 					.<span class="ident">funcref</span>()
 					.<span class="ident">ok_or</span>(<span class="ident">Error::TableElementIsNotAFunction</span>(<span class="ident">dispatcher_ref</span>))<span class="question-mark">?</span>
-					.<span class="ident">ok_or</span>(<span class="ident">Error::FunctionRefIsNull</span>(<span class="ident">dispatcher_ref</span>))<span class="question-mark">?</span>
-					.<span class="ident">clone</span>();
+					.<span class="ident">ok_or</span>(<span class="ident">Error::FunctionRefIsNull</span>(<span class="ident">dispatcher_ref</span>))<span class="question-mark">?</span>;
 
-				<span class="ident">EntryPoint::wrapped</span>(<span class="ident">dispatcher</span>, <span class="ident">func</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">store</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+				<span class="ident">EntryPoint::wrapped</span>(<span class="kw-2">*</span><span class="ident">dispatcher</span>, <span class="ident">func</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">store</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
 					<span class="ident">Error::from</span>(<span class="macro">format!</span>(
 						<span class="string">&quot;Function @{} in exported table has invalid signature for wrapped call.&quot;</span>,
 						<span class="ident">dispatcher_ref</span>,
@@ -749,9 +738,8 @@
 		.<span class="ident">get_export</span>(<span class="ident">ctx</span>, <span class="string">&quot;memory&quot;</span>)
 		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::from</span>(<span class="string">&quot;memory is not exported under `memory` name&quot;</span>))<span class="question-mark">?</span>;
 
-	<span class="kw">let</span> <span class="ident">memory</span> <span class="op">=</span> <span class="ident">extern_memory</span>(<span class="kw-2">&amp;</span><span class="ident">memory_export</span>)
-		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::from</span>(<span class="string">&quot;the `memory` export should have memory type&quot;</span>))<span class="question-mark">?</span>
-		.<span class="ident">clone</span>();
+	<span class="kw">let</span> <span class="ident">memory</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">extern_memory</span>(<span class="kw-2">&amp;</span><span class="ident">memory_export</span>)
+		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Error::from</span>(<span class="string">&quot;the `memory` export should have memory type&quot;</span>))<span class="question-mark">?</span>;
 
 	<span class="prelude-val">Ok</span>(<span class="ident">memory</span>)
 }

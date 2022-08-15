@@ -3200,13 +3200,6 @@
 <span id="3194">3194</span>
 <span id="3195">3195</span>
 <span id="3196">3196</span>
-<span id="3197">3197</span>
-<span id="3198">3198</span>
-<span id="3199">3199</span>
-<span id="3200">3200</span>
-<span id="3201">3201</span>
-<span id="3202">3202</span>
-<span id="3203">3203</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -4625,12 +4618,7 @@
 				<span class="ident">loader</span>.<span class="ident">counter</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 				<span class="ident">loader</span>.<span class="ident">map</span>.<span class="ident">insert</span>(
 					<span class="ident">hash</span>,
-					<span class="ident">MockExecutable</span> {
-						<span class="ident">func</span>: <span class="ident">Rc::new</span>(<span class="ident">f</span>),
-						<span class="ident">func_type</span>,
-						<span class="ident">code_hash</span>: <span class="ident">hash</span>.<span class="ident">clone</span>(),
-						<span class="ident">refcount</span>: <span class="number">1</span>,
-					},
+					<span class="ident">MockExecutable</span> { <span class="ident">func</span>: <span class="ident">Rc::new</span>(<span class="ident">f</span>), <span class="ident">func_type</span>, <span class="ident">code_hash</span>: <span class="ident">hash</span>, <span class="ident">refcount</span>: <span class="number">1</span> },
 				);
 				<span class="ident">hash</span>
 			})
@@ -5398,7 +5386,6 @@
 		<span class="kw">let</span> <span class="ident">dummy_ch</span> <span class="op">=</span> <span class="ident">MockLoader::insert</span>(<span class="ident">Call</span>, <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">exec_success</span>());
 		<span class="kw">let</span> <span class="ident">instantiated_contract_address</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">RefCell::new</span>(<span class="prelude-val">None</span>::<span class="op">&lt;</span><span class="ident">AccountIdOf</span><span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="op">&gt;</span>));
 		<span class="kw">let</span> <span class="ident">instantiator_ch</span> <span class="op">=</span> <span class="ident">MockLoader::insert</span>(<span class="ident">Call</span>, {
-			<span class="kw">let</span> <span class="ident">dummy_ch</span> <span class="op">=</span> <span class="ident">dummy_ch</span>.<span class="ident">clone</span>();
 			<span class="kw">let</span> <span class="ident">instantiated_contract_address</span> <span class="op">=</span> <span class="ident">Rc::clone</span>(<span class="kw-2">&amp;</span><span class="ident">instantiated_contract_address</span>);
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">ctx</span>, <span class="kw">_</span><span class="op">|</span> {
 				<span class="comment">// Instantiate a contract and save it&#39;s address in `instantiated_contract_address`.</span>
@@ -5461,7 +5448,6 @@
 	<span class="kw">fn</span> <span class="ident">instantiation_traps</span>() {
 		<span class="kw">let</span> <span class="ident">dummy_ch</span> <span class="op">=</span> <span class="ident">MockLoader::insert</span>(<span class="ident">Constructor</span>, <span class="op">|</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Err</span>(<span class="string">&quot;It&#39;s a trap!&quot;</span>.<span class="ident">into</span>()));
 		<span class="kw">let</span> <span class="ident">instantiator_ch</span> <span class="op">=</span> <span class="ident">MockLoader::insert</span>(<span class="ident">Call</span>, {
-			<span class="kw">let</span> <span class="ident">dummy_ch</span> <span class="op">=</span> <span class="ident">dummy_ch</span>.<span class="ident">clone</span>();
 			<span class="kw">move</span> <span class="op">|</span><span class="ident">ctx</span>, <span class="kw">_</span><span class="op">|</span> {
 				<span class="comment">// Instantiate a contract and save it&#39;s address in `instantiated_contract_address`.</span>
 				<span class="macro">assert_matches!</span>(

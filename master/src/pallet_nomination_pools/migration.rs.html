@@ -635,7 +635,7 @@
 								},
 							};
 
-							<span class="ident">total_value_locked</span> <span class="op">+</span><span class="op">=</span> <span class="ident">bonded_pool</span>.<span class="ident">points_to_balance</span>(<span class="ident">points</span>.<span class="ident">clone</span>());
+							<span class="ident">total_value_locked</span> <span class="op">+</span><span class="op">=</span> <span class="ident">bonded_pool</span>.<span class="ident">points_to_balance</span>(<span class="kw-2">*</span><span class="ident">points</span>);
 							<span class="kw">let</span> <span class="ident">portion</span> <span class="op">=</span> <span class="ident">Perbill::from_rational</span>(<span class="kw-2">*</span><span class="ident">points</span>, <span class="ident">bonded_pool</span>.<span class="ident">points</span>);
 							<span class="kw">let</span> <span class="ident">last_claim</span> <span class="op">=</span> <span class="ident">portion</span> <span class="op">*</span> <span class="ident">accumulated_reward</span>;
 

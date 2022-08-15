@@ -3027,7 +3027,7 @@
 
 			<span class="ident">weight_sum</span> <span class="op">+</span><span class="op">=</span> <span class="ident">StateTrieMigration::on_initialize</span>(<span class="ident">System::block_number</span>());
 
-			<span class="ident">root</span> <span class="op">=</span> <span class="ident">System::finalize</span>().<span class="ident">state_root</span>().<span class="ident">clone</span>();
+			<span class="ident">root</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">System::finalize</span>().<span class="ident">state_root</span>();
 			<span class="ident">System::on_finalize</span>(<span class="ident">System::block_number</span>());
 		}
 		(<span class="ident">root</span>, <span class="ident">weight_sum</span>)

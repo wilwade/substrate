@@ -186,7 +186,7 @@
 			<span class="ident">state_cache_child_ratio</span>: <span class="ident">config</span>.<span class="ident">state_cache_child_ratio</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> (<span class="ident">v</span>, <span class="number">100</span>)),
 			<span class="ident">state_pruning</span>: <span class="ident">config</span>.<span class="ident">state_pruning</span>.<span class="ident">clone</span>(),
 			<span class="ident">source</span>: <span class="ident">config</span>.<span class="ident">database</span>.<span class="ident">clone</span>(),
-			<span class="ident">blocks_pruning</span>: <span class="ident">config</span>.<span class="ident">blocks_pruning</span>.<span class="ident">clone</span>(),
+			<span class="ident">blocks_pruning</span>: <span class="ident">config</span>.<span class="ident">blocks_pruning</span>,
 		};
 		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">sc_service::new_db_backend</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">db_config</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">info</span>: <span class="ident">ChainInfo</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">info</span>().<span class="ident">into</span>();

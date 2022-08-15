@@ -1178,7 +1178,7 @@
 			<span class="ident">_number</span>: <span class="ident">BlockNumber</span>,
 			<span class="ident">_success</span>: <span class="ident">bool</span>,
 		) {
-			<span class="self">self</span>.<span class="ident">events</span>.<span class="ident">push</span>(<span class="ident">Event::JustificationImported</span>(<span class="ident">hash</span>.<span class="ident">clone</span>()))
+			<span class="self">self</span>.<span class="ident">events</span>.<span class="ident">push</span>(<span class="ident">Event::JustificationImported</span>(<span class="kw-2">*</span><span class="ident">hash</span>))
 		}
 	}
 

@@ -2500,9 +2500,6 @@
 <span id="2494">2494</span>
 <span id="2495">2495</span>
 <span id="2496">2496</span>
-<span id="2497">2497</span>
-<span id="2498">2498</span>
-<span id="2499">2499</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -2996,7 +2993,7 @@
 				<span class="bool-val">true</span>
 			} <span class="kw">else</span> {
 				<span class="ident">removed_points</span>
-					.<span class="ident">try_insert</span>(<span class="kw-2">*</span><span class="ident">e</span>, <span class="ident">p</span>.<span class="ident">clone</span>())
+					.<span class="ident">try_insert</span>(<span class="kw-2">*</span><span class="ident">e</span>, <span class="kw-2">*</span><span class="ident">p</span>)
 					.<span class="ident">expect</span>(<span class="string">&quot;source map is bounded, this is a subset, will be bounded; qed&quot;</span>);
 				<span class="bool-val">false</span>
 			}
@@ -4425,10 +4422,7 @@
 			);
 			<span class="ident">ReversePoolIdLookup</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">bonded_pool</span>.<span class="ident">bonded_account</span>(), <span class="ident">pool_id</span>);
 
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Created</span> {
-				<span class="ident">depositor</span>: <span class="ident">who</span>.<span class="ident">clone</span>(),
-				<span class="ident">pool_id</span>: <span class="ident">pool_id</span>.<span class="ident">clone</span>(),
-			});
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Created</span> { <span class="ident">depositor</span>: <span class="ident">who</span>.<span class="ident">clone</span>(), <span class="ident">pool_id</span> });
 
 			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Bonded</span> {
 				<span class="ident">member</span>: <span class="ident">who</span>,

@@ -5968,15 +5968,15 @@
 		<span class="kw">let</span> (<span class="ident">b1_hash</span>, <span class="ident">b1_number</span>) <span class="op">=</span> <span class="ident">new_blocks</span>(<span class="number">50</span>);
 
 		<span class="comment">// add 2 peers at blocks that we don&#39;t have locally</span>
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>(), <span class="ident">Hash::random</span>(), <span class="number">42</span>).<span class="ident">unwrap</span>();
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id2</span>.<span class="ident">clone</span>(), <span class="ident">Hash::random</span>(), <span class="number">10</span>).<span class="ident">unwrap</span>();
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>, <span class="ident">Hash::random</span>(), <span class="number">42</span>).<span class="ident">unwrap</span>();
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id2</span>, <span class="ident">Hash::random</span>(), <span class="number">10</span>).<span class="ident">unwrap</span>();
 
 		<span class="comment">// we wil send block requests to these peers</span>
 		<span class="comment">// for these blocks we don&#39;t know about</span>
 		<span class="macro">assert!</span>(<span class="ident">sync</span>.<span class="ident">block_requests</span>().<span class="ident">all</span>(<span class="op">|</span>(<span class="ident">p</span>, <span class="kw">_</span>)<span class="op">|</span> { <span class="kw-2">*</span><span class="ident">p</span> <span class="op">==</span> <span class="ident">peer_id1</span> <span class="op">|</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">p</span> <span class="op">==</span> <span class="ident">peer_id2</span> }));
 
 		<span class="comment">// add a new peer at a known block</span>
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id3</span>.<span class="ident">clone</span>(), <span class="ident">b1_hash</span>, <span class="ident">b1_number</span>).<span class="ident">unwrap</span>();
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id3</span>, <span class="ident">b1_hash</span>, <span class="ident">b1_number</span>).<span class="ident">unwrap</span>();
 
 		<span class="comment">// we request a justification for a block we have locally</span>
 		<span class="ident">sync</span>.<span class="ident">request_justification</span>(<span class="kw-2">&amp;</span><span class="ident">b1_hash</span>, <span class="ident">b1_number</span>);
@@ -6027,7 +6027,7 @@
 			<span class="ident">data</span>: <span class="prelude-val">Some</span>(<span class="ident">Vec::new</span>()),
 		};
 
-		<span class="ident">sync</span>.<span class="ident">push_block_announce_validation</span>(<span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">header</span>.<span class="ident">hash</span>(), <span class="ident">block_annnounce</span>, <span class="bool-val">true</span>);
+		<span class="ident">sync</span>.<span class="ident">push_block_announce_validation</span>(<span class="kw-2">*</span><span class="ident">peer_id</span>, <span class="ident">header</span>.<span class="ident">hash</span>(), <span class="ident">block_annnounce</span>, <span class="bool-val">true</span>);
 
 		<span class="comment">// Poll until we have procssed the block announcement</span>
 		<span class="ident">block_on</span>(<span class="ident">poll_fn</span>(<span class="op">|</span><span class="ident">cx</span><span class="op">|</span> <span class="kw">loop</span> {
@@ -6144,8 +6144,8 @@
 		<span class="kw">let</span> <span class="ident">block3_fork</span> <span class="op">=</span> <span class="ident">build_block_at</span>(<span class="ident">block2</span>.<span class="ident">hash</span>(), <span class="bool-val">false</span>);
 
 		<span class="comment">// Add two peers which are on block 1.</span>
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>(), <span class="ident">block1</span>.<span class="ident">hash</span>(), <span class="number">1</span>).<span class="ident">unwrap</span>();
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id2</span>.<span class="ident">clone</span>(), <span class="ident">block1</span>.<span class="ident">hash</span>(), <span class="number">1</span>).<span class="ident">unwrap</span>();
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>, <span class="ident">block1</span>.<span class="ident">hash</span>(), <span class="number">1</span>).<span class="ident">unwrap</span>();
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id2</span>, <span class="ident">block1</span>.<span class="ident">hash</span>(), <span class="number">1</span>).<span class="ident">unwrap</span>();
 
 		<span class="comment">// Tell sync that our best block is 3.</span>
 		<span class="ident">sync</span>.<span class="ident">update_chain_info</span>(<span class="kw-2">&amp;</span><span class="ident">block3</span>.<span class="ident">hash</span>(), <span class="number">3</span>);
@@ -6239,9 +6239,9 @@
 
 		<span class="kw">let</span> <span class="ident">best_block</span> <span class="op">=</span> <span class="ident">blocks</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">clone</span>();
 		<span class="comment">// Connect the node we will sync from</span>
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>(), <span class="ident">best_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">best_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>, <span class="ident">best_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">best_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
 			.<span class="ident">unwrap</span>();
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id2</span>.<span class="ident">clone</span>(), <span class="ident">info</span>.<span class="ident">best_hash</span>, <span class="number">0</span>).<span class="ident">unwrap</span>();
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id2</span>, <span class="ident">info</span>.<span class="ident">best_hash</span>, <span class="number">0</span>).<span class="ident">unwrap</span>();
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">best_block_num</span> <span class="op">=</span> <span class="number">0</span>;
 		<span class="kw">while</span> <span class="ident">best_block_num</span> <span class="op">&lt;</span> <span class="ident">MAX_DOWNLOAD_AHEAD</span> {
@@ -6276,9 +6276,9 @@
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> {
 						(
 							<span class="prelude-val">Ok</span>(<span class="ident">BlockImportStatus::ImportedUnknown</span>(
-								<span class="ident">b</span>.<span class="ident">header</span>().<span class="ident">number</span>().<span class="ident">clone</span>(),
+								<span class="kw-2">*</span><span class="ident">b</span>.<span class="ident">header</span>().<span class="ident">number</span>(),
 								<span class="ident">Default::default</span>(),
-								<span class="prelude-val">Some</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>()),
+								<span class="prelude-val">Some</span>(<span class="ident">peer_id1</span>),
 							)),
 							<span class="ident">b</span>.<span class="ident">hash</span>(),
 						)
@@ -6388,7 +6388,7 @@
 
 		<span class="kw">let</span> <span class="ident">common_block</span> <span class="op">=</span> <span class="ident">blocks</span>[<span class="ident">MAX_BLOCKS_TO_LOOK_BACKWARDS</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">/</span> <span class="number">2</span>].<span class="ident">clone</span>();
 		<span class="comment">// Connect the node we will sync from</span>
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>(), <span class="ident">common_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">common_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>, <span class="ident">common_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">common_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
 			.<span class="ident">unwrap</span>();
 
 		<span class="ident">send_block_announce</span>(<span class="ident">fork_blocks</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">header</span>().<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">peer_id1</span>, <span class="kw-2">&amp;mut</span> <span class="ident">sync</span>);
@@ -6413,7 +6413,7 @@
 		}
 
 		<span class="comment">// Now request and import the fork.</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">best_block_num</span> <span class="op">=</span> <span class="ident">finalized_block</span>.<span class="ident">header</span>().<span class="ident">number</span>().<span class="ident">clone</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">best_block_num</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">finalized_block</span>.<span class="ident">header</span>().<span class="ident">number</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 		<span class="kw">while</span> <span class="ident">best_block_num</span> <span class="op">&lt;</span> <span class="kw-2">*</span><span class="ident">fork_blocks</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">header</span>().<span class="ident">number</span>() <span class="kw">as</span> <span class="ident">u32</span> <span class="op">-</span> <span class="number">1</span> {
 			<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">get_block_request</span>(
 				<span class="kw-2">&amp;mut</span> <span class="ident">sync</span>,
@@ -6446,9 +6446,9 @@
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> {
 						(
 							<span class="prelude-val">Ok</span>(<span class="ident">BlockImportStatus::ImportedUnknown</span>(
-								<span class="ident">b</span>.<span class="ident">header</span>().<span class="ident">number</span>().<span class="ident">clone</span>(),
+								<span class="kw-2">*</span><span class="ident">b</span>.<span class="ident">header</span>().<span class="ident">number</span>(),
 								<span class="ident">Default::default</span>(),
-								<span class="prelude-val">Some</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>()),
+								<span class="prelude-val">Some</span>(<span class="ident">peer_id1</span>),
 							)),
 							<span class="ident">b</span>.<span class="ident">hash</span>(),
 						)
@@ -6519,7 +6519,7 @@
 
 		<span class="kw">let</span> <span class="ident">common_block</span> <span class="op">=</span> <span class="ident">blocks</span>[<span class="ident">MAX_BLOCKS_TO_LOOK_BACKWARDS</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">/</span> <span class="number">2</span>].<span class="ident">clone</span>();
 		<span class="comment">// Connect the node we will sync from</span>
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>(), <span class="ident">common_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">common_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>, <span class="ident">common_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">common_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
 			.<span class="ident">unwrap</span>();
 
 		<span class="ident">send_block_announce</span>(<span class="ident">fork_blocks</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">header</span>().<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">peer_id1</span>, <span class="kw-2">&amp;mut</span> <span class="ident">sync</span>);
@@ -6544,7 +6544,7 @@
 		}
 
 		<span class="comment">// Now request and import the fork.</span>
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">best_block_num</span> <span class="op">=</span> <span class="ident">finalized_block</span>.<span class="ident">header</span>().<span class="ident">number</span>().<span class="ident">clone</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">best_block_num</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">finalized_block</span>.<span class="ident">header</span>().<span class="ident">number</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">get_block_request</span>(
 			<span class="kw-2">&amp;mut</span> <span class="ident">sync</span>,
 			<span class="ident">FromBlock::Number</span>(<span class="ident">MAX_BLOCKS_TO_REQUEST</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">+</span> <span class="ident">best_block_num</span> <span class="kw">as</span> <span class="ident">u64</span>),
@@ -6585,9 +6585,9 @@
 				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> {
 					(
 						<span class="prelude-val">Ok</span>(<span class="ident">BlockImportStatus::ImportedUnknown</span>(
-							<span class="ident">b</span>.<span class="ident">header</span>().<span class="ident">number</span>().<span class="ident">clone</span>(),
+							<span class="kw-2">*</span><span class="ident">b</span>.<span class="ident">header</span>().<span class="ident">number</span>(),
 							<span class="ident">Default::default</span>(),
-							<span class="prelude-val">Some</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>()),
+							<span class="prelude-val">Some</span>(<span class="ident">peer_id1</span>),
 						)),
 						<span class="ident">b</span>.<span class="ident">hash</span>(),
 					)
@@ -6642,7 +6642,7 @@
 		<span class="kw">let</span> <span class="ident">peer_id1</span> <span class="op">=</span> <span class="ident">PeerId::random</span>();
 		<span class="kw">let</span> <span class="ident">common_block</span> <span class="op">=</span> <span class="ident">blocks</span>[<span class="number">1</span>].<span class="ident">clone</span>();
 		<span class="comment">// Connect the node we will sync from</span>
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>(), <span class="ident">common_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">common_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>, <span class="ident">common_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">common_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
 			.<span class="ident">unwrap</span>();
 
 		<span class="comment">// Create a &quot;new&quot; header and announce it</span>
@@ -6674,7 +6674,7 @@
 
 		<span class="kw">let</span> <span class="ident">peer_id1</span> <span class="op">=</span> <span class="ident">PeerId::random</span>();
 		<span class="kw">let</span> <span class="ident">best_block</span> <span class="op">=</span> <span class="ident">blocks</span>[<span class="number">3</span>].<span class="ident">clone</span>();
-		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>.<span class="ident">clone</span>(), <span class="ident">best_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">best_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
+		<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">peer_id1</span>, <span class="ident">best_block</span>.<span class="ident">hash</span>(), <span class="kw-2">*</span><span class="ident">best_block</span>.<span class="ident">header</span>().<span class="ident">number</span>())
 			.<span class="ident">unwrap</span>();
 
 		<span class="ident">sync</span>.<span class="ident">peers</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id1</span>).<span class="ident">unwrap</span>().<span class="ident">state</span> <span class="op">=</span> <span class="ident">PeerSyncState::Available</span>;
