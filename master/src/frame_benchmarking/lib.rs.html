@@ -1921,6 +1921,8 @@
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">paste</span>;
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_core::defer</span>;
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_io::storage::root</span> <span class="kw">as</span> <span class="ident">storage_root</span>;
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_runtime::traits::Zero</span>;
@@ -2916,6 +2918,9 @@
 
 				<span class="comment">// Always do at least one internal repeat...</span>
 				<span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">internal_repeats</span>.<span class="ident">max</span>(<span class="number">1</span>) {
+					<span class="comment">// Always reset the state after the benchmark.</span>
+					<span class="macro-nonterminal">$</span><span class="macro">crate::defer!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::benchmarking::wipe_db</span>());
+
 					<span class="comment">// Set up the externalities environment for the setup we want to</span>
 					<span class="comment">// benchmark.</span>
 					<span class="kw">let</span> <span class="ident">closure_to_benchmark</span> <span class="op">=</span> <span class="op">&lt;</span>
@@ -2993,9 +2998,6 @@
 						<span class="ident">proof_size</span>: <span class="ident">diff_pov</span>,
 						<span class="ident">keys</span>: <span class="ident">read_and_written_keys</span>,
 					});
-
-					<span class="comment">// Wipe the DB back to the genesis state.</span>
-					<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::benchmarking::wipe_db</span>();
 				}
 
 				<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">results</span>);
@@ -3058,6 +3060,9 @@
 					<span class="kw">let</span> <span class="ident">execute_benchmark</span> <span class="op">=</span> <span class="op">|</span>
 						<span class="ident">c</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Vec</span><span class="op">&lt;</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::BenchmarkParameter</span>, <span class="ident">u32</span>)<span class="op">&gt;</span>
 					<span class="op">|</span> -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::BenchmarkError</span><span class="op">&gt;</span> {
+						<span class="comment">// Always reset the state after the benchmark.</span>
+						<span class="macro-nonterminal">$</span><span class="macro">crate::defer!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::benchmarking::wipe_db</span>());
+
 						<span class="comment">// Set up the benchmark, return execution + verification function.</span>
 						<span class="kw">let</span> <span class="ident">closure_to_verify</span> <span class="op">=</span> <span class="op">&lt;</span>
 							<span class="ident">SelectedBenchmark</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::BenchmarkingSetup</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span>
@@ -3069,12 +3074,7 @@
 						}
 
 						<span class="comment">// Run execution + verification</span>
-						<span class="ident">closure_to_verify</span>()<span class="question-mark">?</span>;
-
-						<span class="comment">// Reset the state</span>
-						<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::benchmarking::wipe_db</span>();
-
-						<span class="prelude-val">Ok</span>(())
+						<span class="ident">closure_to_verify</span>()
 					};
 
 					<span class="kw">if</span> <span class="ident">components</span>.<span class="ident">is_empty</span>() {
