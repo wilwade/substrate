@@ -34,7 +34,7 @@ use scale_info::TypeInfo;
 use sp_core::crypto::UncheckedFrom;
 use sp_io::KillStorageResult;
 use sp_runtime::{
-	traits::{Hash, Zero},
+	traits::{Hash, Saturating, Zero},
 	RuntimeDebug,
 };
 use sp_std::{marker::PhantomData, prelude::*};
@@ -49,15 +49,21 @@ pub struct RawContractInfo<CodeHash, Balance> {
 	pub trie_id: TrieId,
 	/// The code associated with a given account.
 	pub code_hash: CodeHash,
-	/// The amount of balance that is currently deposited to pay for consumed storage.
-	pub storage_deposit: Balance,
+	pub storage_bytes: u32,
+	pub storage_items: u32,
+	pub storage_bytes_deposit: Balance,
+	pub storage_items_deposit: Balance,
 }
 
-impl<CodeHash, Balance> RawContractInfo<CodeHash, Balance> {
+impl<CodeHash, Balance: Saturating + Copy> RawContractInfo<CodeHash, Balance> {
 	/// Associated child trie unique id is built from the hash part of the trie id.
 	#[cfg(test)]
 	pub fn child_trie_info(&self) -> ChildInfo {
 		child_trie_info(&self.trie_id[..])
+	}
+
+	pub fn storage_deposit(&self) -> Balance {
+		self.storage_bytes_deposit.saturating_add(self.storage_items_deposit)
 	}
 }
 
@@ -200,14 +206,20 @@ where
 	pub fn new_contract(
 		account: &AccountIdOf<T>,
 		trie_id: TrieId,
-		ch: CodeHash<T>,
+		code_hash: CodeHash<T>,
 	) -> Result<ContractInfo<T>, DispatchError> {
 		if <ContractInfoOf<T>>::contains_key(account) {
 			return Err(Error::<T>::DuplicateContract.into())
 		}
 
-		let contract =
-			ContractInfo::<T> { code_hash: ch, trie_id, storage_deposit: <BalanceOf<T>>::zero() };
+		let contract = ContractInfo::<T> {
+			code_hash,
+			trie_id,
+			storage_bytes: 0,
+			storage_items: 0,
+			storage_bytes_deposit: Zero::zero(),
+			storage_items_deposit: Zero::zero(),
+		};
 
 		Ok(contract)
 	}

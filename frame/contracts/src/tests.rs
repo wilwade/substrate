@@ -967,7 +967,7 @@ fn cannot_self_destruct_through_storage_refund_after_price_change() {
 
 		// Check that the BOB contract has been instantiated and has the minimum balance
 		let info = ContractInfoOf::<Test>::get(&addr).unwrap();
-		assert_eq!(info.storage_deposit, min_balance);
+		assert_eq!(info.storage_deposit(), min_balance);
 		assert_eq!(<Test as Config>::Currency::total_balance(&addr), min_balance);
 
 		// Create 100 bytes of storage with a price of per byte
@@ -1048,9 +1048,6 @@ fn cannot_self_destruct_by_refund_after_slash() {
 
 		// Make sure the account kept the minimum balance and was not destroyed
 		assert_eq!(<Test as Config>::Currency::total_balance(&addr), min_balance);
-
-		// even though it was not charged it is still substracted from the storage deposit tracker
-		assert_eq!(ContractInfoOf::<Test>::get(&addr).unwrap().storage_deposit, 550);
 
 		assert_eq!(
 			System::events(),
@@ -3030,7 +3027,7 @@ fn storage_deposit_works() {
 		// 4 is for creating 2 storage items
 		let charged0 = 4 + 1_000 + 5_000;
 		deposit += charged0;
-		assert_eq!(<ContractInfoOf<Test>>::get(&addr).unwrap().storage_deposit, deposit);
+		assert_eq!(<ContractInfoOf<Test>>::get(&addr).unwrap().storage_deposit(), deposit);
 
 		// Add more storage (but also remove some)
 		assert_ok!(Contracts::call(
@@ -3043,7 +3040,7 @@ fn storage_deposit_works() {
 		));
 		let charged1 = 1_000 - 100;
 		deposit += charged1;
-		assert_eq!(<ContractInfoOf<Test>>::get(&addr).unwrap().storage_deposit, deposit);
+		assert_eq!(<ContractInfoOf<Test>>::get(&addr).unwrap().storage_deposit(), deposit);
 
 		// Remove more storage (but also add some)
 		assert_ok!(Contracts::call(
@@ -3056,7 +3053,7 @@ fn storage_deposit_works() {
 		));
 		let refunded0 = 4_000 - 100;
 		deposit -= refunded0;
-		assert_eq!(<ContractInfoOf<Test>>::get(&addr).unwrap().storage_deposit, deposit);
+		assert_eq!(<ContractInfoOf<Test>>::get(&addr).unwrap().storage_deposit(), deposit);
 
 		assert_eq!(
 			System::events(),
@@ -3508,7 +3505,7 @@ fn storage_deposit_limit_is_enforced() {
 
 		// Check that the BOB contract has been instantiated and has the minimum balance
 		let info = ContractInfoOf::<Test>::get(&addr).unwrap();
-		assert_eq!(info.storage_deposit, min_balance);
+		assert_eq!(info.storage_deposit(), min_balance);
 		assert_eq!(<Test as Config>::Currency::total_balance(&addr), min_balance);
 
 		// Create 100 bytes of storage with a price of per byte
