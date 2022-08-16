@@ -140,6 +140,9 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -241,7 +244,8 @@
 			<span class="ident">beneficiary_lookup</span>
 		)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">proposal_id</span> <span class="op">=</span> <span class="ident">Treasury</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::proposal_count</span>() <span class="op">-</span> <span class="number">1</span>;
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">proposal_id</span>)
+		<span class="kw">let</span> <span class="ident">reject_origin</span> <span class="op">=</span> <span class="ident">T::RejectOrigin::successful_origin</span>();
+	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">T::Origin</span><span class="op">&gt;</span>(<span class="ident">reject_origin</span>, <span class="ident">proposal_id</span>)
 
 	<span class="ident">approve_proposal</span> {
 		<span class="kw">let</span> <span class="ident">p</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::MaxApprovals::get</span>() <span class="op">-</span> <span class="number">1</span>;
@@ -253,7 +257,8 @@
 			<span class="ident">beneficiary_lookup</span>
 		)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">proposal_id</span> <span class="op">=</span> <span class="ident">Treasury</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::proposal_count</span>() <span class="op">-</span> <span class="number">1</span>;
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">proposal_id</span>)
+		<span class="kw">let</span> <span class="ident">approve_origin</span> <span class="op">=</span> <span class="ident">T::ApproveOrigin::successful_origin</span>();
+	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">T::Origin</span><span class="op">&gt;</span>(<span class="ident">approve_origin</span>, <span class="ident">proposal_id</span>)
 
 	<span class="ident">remove_approval</span> {
 		<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">value</span>, <span class="ident">beneficiary_lookup</span>) <span class="op">=</span> <span class="ident">setup_proposal</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">SEED</span>);
@@ -264,7 +269,8 @@
 		)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">proposal_id</span> <span class="op">=</span> <span class="ident">Treasury</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::proposal_count</span>() <span class="op">-</span> <span class="number">1</span>;
 		<span class="ident">Treasury</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::approve_proposal</span>(<span class="ident">RawOrigin::Root</span>.<span class="ident">into</span>(), <span class="ident">proposal_id</span>)<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">proposal_id</span>)
+		<span class="kw">let</span> <span class="ident">reject_origin</span> <span class="op">=</span> <span class="ident">T::RejectOrigin::successful_origin</span>();
+	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">T::Origin</span><span class="op">&gt;</span>(<span class="ident">reject_origin</span>, <span class="ident">proposal_id</span>)
 
 	<span class="ident">on_initialize_proposals</span> {
 		<span class="kw">let</span> <span class="ident">p</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">T::MaxApprovals::get</span>();

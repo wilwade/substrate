@@ -282,6 +282,11 @@
 <span id="276">276</span>
 <span id="277">277</span>
 <span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -307,7 +312,6 @@
 	<span class="ident">ensure</span>,
 	<span class="ident">traits</span>::{<span class="ident">OnInitialize</span>, <span class="ident">PreimageProvider</span>, <span class="ident">PreimageRecipient</span>},
 };
-<span class="kw">use</span> <span class="ident">frame_system::RawOrigin</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Hash</span>;
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">vec</span>};
 
@@ -315,6 +319,8 @@
 <span class="kw">use</span> <span class="ident">frame_system::Pallet</span> <span class="kw">as</span> <span class="ident">System</span>;
 
 <span class="kw">const</span> <span class="ident">BLOCK_NUMBER</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
+
+<span class="kw">type</span> <span class="ident">SystemOrigin</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Origin</span>;
 
 <span class="doccomment">/// Add `n` named items to the schedule.</span>
 <span class="doccomment">///</span>
@@ -494,7 +500,8 @@
 		<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">CallOrHashOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Value</span>(<span class="ident">inner_call</span>));
 
 		<span class="ident">fill_schedule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">when</span>, <span class="ident">s</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>, <span class="prelude-val">Some</span>(<span class="bool-val">false</span>))<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">when</span>, <span class="ident">periodic</span>, <span class="ident">priority</span>, <span class="ident">call</span>)
+		<span class="kw">let</span> <span class="ident">schedule_origin</span> <span class="op">=</span> <span class="ident">T::ScheduleOrigin::successful_origin</span>();
+	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">SystemOrigin</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">schedule_origin</span>, <span class="ident">when</span>, <span class="ident">periodic</span>, <span class="ident">priority</span>, <span class="ident">call</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">ensure!</span>(
 			<span class="ident">Agenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">when</span>).<span class="ident">len</span>() <span class="op">==</span> (<span class="ident">s</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">usize</span>,
@@ -508,7 +515,8 @@
 
 		<span class="ident">fill_schedule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">when</span>, <span class="ident">s</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>, <span class="prelude-val">Some</span>(<span class="bool-val">false</span>))<span class="question-mark">?</span>;
 		<span class="macro">assert_eq!</span>(<span class="ident">Agenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">when</span>).<span class="ident">len</span>(), <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>);
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">when</span>, <span class="number">0</span>)
+		<span class="kw">let</span> <span class="ident">schedule_origin</span> <span class="op">=</span> <span class="ident">T::ScheduleOrigin::successful_origin</span>();
+	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">SystemOrigin</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">schedule_origin</span>, <span class="ident">when</span>, <span class="number">0</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">ensure!</span>(
 			<span class="ident">Lookup</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="number">0</span>.<span class="ident">encode</span>()).<span class="ident">is_none</span>(),
@@ -532,7 +540,8 @@
 		<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">CallOrHashOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Value</span>(<span class="ident">inner_call</span>));
 
 		<span class="ident">fill_schedule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">when</span>, <span class="ident">s</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>, <span class="prelude-val">Some</span>(<span class="bool-val">false</span>))<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">id</span>, <span class="ident">when</span>, <span class="ident">periodic</span>, <span class="ident">priority</span>, <span class="ident">call</span>)
+		<span class="kw">let</span> <span class="ident">schedule_origin</span> <span class="op">=</span> <span class="ident">T::ScheduleOrigin::successful_origin</span>();
+	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">SystemOrigin</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">schedule_origin</span>, <span class="ident">id</span>, <span class="ident">when</span>, <span class="ident">periodic</span>, <span class="ident">priority</span>, <span class="ident">call</span>)
 	<span class="ident">verify</span> {
 		<span class="macro">ensure!</span>(
 			<span class="ident">Agenda</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">when</span>).<span class="ident">len</span>() <span class="op">==</span> (<span class="ident">s</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">usize</span>,
@@ -545,7 +554,8 @@
 		<span class="kw">let</span> <span class="ident">when</span> <span class="op">=</span> <span class="ident">BLOCK_NUMBER</span>.<span class="ident">into</span>();
 
 		<span class="ident">fill_schedule</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">when</span>, <span class="ident">s</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>, <span class="prelude-val">Some</span>(<span class="bool-val">false</span>))<span class="question-mark">?</span>;
-	}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="number">0</span>.<span class="ident">encode</span>())
+		<span class="kw">let</span> <span class="ident">schedule_origin</span> <span class="op">=</span> <span class="ident">T::ScheduleOrigin::successful_origin</span>();
+	}: <span class="kw">_</span><span class="op">&lt;</span><span class="ident">SystemOrigin</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">schedule_origin</span>, <span class="number">0</span>.<span class="ident">encode</span>())
 	<span class="ident">verify</span> {
 		<span class="macro">ensure!</span>(
 			<span class="ident">Lookup</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="number">0</span>.<span class="ident">encode</span>()).<span class="ident">is_none</span>(),

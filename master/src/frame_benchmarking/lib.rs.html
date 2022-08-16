@@ -2430,7 +2430,7 @@
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names</span>:<span class="ident">tt</span> )<span class="op">*</span> )
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_extra</span>:<span class="ident">tt</span> )<span class="op">*</span> )
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_skip_meta</span>:<span class="ident">tt</span> )<span class="op">*</span> )
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>:<span class="ident">tt</span> )<span class="op">*</span> }: <span class="kw">_</span> ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>:<span class="ident">expr</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>:<span class="ident">expr</span> )<span class="op">*</span> )
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>:<span class="ident">tt</span> )<span class="op">*</span> }: <span class="kw">_</span> $(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span>:<span class="ident">ty</span><span class="op">&gt;</span>)<span class="question-mark">?</span> ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>:<span class="ident">expr</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>:<span class="ident">expr</span> )<span class="op">*</span> )
 		$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span> )<span class="op">*</span>
 	) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::benchmarks_iter!</span> {
@@ -2440,7 +2440,7 @@
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names</span> )<span class="op">*</span> )
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_extra</span> )<span class="op">*</span> )
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_skip_meta</span> )<span class="op">*</span> )
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> }: <span class="kw">_</span> ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span> )<span class="op">*</span> )
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> }: <span class="kw">_</span> $(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span><span class="op">&gt;</span>)<span class="question-mark">?</span> ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span> )<span class="op">*</span> )
 			<span class="ident">verify</span> { }
 			$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span> )<span class="op">*</span>
 		}
@@ -2453,7 +2453,7 @@
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names</span>:<span class="ident">tt</span> )<span class="op">*</span> )
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_extra</span>:<span class="ident">tt</span> )<span class="op">*</span> )
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_skip_meta</span>:<span class="ident">tt</span> )<span class="op">*</span> )
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>:<span class="ident">tt</span> )<span class="op">*</span> }: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dispatch</span>:<span class="ident">ident</span> ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>:<span class="ident">expr</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>:<span class="ident">expr</span> )<span class="op">*</span> )
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>:<span class="ident">tt</span> )<span class="op">*</span> }: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dispatch</span>:<span class="ident">ident</span> $(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span>:<span class="ident">ty</span><span class="op">&gt;</span>)<span class="question-mark">?</span> ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>:<span class="ident">expr</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span>:<span class="ident">expr</span> )<span class="op">*</span> )
 		$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span> )<span class="op">*</span>
 	) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::benchmarks_iter!</span> {
@@ -2463,7 +2463,7 @@
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names</span> )<span class="op">*</span> )
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_extra</span> )<span class="op">*</span> )
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_skip_meta</span> )<span class="op">*</span> )
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> }: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dispatch</span> ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span> )<span class="op">*</span> )
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> }: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">dispatch</span> $(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span><span class="op">&gt;</span>)<span class="question-mark">?</span> ( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span> $( , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">arg</span> )<span class="op">*</span> )
 			<span class="ident">verify</span> { }
 			$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span> )<span class="op">*</span>
 		}
@@ -2476,7 +2476,7 @@
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names</span>:<span class="ident">tt</span> )<span class="op">*</span> )
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_extra</span>:<span class="ident">tt</span> )<span class="op">*</span> )
 		( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_skip_meta</span>:<span class="ident">tt</span> )<span class="op">*</span> )
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>:<span class="ident">tt</span> )<span class="op">*</span> }: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">eval</span>:<span class="ident">block</span>
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>:<span class="ident">tt</span> )<span class="op">*</span> }: $(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span>:<span class="ident">ty</span><span class="op">&gt;</span>)<span class="question-mark">?</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">eval</span>:<span class="ident">block</span>
 		$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span> )<span class="op">*</span>
 	) =&gt; {
 		<span class="macro-nonterminal">$</span><span class="macro">crate::benchmarks_iter!</span>(
@@ -2486,7 +2486,7 @@
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names</span> )<span class="op">*</span> )
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_extra</span> )<span class="op">*</span> )
 			( $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">names_skip_meta</span> )<span class="op">*</span> )
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> }: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">eval</span>
+			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> }: $(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span><span class="op">&gt;</span>)<span class="question-mark">?</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">eval</span>
 			<span class="ident">verify</span> { }
 			$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span> )<span class="op">*</span>
 		);
@@ -2500,7 +2500,7 @@
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>.<span class="ident">into</span>()
 	};
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span>:<span class="ident">ty</span>) =&gt; {
-		<span class="op">&lt;</span><span class="ident">T::Origin</span> <span class="kw">as</span> <span class="ident">From</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>)
+		<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Origin</span> <span class="kw">as</span> <span class="ident">From</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin_type</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">origin</span>)
 	};
 }
 
