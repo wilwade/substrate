@@ -365,17 +365,27 @@ where
 		slot: Slot,
 		epoch_data: &Self::EpochData,
 	) -> Option<Self::Claim> {
+		trace!(target: "aura", "Authorities: {:?}", epoch_data);
+
 		let expected_author = slot_author::<P>(slot, epoch_data);
-		expected_author.and_then(|p| {
-			if SyncCryptoStore::has_keys(
-				&*self.keystore,
-				&[(p.to_raw_vec(), sp_application_crypto::key_types::AURA)],
-			) {
-				Some(p.clone())
-			} else {
+		match expected_author {
+			Some(p) => {
+				if SyncCryptoStore::has_keys(
+					&*self.keystore,
+					&[(p.to_raw_vec(), sp_application_crypto::key_types::AURA)],
+				) {
+					debug!(target: "aura", "Authoring a block, key: {:?}", p);
+					Some(p.clone())
+				} else {
+					debug!(target: "aura", "Not our turn to author, expected key {:?}", p);
+					None
+				}
+			}
+			None => {
+				debug!(target: "aura", "No author is expected on slot");
 				None
 			}
-		})
+		}
 	}
 
 	fn pre_digest_data(&self, slot: Slot, _claim: &Self::Claim) -> Vec<sp_runtime::DigestItem> {
