@@ -458,7 +458,6 @@
 <span id="452">452</span>
 <span id="453">453</span>
 <span id="454">454</span>
-<span id="455">455</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -498,7 +497,7 @@
 <span class="kw">const</span> <span class="ident">SEED</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 
 <span class="kw">fn</span> <span class="ident">create_collection</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
-) -&gt; (<span class="ident">T::CollectionId</span>, <span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+) -&gt; (<span class="ident">T::CollectionId</span>, <span class="ident">T::AccountId</span>, <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
 	<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 	<span class="kw">let</span> <span class="ident">caller_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 	<span class="kw">let</span> <span class="ident">collection</span> <span class="op">=</span> <span class="ident">T::Helper::collection</span>(<span class="number">0</span>);
@@ -510,8 +509,7 @@
 	(<span class="ident">collection</span>, <span class="ident">caller</span>, <span class="ident">caller_lookup</span>)
 }
 
-<span class="kw">fn</span> <span class="ident">add_collection_metadata</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
-) -&gt; (<span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+<span class="kw">fn</span> <span class="ident">add_collection_metadata</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>() -&gt; (<span class="ident">T::AccountId</span>, <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
 	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::collection</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
 	<span class="kw">if</span> <span class="ident">caller</span> <span class="op">!</span><span class="op">=</span> <span class="ident">whitelisted_caller</span>() {
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
@@ -529,7 +527,7 @@
 
 <span class="kw">fn</span> <span class="ident">mint_item</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 	<span class="ident">index</span>: <span class="ident">u16</span>,
-) -&gt; (<span class="ident">T::ItemId</span>, <span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+) -&gt; (<span class="ident">T::ItemId</span>, <span class="ident">T::AccountId</span>, <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
 	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::collection</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">admin</span>;
 	<span class="kw">if</span> <span class="ident">caller</span> <span class="op">!</span><span class="op">=</span> <span class="ident">whitelisted_caller</span>() {
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
@@ -548,7 +546,7 @@
 
 <span class="kw">fn</span> <span class="ident">add_item_metadata</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 	<span class="ident">item</span>: <span class="ident">T::ItemId</span>,
-) -&gt; (<span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+) -&gt; (<span class="ident">T::AccountId</span>, <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
 	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::collection</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
 	<span class="kw">if</span> <span class="ident">caller</span> <span class="op">!</span><span class="op">=</span> <span class="ident">whitelisted_caller</span>() {
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);
@@ -567,7 +565,7 @@
 
 <span class="kw">fn</span> <span class="ident">add_item_attribute</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 	<span class="ident">item</span>: <span class="ident">T::ItemId</span>,
-) -&gt; (<span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::KeyLimit</span><span class="op">&gt;</span>, <span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+) -&gt; (<span class="ident">BoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">T::KeyLimit</span><span class="op">&gt;</span>, <span class="ident">T::AccountId</span>, <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
 	<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">Collection</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">T::Helper::collection</span>(<span class="number">0</span>)).<span class="ident">unwrap</span>().<span class="ident">owner</span>;
 	<span class="kw">if</span> <span class="ident">caller</span> <span class="op">!</span><span class="op">=</span> <span class="ident">whitelisted_caller</span>() {
 		<span class="macro">whitelist_account!</span>(<span class="ident">caller</span>);

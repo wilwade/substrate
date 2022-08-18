@@ -192,6 +192,12 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2021-2022 Parity Technologies (UK) Ltd.</span>
@@ -251,6 +257,8 @@
 		<span class="kw">let</span> <span class="ident">dest_head</span>: <span class="ident">T::AccountId</span>  <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;dest_head&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
 		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">dest_head</span>.<span class="ident">clone</span>(), <span class="ident">dest_bag_thresh</span>));
 
+		<span class="kw">let</span> <span class="ident">origin_middle_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">origin_middle</span>.<span class="ident">clone</span>());
+
 		<span class="comment">// the bags are in the expected state after initial setup.</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
@@ -263,7 +271,7 @@
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="comment">// update the weight of `origin_middle` to guarantee it will be rebagged into the destination.</span>
 		<span class="ident">T::ScoreProvider::set_score_of</span>(<span class="kw-2">&amp;</span><span class="ident">origin_middle</span>, <span class="ident">dest_bag_thresh</span>);
-	}: <span class="ident">rebag</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">origin_middle</span>.<span class="ident">clone</span>())
+	}: <span class="ident">rebag</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">origin_middle_lookup</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
 		<span class="comment">// check the bags have updated as expected.</span>
 		<span class="macro">assert_eq!</span>(
@@ -308,6 +316,8 @@
 		<span class="kw">let</span> <span class="ident">dest_head</span>: <span class="ident">T::AccountId</span>  <span class="op">=</span> <span class="ident">account</span>(<span class="string">&quot;dest_head&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);
 		<span class="macro">assert_ok!</span>(<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">dest_head</span>.<span class="ident">clone</span>(), <span class="ident">dest_bag_thresh</span>));
 
+		<span class="kw">let</span> <span class="ident">origin_tail_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">origin_tail</span>.<span class="ident">clone</span>());
+
 		<span class="comment">// the bags are in the expected state after initial setup.</span>
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::get_bags</span>(),
@@ -320,7 +330,7 @@
 		<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 		<span class="comment">// update the weight of `origin_tail` to guarantee it will be rebagged into the destination.</span>
 		<span class="ident">T::ScoreProvider::set_score_of</span>(<span class="kw-2">&amp;</span><span class="ident">origin_tail</span>, <span class="ident">dest_bag_thresh</span>);
-	}: <span class="ident">rebag</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">origin_tail</span>.<span class="ident">clone</span>())
+	}: <span class="ident">rebag</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">origin_tail_lookup</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
 		<span class="comment">// check the bags have updated as expected.</span>
 		<span class="macro">assert_eq!</span>(
@@ -360,13 +370,15 @@
 		<span class="ident">T::ScoreProvider::set_score_of</span>(<span class="kw-2">&amp;</span><span class="ident">lighter</span>, <span class="ident">bag_thresh</span> <span class="op">-</span> <span class="ident">One::one</span>());
 		<span class="ident">T::ScoreProvider::set_score_of</span>(<span class="kw-2">&amp;</span><span class="ident">heavier</span>, <span class="ident">bag_thresh</span>);
 
+		<span class="kw">let</span> <span class="ident">lighter_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">lighter</span>.<span class="ident">clone</span>());
+
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">id</span>().<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 			<span class="macro">vec!</span>[<span class="ident">lighter</span>.<span class="ident">clone</span>(), <span class="ident">heavier_prev</span>.<span class="ident">clone</span>(), <span class="ident">heavier</span>.<span class="ident">clone</span>(), <span class="ident">heavier_next</span>.<span class="ident">clone</span>()]
 		);
 
 		<span class="macro">whitelist_account!</span>(<span class="ident">heavier</span>);
-	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">heavier</span>.<span class="ident">clone</span>()), <span class="ident">lighter</span>.<span class="ident">clone</span>())
+	}: <span class="kw">_</span>(<span class="ident">SystemOrigin::Signed</span>(<span class="ident">heavier</span>.<span class="ident">clone</span>()), <span class="ident">lighter_lookup</span>.<span class="ident">clone</span>())
 	<span class="ident">verify</span> {
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">List</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">id</span>().<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),

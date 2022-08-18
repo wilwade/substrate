@@ -485,7 +485,7 @@
 
 <span class="kw">fn</span> <span class="ident">create_default_asset</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 	<span class="ident">is_sufficient</span>: <span class="ident">bool</span>,
-) -&gt; (<span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+) -&gt; (<span class="ident">T::AccountId</span>, <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
 	<span class="kw">let</span> <span class="ident">caller</span>: <span class="ident">T::AccountId</span> <span class="op">=</span> <span class="ident">whitelisted_caller</span>();
 	<span class="kw">let</span> <span class="ident">caller_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">caller</span>.<span class="ident">clone</span>());
 	<span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident">SystemOrigin::Root</span>.<span class="ident">into</span>();
@@ -503,7 +503,7 @@
 <span class="kw">fn</span> <span class="ident">create_default_minted_asset</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
 	<span class="ident">is_sufficient</span>: <span class="ident">bool</span>,
 	<span class="ident">amount</span>: <span class="ident">T::Balance</span>,
-) -&gt; (<span class="ident">T::AccountId</span>, <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>) {
+) -&gt; (<span class="ident">T::AccountId</span>, <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
 	<span class="kw">let</span> (<span class="ident">caller</span>, <span class="ident">caller_lookup</span>) <span class="op">=</span> <span class="ident">create_default_asset</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">is_sufficient</span>);
 	<span class="kw">if</span> <span class="op">!</span><span class="ident">is_sufficient</span> {
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="ident">T::Currency::minimum_balance</span>());

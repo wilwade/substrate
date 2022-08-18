@@ -430,6 +430,93 @@
 <span id="424">424</span>
 <span id="425">425</span>
 <span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -464,32 +551,36 @@
 	<span class="ident">number</span>: <span class="ident">Reverse</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>,
 }
 
-<span class="doccomment">/// A displaced leaf after import.</span>
-<span class="attribute">#[<span class="ident">must_use</span> <span class="op">=</span> <span class="string">&quot;Displaced items from the leaf set must be handled.&quot;</span>]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ImportDisplaced</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
-	<span class="ident">new_hash</span>: <span class="ident">H</span>,
-	<span class="ident">displaced</span>: <span class="ident">LeafSetItem</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Inserted and removed leaves after an import action.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ImportOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
+	<span class="ident">inserted</span>: <span class="ident">LeafSetItem</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span>,
+	<span class="ident">removed</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
 }
 
-<span class="doccomment">/// Displaced leaves after finalization.</span>
-<span class="attribute">#[<span class="ident">must_use</span> <span class="op">=</span> <span class="string">&quot;Displaced items from the leaf set must be handled.&quot;</span>]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FinalizationDisplaced</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
-	<span class="ident">leaves</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">Reverse</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Inserted and removed leaves after a remove action.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RemoveOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
+	<span class="ident">inserted</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
+	<span class="ident">removed</span>: <span class="ident">LeafSetItem</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span>: <span class="ident">Ord</span><span class="op">&gt;</span> <span class="ident">FinalizationDisplaced</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
+<span class="doccomment">/// Removed leaves after a finalization action.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FinalizationOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
+	<span class="ident">removed</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">Reverse</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span>: <span class="ident">Ord</span><span class="op">&gt;</span> <span class="ident">FinalizationOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Merge with another. This should only be used for displaced items that</span>
 	<span class="doccomment">/// are produced within one transaction of each other.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">merge</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">other</span>: <span class="self">Self</span>) {
 		<span class="comment">// this will ignore keys that are in duplicate, however</span>
 		<span class="comment">// if these are actually produced correctly via the leaf-set within</span>
 		<span class="comment">// one transaction, then there will be no overlap in the keys.</span>
-		<span class="self">self</span>.<span class="ident">leaves</span>.<span class="ident">append</span>(<span class="kw-2">&amp;mut</span> <span class="ident">other</span>.<span class="ident">leaves</span>);
+		<span class="self">self</span>.<span class="ident">removed</span>.<span class="ident">append</span>(<span class="kw-2">&amp;mut</span> <span class="ident">other</span>.<span class="ident">removed</span>);
 	}
 
 	<span class="doccomment">/// Iterate over all displaced leaves.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">leaves</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">H</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">leaves</span>.<span class="ident">values</span>().<span class="ident">flatten</span>()
+		<span class="self">self</span>.<span class="ident">removed</span>.<span class="ident">values</span>().<span class="ident">flatten</span>()
 	}
 }
 
@@ -531,27 +622,52 @@
 	}
 
 	<span class="doccomment">/// Update the leaf list on import.</span>
-	<span class="doccomment">/// Returns a displaced leaf if there was one.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">import</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">H</span>, <span class="ident">number</span>: <span class="ident">N</span>, <span class="ident">parent_hash</span>: <span class="ident">H</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ImportDisplaced</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="comment">// avoid underflow for genesis.</span>
-		<span class="kw">let</span> <span class="ident">displaced</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">number</span> <span class="op">!</span><span class="op">=</span> <span class="ident">N::zero</span>() {
-			<span class="kw">let</span> <span class="ident">parent_number</span> <span class="op">=</span> <span class="ident">Reverse</span>(<span class="ident">number</span>.<span class="ident">clone</span>() <span class="op">-</span> <span class="ident">N::one</span>());
-			<span class="kw">let</span> <span class="ident">was_displaced</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">remove_leaf</span>(<span class="kw-2">&amp;</span><span class="ident">parent_number</span>, <span class="kw-2">&amp;</span><span class="ident">parent_hash</span>);
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">import</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">H</span>, <span class="ident">number</span>: <span class="ident">N</span>, <span class="ident">parent_hash</span>: <span class="ident">H</span>) -&gt; <span class="ident">ImportOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="ident">Reverse</span>(<span class="ident">number</span>);
 
-			<span class="kw">if</span> <span class="ident">was_displaced</span> {
-				<span class="prelude-val">Some</span>(<span class="ident">ImportDisplaced</span> {
-					<span class="ident">new_hash</span>: <span class="ident">hash</span>.<span class="ident">clone</span>(),
-					<span class="ident">displaced</span>: <span class="ident">LeafSetItem</span> { <span class="ident">hash</span>: <span class="ident">parent_hash</span>, <span class="ident">number</span>: <span class="ident">parent_number</span> },
-				})
-			} <span class="kw">else</span> {
-				<span class="prelude-val">None</span>
-			}
+		<span class="kw">let</span> <span class="ident">removed</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">number</span>.<span class="number">0</span> <span class="op">!</span><span class="op">=</span> <span class="ident">N::zero</span>() {
+			<span class="kw">let</span> <span class="ident">parent_number</span> <span class="op">=</span> <span class="ident">Reverse</span>(<span class="ident">number</span>.<span class="number">0</span>.<span class="ident">clone</span>() <span class="op">-</span> <span class="ident">N::one</span>());
+			<span class="self">self</span>.<span class="ident">remove_leaf</span>(<span class="kw-2">&amp;</span><span class="ident">parent_number</span>, <span class="kw-2">&amp;</span><span class="ident">parent_hash</span>).<span class="ident">then</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">parent_hash</span>)
 		} <span class="kw">else</span> {
 			<span class="prelude-val">None</span>
 		};
 
-		<span class="self">self</span>.<span class="ident">insert_leaf</span>(<span class="ident">Reverse</span>(<span class="ident">number</span>.<span class="ident">clone</span>()), <span class="ident">hash</span>.<span class="ident">clone</span>());
-		<span class="ident">displaced</span>
+		<span class="self">self</span>.<span class="ident">insert_leaf</span>(<span class="ident">number</span>.<span class="ident">clone</span>(), <span class="ident">hash</span>.<span class="ident">clone</span>());
+
+		<span class="ident">ImportOutcome</span> { <span class="ident">inserted</span>: <span class="ident">LeafSetItem</span> { <span class="ident">hash</span>, <span class="ident">number</span> }, <span class="ident">removed</span> }
+	}
+
+	<span class="doccomment">/// Update the leaf list on removal.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Note that the leaves set structure doesn&#39;t have the information to decide if the</span>
+	<span class="doccomment">/// leaf we&#39;re removing is the last children of the parent. Follows that this method requires</span>
+	<span class="doccomment">/// the caller to check this condition and optionally pass the `parent_hash` if `hash` is</span>
+	<span class="doccomment">/// its last child.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Returns `None` if no modifications are applied.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove</span>(
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+		<span class="ident">hash</span>: <span class="ident">H</span>,
+		<span class="ident">number</span>: <span class="ident">N</span>,
+		<span class="ident">parent_hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RemoveOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="ident">Reverse</span>(<span class="ident">number</span>);
+
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">remove_leaf</span>(<span class="kw-2">&amp;</span><span class="ident">number</span>, <span class="kw-2">&amp;</span><span class="ident">hash</span>) {
+			<span class="kw">return</span> <span class="prelude-val">None</span>
+		}
+
+		<span class="kw">let</span> <span class="ident">inserted</span> <span class="op">=</span> <span class="ident">parent_hash</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">parent_hash</span><span class="op">|</span> {
+			<span class="kw">if</span> <span class="ident">number</span>.<span class="number">0</span> <span class="op">!</span><span class="op">=</span> <span class="ident">N::zero</span>() {
+				<span class="kw">let</span> <span class="ident">parent_number</span> <span class="op">=</span> <span class="ident">Reverse</span>(<span class="ident">number</span>.<span class="number">0</span>.<span class="ident">clone</span>() <span class="op">-</span> <span class="ident">N::one</span>());
+				<span class="self">self</span>.<span class="ident">insert_leaf</span>(<span class="ident">parent_number</span>, <span class="ident">parent_hash</span>.<span class="ident">clone</span>());
+				<span class="prelude-val">Some</span>(<span class="ident">parent_hash</span>)
+			} <span class="kw">else</span> {
+				<span class="prelude-val">None</span>
+			}
+		});
+
+		<span class="prelude-val">Some</span>(<span class="ident">RemoveOutcome</span> { <span class="ident">inserted</span>, <span class="ident">removed</span>: <span class="ident">LeafSetItem</span> { <span class="ident">hash</span>, <span class="ident">number</span> } })
 	}
 
 	<span class="doccomment">/// Note a block height finalized, displacing all leaves with number less than the finalized</span>
@@ -561,15 +677,15 @@
 	<span class="doccomment">/// same number as the finalized block, but with different hashes, the current behavior</span>
 	<span class="doccomment">/// is simpler and our assumptions about how finalization works means that those leaves</span>
 	<span class="doccomment">/// will be pruned soon afterwards anyway.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">finalize_height</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">number</span>: <span class="ident">N</span>) -&gt; <span class="ident">FinalizationDisplaced</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">finalize_height</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">number</span>: <span class="ident">N</span>) -&gt; <span class="ident">FinalizationOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">boundary</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">number</span> <span class="op">==</span> <span class="ident">N::zero</span>() {
-			<span class="kw">return</span> <span class="ident">FinalizationDisplaced</span> { <span class="ident">leaves</span>: <span class="ident">BTreeMap::new</span>() }
+			<span class="kw">return</span> <span class="ident">FinalizationOutcome</span> { <span class="ident">removed</span>: <span class="ident">BTreeMap::new</span>() }
 		} <span class="kw">else</span> {
 			<span class="ident">number</span> <span class="op">-</span> <span class="ident">N::one</span>()
 		};
 
 		<span class="kw">let</span> <span class="ident">below_boundary</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">split_off</span>(<span class="kw-2">&amp;</span><span class="ident">Reverse</span>(<span class="ident">boundary</span>));
-		<span class="ident">FinalizationDisplaced</span> { <span class="ident">leaves</span>: <span class="ident">below_boundary</span> }
+		<span class="ident">FinalizationOutcome</span> { <span class="ident">removed</span>: <span class="ident">below_boundary</span> }
 	}
 
 	<span class="doccomment">/// The same as [`Self::finalize_height`], but it only simulates the operation.</span>
@@ -577,16 +693,16 @@
 	<span class="doccomment">/// This means that no changes are done.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns the leaves that would be displaced by finalizing the given block.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">displaced_by_finalize_height</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">number</span>: <span class="ident">N</span>) -&gt; <span class="ident">FinalizationDisplaced</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">displaced_by_finalize_height</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">number</span>: <span class="ident">N</span>) -&gt; <span class="ident">FinalizationOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">boundary</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">number</span> <span class="op">==</span> <span class="ident">N::zero</span>() {
-			<span class="kw">return</span> <span class="ident">FinalizationDisplaced</span> { <span class="ident">leaves</span>: <span class="ident">BTreeMap::new</span>() }
+			<span class="kw">return</span> <span class="ident">FinalizationOutcome</span> { <span class="ident">removed</span>: <span class="ident">BTreeMap::new</span>() }
 		} <span class="kw">else</span> {
 			<span class="ident">number</span> <span class="op">-</span> <span class="ident">N::one</span>()
 		};
 
 		<span class="kw">let</span> <span class="ident">below_boundary</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">range</span>(<span class="kw-2">&amp;</span><span class="ident">Reverse</span>(<span class="ident">boundary</span>)..);
-		<span class="ident">FinalizationDisplaced</span> {
-			<span class="ident">leaves</span>: <span class="ident">below_boundary</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="op">|</span> (<span class="ident">k</span>.<span class="ident">clone</span>(), <span class="ident">v</span>.<span class="ident">clone</span>())).<span class="ident">collect</span>(),
+		<span class="ident">FinalizationOutcome</span> {
+			<span class="ident">removed</span>: <span class="ident">below_boundary</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="op">|</span> (<span class="ident">k</span>.<span class="ident">clone</span>(), <span class="ident">v</span>.<span class="ident">clone</span>())).<span class="ident">collect</span>(),
 		}
 	}
 
@@ -708,16 +824,30 @@
 	<span class="ident">H</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Decode</span> <span class="op">+</span> <span class="ident">Encode</span>,
 	<span class="ident">N</span>: <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">AtLeast32Bit</span> <span class="op">+</span> <span class="ident">Decode</span> <span class="op">+</span> <span class="ident">Encode</span>,
 {
-	<span class="doccomment">/// Undo an imported block by providing the displaced leaf.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">undo_import</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">displaced</span>: <span class="ident">ImportDisplaced</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span>) {
-		<span class="kw">let</span> <span class="ident">new_number</span> <span class="op">=</span> <span class="ident">Reverse</span>(<span class="ident">displaced</span>.<span class="ident">displaced</span>.<span class="ident">number</span>.<span class="number">0</span>.<span class="ident">clone</span>() <span class="op">+</span> <span class="ident">N::one</span>());
-		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">remove_leaf</span>(<span class="kw-2">&amp;</span><span class="ident">new_number</span>, <span class="kw-2">&amp;</span><span class="ident">displaced</span>.<span class="ident">new_hash</span>);
-		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">insert_leaf</span>(<span class="ident">displaced</span>.<span class="ident">displaced</span>.<span class="ident">number</span>, <span class="ident">displaced</span>.<span class="ident">displaced</span>.<span class="ident">hash</span>);
+	<span class="doccomment">/// Undo an imported block by providing the import operation outcome.</span>
+	<span class="doccomment">/// No additional operations should be performed between import and undo.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">undo_import</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">outcome</span>: <span class="ident">ImportOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span>) {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">removed_hash</span>) <span class="op">=</span> <span class="ident">outcome</span>.<span class="ident">removed</span> {
+			<span class="kw">let</span> <span class="ident">removed_number</span> <span class="op">=</span> <span class="ident">Reverse</span>(<span class="ident">outcome</span>.<span class="ident">inserted</span>.<span class="ident">number</span>.<span class="number">0</span>.<span class="ident">clone</span>() <span class="op">-</span> <span class="ident">N::one</span>());
+			<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">insert_leaf</span>(<span class="ident">removed_number</span>, <span class="ident">removed_hash</span>);
+		}
+		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">remove_leaf</span>(<span class="kw-2">&amp;</span><span class="ident">outcome</span>.<span class="ident">inserted</span>.<span class="ident">number</span>, <span class="kw-2">&amp;</span><span class="ident">outcome</span>.<span class="ident">inserted</span>.<span class="ident">hash</span>);
+	}
+
+	<span class="doccomment">/// Undo a removed block by providing the displaced leaf.</span>
+	<span class="doccomment">/// No additional operations should be performed between remove and undo.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">undo_remove</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">outcome</span>: <span class="ident">RemoveOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span>) {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">inserted_hash</span>) <span class="op">=</span> <span class="ident">outcome</span>.<span class="ident">inserted</span> {
+			<span class="kw">let</span> <span class="ident">inserted_number</span> <span class="op">=</span> <span class="ident">Reverse</span>(<span class="ident">outcome</span>.<span class="ident">removed</span>.<span class="ident">number</span>.<span class="number">0</span>.<span class="ident">clone</span>() <span class="op">-</span> <span class="ident">N::one</span>());
+			<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">remove_leaf</span>(<span class="kw-2">&amp;</span><span class="ident">inserted_number</span>, <span class="kw-2">&amp;</span><span class="ident">inserted_hash</span>);
+		}
+		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">insert_leaf</span>(<span class="ident">outcome</span>.<span class="ident">removed</span>.<span class="ident">number</span>, <span class="ident">outcome</span>.<span class="ident">removed</span>.<span class="ident">hash</span>);
 	}
 
 	<span class="doccomment">/// Undo a finalization operation by providing the displaced leaves.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">undo_finalization</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">displaced</span>: <span class="ident">FinalizationDisplaced</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span>) {
-		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">storage</span>.<span class="ident">append</span>(<span class="kw-2">&amp;mut</span> <span class="ident">displaced</span>.<span class="ident">leaves</span>);
+	<span class="doccomment">/// No additional operations should be performed between finalization and undo.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">undo_finalization</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">outcome</span>: <span class="ident">FinalizationOutcome</span><span class="op">&lt;</span><span class="ident">H</span>, <span class="ident">N</span><span class="op">&gt;</span>) {
+		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">storage</span>.<span class="ident">append</span>(<span class="kw-2">&amp;mut</span> <span class="ident">outcome</span>.<span class="ident">removed</span>);
 	}
 }
 
@@ -727,7 +857,7 @@
 	<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">it_works</span>() {
+	<span class="kw">fn</span> <span class="ident">import_works</span>() {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">LeafSet::new</span>();
 		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">0u32</span>, <span class="number">0u32</span>, <span class="number">0u32</span>);
 
@@ -749,6 +879,90 @@
 		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">3</span>, <span class="number">3_1</span>));
 		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">2</span>, <span class="number">2_2</span>));
 		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">2</span>, <span class="number">2_3</span>));
+
+		<span class="comment">// Finally test the undo feature</span>
+
+		<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">import</span>(<span class="number">2_4</span>, <span class="number">2</span>, <span class="number">1_1</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">inserted</span>.<span class="ident">hash</span>, <span class="number">2_4</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">removed</span>, <span class="prelude-val">None</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">4</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">2</span>, <span class="number">2_4</span>));
+
+		<span class="ident">set</span>.<span class="ident">undo</span>().<span class="ident">undo_import</span>(<span class="ident">outcome</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">3</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">3</span>, <span class="number">3_1</span>));
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">2</span>, <span class="number">2_2</span>));
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">2</span>, <span class="number">2_3</span>));
+
+		<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">import</span>(<span class="number">3_2</span>, <span class="number">3</span>, <span class="number">2_3</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">inserted</span>.<span class="ident">hash</span>, <span class="number">3_2</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">removed</span>, <span class="prelude-val">Some</span>(<span class="number">2_3</span>));
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">3</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">3</span>, <span class="number">3_2</span>));
+
+		<span class="ident">set</span>.<span class="ident">undo</span>().<span class="ident">undo_import</span>(<span class="ident">outcome</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">3</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">3</span>, <span class="number">3_1</span>));
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">2</span>, <span class="number">2_2</span>));
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">2</span>, <span class="number">2_3</span>));
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">removal_works</span>() {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">LeafSet::new</span>();
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">10_1u32</span>, <span class="number">10u32</span>, <span class="number">0u32</span>);
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">11_1</span>, <span class="number">11</span>, <span class="number">10_1</span>);
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">11_2</span>, <span class="number">11</span>, <span class="number">10_1</span>);
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">12_1</span>, <span class="number">12</span>, <span class="number">11_1</span>);
+
+		<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">remove</span>(<span class="number">12_1</span>, <span class="number">12</span>, <span class="prelude-val">Some</span>(<span class="number">11_1</span>)).<span class="ident">unwrap</span>();
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">removed</span>.<span class="ident">hash</span>, <span class="number">12_1</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">inserted</span>, <span class="prelude-val">Some</span>(<span class="number">11_1</span>));
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">2</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_1</span>));
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_2</span>));
+
+		<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">remove</span>(<span class="number">11_1</span>, <span class="number">11</span>, <span class="prelude-val">None</span>).<span class="ident">unwrap</span>();
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">removed</span>.<span class="ident">hash</span>, <span class="number">11_1</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">inserted</span>, <span class="prelude-val">None</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">1</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_2</span>));
+
+		<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">remove</span>(<span class="number">11_2</span>, <span class="number">11</span>, <span class="prelude-val">Some</span>(<span class="number">10_1</span>)).<span class="ident">unwrap</span>();
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">removed</span>.<span class="ident">hash</span>, <span class="number">11_2</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">outcome</span>.<span class="ident">inserted</span>, <span class="prelude-val">Some</span>(<span class="number">10_1</span>));
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">1</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">10</span>, <span class="number">10_1</span>));
+
+		<span class="ident">set</span>.<span class="ident">undo</span>().<span class="ident">undo_remove</span>(<span class="ident">outcome</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">1</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_2</span>));
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">finalization_works</span>() {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">LeafSet::new</span>();
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">9_1u32</span>, <span class="number">9u32</span>, <span class="number">0u32</span>);
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">10_1</span>, <span class="number">10</span>, <span class="number">9_1</span>);
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">10_2</span>, <span class="number">10</span>, <span class="number">9_1</span>);
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">11_1</span>, <span class="number">11</span>, <span class="number">10_1</span>);
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">11_2</span>, <span class="number">11</span>, <span class="number">10_1</span>);
+		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">12_1</span>, <span class="number">12</span>, <span class="number">11_2</span>);
+
+		<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">finalize_height</span>(<span class="number">11</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">2</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_1</span>));
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">12</span>, <span class="number">12_1</span>));
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">outcome</span>.<span class="ident">removed</span>,
+			[(<span class="ident">Reverse</span>(<span class="number">10</span>), <span class="macro">vec!</span>[<span class="number">10_2</span>])].<span class="ident">into_iter</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
+		);
+
+		<span class="ident">set</span>.<span class="ident">undo</span>().<span class="ident">undo_finalization</span>(<span class="ident">outcome</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">3</span>);
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_1</span>));
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">12</span>, <span class="number">12_1</span>));
+		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">10</span>, <span class="number">10_2</span>));
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
@@ -814,46 +1028,6 @@
 
 		<span class="kw">let</span> <span class="ident">set2</span> <span class="op">=</span> <span class="ident">LeafSet::read_from_db</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">db</span>, <span class="number">0</span>, <span class="ident">PREFIX</span>).<span class="ident">unwrap</span>();
 		<span class="macro">assert_eq!</span>(<span class="ident">set</span>, <span class="ident">set2</span>);
-	}
-
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">undo_import</span>() {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">LeafSet::new</span>();
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">10_1u32</span>, <span class="number">10u32</span>, <span class="number">0u32</span>);
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">11_1</span>, <span class="number">11</span>, <span class="number">10_1</span>);
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">11_2</span>, <span class="number">11</span>, <span class="number">10_1</span>);
-
-		<span class="kw">let</span> <span class="ident">displaced</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">import</span>(<span class="number">12_1</span>, <span class="number">12</span>, <span class="number">11_1</span>).<span class="ident">unwrap</span>();
-		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">2</span>);
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_2</span>));
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">12</span>, <span class="number">12_1</span>));
-
-		<span class="ident">set</span>.<span class="ident">undo</span>().<span class="ident">undo_import</span>(<span class="ident">displaced</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">2</span>);
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_1</span>));
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_2</span>));
-	}
-
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">undo_finalization</span>() {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> <span class="op">=</span> <span class="ident">LeafSet::new</span>();
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">9_1u32</span>, <span class="number">9u32</span>, <span class="number">0u32</span>);
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">10_1</span>, <span class="number">10</span>, <span class="number">9_1</span>);
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">10_2</span>, <span class="number">10</span>, <span class="number">9_1</span>);
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">11_1</span>, <span class="number">11</span>, <span class="number">10_1</span>);
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">11_2</span>, <span class="number">11</span>, <span class="number">10_1</span>);
-		<span class="ident">set</span>.<span class="ident">import</span>(<span class="number">12_1</span>, <span class="number">12</span>, <span class="number">11_2</span>);
-
-		<span class="kw">let</span> <span class="ident">displaced</span> <span class="op">=</span> <span class="ident">set</span>.<span class="ident">finalize_height</span>(<span class="number">11</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">2</span>);
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_1</span>));
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">12</span>, <span class="number">12_1</span>));
-
-		<span class="ident">set</span>.<span class="ident">undo</span>().<span class="ident">undo_finalization</span>(<span class="ident">displaced</span>);
-		<span class="macro">assert_eq!</span>(<span class="ident">set</span>.<span class="ident">count</span>(), <span class="number">3</span>);
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">11</span>, <span class="number">11_1</span>));
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">12</span>, <span class="number">12_1</span>));
-		<span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">contains</span>(<span class="number">10</span>, <span class="number">10_2</span>));
 	}
 }
 </code></pre></div>

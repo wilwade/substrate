@@ -3603,6 +3603,76 @@
 <span id="3597">3597</span>
 <span id="3598">3598</span>
 <span id="3599">3599</span>
+<span id="3600">3600</span>
+<span id="3601">3601</span>
+<span id="3602">3602</span>
+<span id="3603">3603</span>
+<span id="3604">3604</span>
+<span id="3605">3605</span>
+<span id="3606">3606</span>
+<span id="3607">3607</span>
+<span id="3608">3608</span>
+<span id="3609">3609</span>
+<span id="3610">3610</span>
+<span id="3611">3611</span>
+<span id="3612">3612</span>
+<span id="3613">3613</span>
+<span id="3614">3614</span>
+<span id="3615">3615</span>
+<span id="3616">3616</span>
+<span id="3617">3617</span>
+<span id="3618">3618</span>
+<span id="3619">3619</span>
+<span id="3620">3620</span>
+<span id="3621">3621</span>
+<span id="3622">3622</span>
+<span id="3623">3623</span>
+<span id="3624">3624</span>
+<span id="3625">3625</span>
+<span id="3626">3626</span>
+<span id="3627">3627</span>
+<span id="3628">3628</span>
+<span id="3629">3629</span>
+<span id="3630">3630</span>
+<span id="3631">3631</span>
+<span id="3632">3632</span>
+<span id="3633">3633</span>
+<span id="3634">3634</span>
+<span id="3635">3635</span>
+<span id="3636">3636</span>
+<span id="3637">3637</span>
+<span id="3638">3638</span>
+<span id="3639">3639</span>
+<span id="3640">3640</span>
+<span id="3641">3641</span>
+<span id="3642">3642</span>
+<span id="3643">3643</span>
+<span id="3644">3644</span>
+<span id="3645">3645</span>
+<span id="3646">3646</span>
+<span id="3647">3647</span>
+<span id="3648">3648</span>
+<span id="3649">3649</span>
+<span id="3650">3650</span>
+<span id="3651">3651</span>
+<span id="3652">3652</span>
+<span id="3653">3653</span>
+<span id="3654">3654</span>
+<span id="3655">3655</span>
+<span id="3656">3656</span>
+<span id="3657">3657</span>
+<span id="3658">3658</span>
+<span id="3659">3659</span>
+<span id="3660">3660</span>
+<span id="3661">3661</span>
+<span id="3662">3662</span>
+<span id="3663">3663</span>
+<span id="3664">3664</span>
+<span id="3665">3665</span>
+<span id="3666">3666</span>
+<span id="3667">3667</span>
+<span id="3668">3668</span>
+<span id="3669">3669</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -3664,7 +3734,7 @@
 <span class="kw">use</span> <span class="ident">hash_db::Prefix</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{
 	<span class="ident">backend::NewBlockState</span>,
-	<span class="ident">leaves</span>::{<span class="ident">FinalizationDisplaced</span>, <span class="ident">LeafSet</span>},
+	<span class="ident">leaves</span>::{<span class="ident">FinalizationOutcome</span>, <span class="ident">LeafSet</span>},
 	<span class="ident">utils::is_descendent_of</span>,
 	<span class="ident">IoInfo</span>, <span class="ident">MemoryInfo</span>, <span class="ident">MemorySize</span>, <span class="ident">UsageInfo</span>,
 };
@@ -4856,7 +4926,7 @@
 		<span class="ident">header</span>: <span class="kw-2">&amp;</span><span class="ident">Block::Header</span>,
 		<span class="ident">last_finalized</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block::Hash</span><span class="op">&gt;</span>,
 		<span class="ident">justification</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Justification</span><span class="op">&gt;</span>,
-		<span class="ident">finalization_displaced</span>: <span class="kw-2">&amp;mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FinalizationDisplaced</span><span class="op">&lt;</span><span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">finalization_displaced</span>: <span class="kw-2">&amp;mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FinalizationOutcome</span><span class="op">&lt;</span><span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">ClientResult</span><span class="op">&lt;</span><span class="ident">MetaUpdate</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="comment">// TODO: ensure best chain contains this block.</span>
 		<span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">number</span>();
@@ -5262,7 +5332,7 @@
 		<span class="ident">transaction</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Transaction</span><span class="op">&lt;</span><span class="ident">DbHash</span><span class="op">&gt;</span>,
 		<span class="ident">f_header</span>: <span class="kw-2">&amp;</span><span class="ident">Block::Header</span>,
 		<span class="ident">f_hash</span>: <span class="ident">Block::Hash</span>,
-		<span class="ident">displaced</span>: <span class="kw-2">&amp;mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FinalizationDisplaced</span><span class="op">&lt;</span><span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">displaced</span>: <span class="kw-2">&amp;mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FinalizationOutcome</span><span class="op">&lt;</span><span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">with_state</span>: <span class="ident">bool</span>,
 	) -&gt; <span class="ident">ClientResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">f_num</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">f_header</span>.<span class="ident">number</span>();
@@ -5301,7 +5371,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">transaction</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Transaction</span><span class="op">&lt;</span><span class="ident">DbHash</span><span class="op">&gt;</span>,
 		<span class="ident">finalized</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-		<span class="ident">displaced</span>: <span class="kw-2">&amp;</span><span class="ident">FinalizationDisplaced</span><span class="op">&lt;</span><span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">displaced</span>: <span class="kw-2">&amp;</span><span class="ident">FinalizationOutcome</span><span class="op">&lt;</span><span class="ident">Block::Hash</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">ClientResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="ident">BlocksPruning::Some</span>(<span class="ident">blocks_pruning</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">blocks_pruning</span> {
 			<span class="comment">// Always keep the last finalized block</span>
@@ -5831,9 +5901,40 @@
 			<span class="ident">apply_state_commit</span>(<span class="kw-2">&amp;mut</span> <span class="ident">transaction</span>, <span class="ident">commit</span>);
 		}
 		<span class="ident">transaction</span>.<span class="ident">remove</span>(<span class="ident">columns::KEY_LOOKUP</span>, <span class="ident">hash</span>.<span class="ident">as_ref</span>());
-		<span class="ident">leaves</span>.<span class="ident">revert</span>(<span class="kw-2">*</span><span class="ident">hash</span>, <span class="ident">hdr</span>.<span class="ident">number</span>);
+
+		<span class="kw">let</span> <span class="ident">children</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>
+			.<span class="ident">blockchain</span>()
+			.<span class="ident">children</span>(<span class="ident">hdr</span>.<span class="ident">parent</span>)<span class="question-mark">?</span>
+			.<span class="ident">into_iter</span>()
+			.<span class="ident">filter</span>(<span class="op">|</span><span class="ident">child_hash</span><span class="op">|</span> <span class="ident">child_hash</span> <span class="op">!</span><span class="op">=</span> <span class="ident">hash</span>)
+			.<span class="ident">collect</span>();
+		<span class="kw">let</span> <span class="ident">parent_leaf</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">children</span>.<span class="ident">is_empty</span>() {
+			<span class="ident">children::remove_children</span>(
+				<span class="kw-2">&amp;mut</span> <span class="ident">transaction</span>,
+				<span class="ident">columns::META</span>,
+				<span class="ident">meta_keys::CHILDREN_PREFIX</span>,
+				<span class="ident">hdr</span>.<span class="ident">parent</span>,
+			);
+			<span class="prelude-val">Some</span>(<span class="ident">hdr</span>.<span class="ident">parent</span>)
+		} <span class="kw">else</span> {
+			<span class="ident">children::write_children</span>(
+				<span class="kw-2">&amp;mut</span> <span class="ident">transaction</span>,
+				<span class="ident">columns::META</span>,
+				<span class="ident">meta_keys::CHILDREN_PREFIX</span>,
+				<span class="ident">hdr</span>.<span class="ident">parent</span>,
+				<span class="ident">children</span>,
+			);
+			<span class="prelude-val">None</span>
+		};
+
+		<span class="kw">let</span> <span class="ident">remove_outcome</span> <span class="op">=</span> <span class="ident">leaves</span>.<span class="ident">remove</span>(<span class="kw-2">*</span><span class="ident">hash</span>, <span class="ident">hdr</span>.<span class="ident">number</span>, <span class="ident">parent_leaf</span>);
 		<span class="ident">leaves</span>.<span class="ident">prepare_transaction</span>(<span class="kw-2">&amp;mut</span> <span class="ident">transaction</span>, <span class="ident">columns::META</span>, <span class="ident">meta_keys::LEAF_PREFIX</span>);
-		<span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">db</span>.<span class="ident">commit</span>(<span class="ident">transaction</span>)<span class="question-mark">?</span>;
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">db</span>.<span class="ident">commit</span>(<span class="ident">transaction</span>) {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">outcome</span>) <span class="op">=</span> <span class="ident">remove_outcome</span> {
+				<span class="ident">leaves</span>.<span class="ident">undo</span>().<span class="ident">undo_remove</span>(<span class="ident">outcome</span>);
+			}
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">into</span>())
+		}
 		<span class="self">self</span>.<span class="ident">blockchain</span>().<span class="ident">remove_header_metadata</span>(<span class="kw-2">*</span><span class="ident">hash</span>);
 		<span class="prelude-val">Ok</span>(())
 	}
@@ -6981,7 +7082,21 @@
 			<span class="ident">prev_hash</span> <span class="op">=</span> <span class="ident">hash</span>;
 		}
 
-		<span class="comment">// insert a fork at block 2, which becomes best block</span>
+		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">2</span> {
+			<span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">insert_block</span>(
+				<span class="kw-2">&amp;</span><span class="ident">backend</span>,
+				<span class="number">2</span>,
+				<span class="ident">blocks</span>[<span class="number">1</span>],
+				<span class="prelude-val">None</span>,
+				<span class="ident">sp_core::H256::random</span>(),
+				<span class="macro">vec!</span>[<span class="ident">i</span>.<span class="ident">into</span>()],
+				<span class="prelude-val">None</span>,
+			)
+			.<span class="ident">unwrap</span>();
+			<span class="ident">blocks</span>.<span class="ident">push</span>(<span class="ident">hash</span>);
+		}
+
+		<span class="comment">// insert a fork at block 1, which becomes best block</span>
 		<span class="kw">let</span> <span class="ident">best_hash</span> <span class="op">=</span> <span class="ident">insert_block</span>(
 			<span class="kw-2">&amp;</span><span class="ident">backend</span>,
 			<span class="number">1</span>,
@@ -6992,11 +7107,36 @@
 			<span class="prelude-val">None</span>,
 		)
 		.<span class="ident">unwrap</span>();
+
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">info</span>().<span class="ident">best_hash</span>, <span class="ident">best_hash</span>);
 		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">remove_leaf_block</span>(<span class="kw-2">&amp;</span><span class="ident">best_hash</span>).<span class="ident">is_err</span>());
-		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">prev_hash</span>, <span class="number">1</span>));
-		<span class="ident">backend</span>.<span class="ident">remove_leaf_block</span>(<span class="kw-2">&amp;</span><span class="ident">prev_hash</span>).<span class="ident">unwrap</span>();
-		<span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, <span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">prev_hash</span>)).<span class="ident">unwrap</span>());
-		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">prev_hash</span>, <span class="number">1</span>));
+
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>().<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">blocks</span>[<span class="number">2</span>], <span class="ident">blocks</span>[<span class="number">3</span>], <span class="ident">best_hash</span>]);
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">children</span>(<span class="ident">blocks</span>[<span class="number">1</span>]).<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">blocks</span>[<span class="number">2</span>], <span class="ident">blocks</span>[<span class="number">3</span>]]);
+
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">3</span>], <span class="number">2</span>));
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">blocks</span>[<span class="number">3</span>])).<span class="ident">unwrap</span>().<span class="ident">is_some</span>());
+		<span class="ident">backend</span>.<span class="ident">remove_leaf_block</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">3</span>]).<span class="ident">unwrap</span>();
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">3</span>], <span class="number">2</span>));
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">blocks</span>[<span class="number">3</span>])).<span class="ident">unwrap</span>().<span class="ident">is_none</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>().<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">blocks</span>[<span class="number">2</span>], <span class="ident">best_hash</span>]);
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">children</span>(<span class="ident">blocks</span>[<span class="number">1</span>]).<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">blocks</span>[<span class="number">2</span>]]);
+
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">2</span>], <span class="number">2</span>));
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">blocks</span>[<span class="number">2</span>])).<span class="ident">unwrap</span>().<span class="ident">is_some</span>());
+		<span class="ident">backend</span>.<span class="ident">remove_leaf_block</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">2</span>]).<span class="ident">unwrap</span>();
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">2</span>], <span class="number">2</span>));
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">blocks</span>[<span class="number">2</span>])).<span class="ident">unwrap</span>().<span class="ident">is_none</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>().<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">best_hash</span>, <span class="ident">blocks</span>[<span class="number">1</span>]]);
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">children</span>(<span class="ident">blocks</span>[<span class="number">1</span>]).<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[]);
+
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">1</span>], <span class="number">1</span>));
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">blocks</span>[<span class="number">1</span>])).<span class="ident">unwrap</span>().<span class="ident">is_some</span>());
+		<span class="ident">backend</span>.<span class="ident">remove_leaf_block</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">1</span>]).<span class="ident">unwrap</span>();
+		<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">backend</span>.<span class="ident">have_state_at</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">1</span>], <span class="number">1</span>));
+		<span class="macro">assert!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">header</span>(<span class="ident">BlockId::hash</span>(<span class="ident">blocks</span>[<span class="number">1</span>])).<span class="ident">unwrap</span>().<span class="ident">is_none</span>());
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">leaves</span>().<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">best_hash</span>]);
+		<span class="macro">assert_eq!</span>(<span class="ident">backend</span>.<span class="ident">blockchain</span>().<span class="ident">children</span>(<span class="ident">blocks</span>[<span class="number">0</span>]).<span class="ident">unwrap</span>(), <span class="macro">vec!</span>[<span class="ident">best_hash</span>]);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

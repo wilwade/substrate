@@ -472,6 +472,28 @@
 <span id="466">466</span>
 <span id="467">467</span>
 <span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -558,7 +580,6 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frame_system::Config</span> <span class="kw">as</span> <span class="ident">SysConfig</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet_contracts_primitives::ReturnFlags</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_core::crypto::UncheckedFrom</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">state::Init</span> <span class="kw">as</span> <span class="ident">InitState</span>;
 
 <span class="doccomment">/// Result that returns a [`DispatchError`] on error.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">sp_std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span>;
@@ -672,7 +693,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// It uses [typestate programming](https://docs.rust-embedded.org/book/static-guarantees/typestate-programming.html)</span>
 <span class="doccomment">/// to enforce the correct usage of the parameters passed to the chain extension.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">state::State</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">State</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The actual data of this type.</span>
 	<span class="ident">inner</span>: <span class="ident">Inner</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// `S` is only used in the type system but never as value.</span>
@@ -680,7 +701,7 @@
 }
 
 <span class="doccomment">/// Functions that are available in every state of this type.</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">state::State</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">State</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
 {
@@ -738,7 +759,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Those are the functions that determine how the arguments to the chain extensions</span>
 <span class="doccomment">/// should be consumed.</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">state::Init</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">InitState</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Creates a new environment for consumption by a chain extension.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// It is only available to this crate because only the wasm runtime module needs to</span>
@@ -758,23 +779,23 @@
 	}
 
 	<span class="doccomment">/// Use all arguments as integer values.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">only_in</span>(<span class="self">self</span>) -&gt; <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">state::OnlyIn</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">only_in</span>(<span class="self">self</span>) -&gt; <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">OnlyInState</span><span class="op">&gt;</span> {
 		<span class="ident">Environment</span> { <span class="ident">inner</span>: <span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">phantom</span>: <span class="ident">PhantomData</span> }
 	}
 
 	<span class="doccomment">/// Use input arguments as integer and output arguments as pointer to a buffer.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prim_in_buf_out</span>(<span class="self">self</span>) -&gt; <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">state::PrimInBufOut</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prim_in_buf_out</span>(<span class="self">self</span>) -&gt; <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">PrimInBufOutState</span><span class="op">&gt;</span> {
 		<span class="ident">Environment</span> { <span class="ident">inner</span>: <span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">phantom</span>: <span class="ident">PhantomData</span> }
 	}
 
 	<span class="doccomment">/// Use input and output arguments as pointers to a buffer.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">buf_in_buf_out</span>(<span class="self">self</span>) -&gt; <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">state::BufInBufOut</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">buf_in_buf_out</span>(<span class="self">self</span>) -&gt; <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">BufInBufOutState</span><span class="op">&gt;</span> {
 		<span class="ident">Environment</span> { <span class="ident">inner</span>: <span class="self">self</span>.<span class="ident">inner</span>, <span class="ident">phantom</span>: <span class="ident">PhantomData</span> }
 	}
 }
 
 <span class="doccomment">/// Functions to use the input arguments as integers.</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">state::PrimIn</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">PrimIn</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The `input_ptr` argument.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">val0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
 		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">input_ptr</span>
@@ -787,7 +808,7 @@
 }
 
 <span class="doccomment">/// Functions to use the output arguments as integers.</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">state::PrimOut</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">PrimOut</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// The `output_ptr` argument.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">val2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
 		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">output_ptr</span>
@@ -800,7 +821,7 @@
 }
 
 <span class="doccomment">/// Functions to use the input arguments as pointer to a buffer.</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">state::BufIn</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">BufIn</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
 {
@@ -863,7 +884,7 @@
 }
 
 <span class="doccomment">/// Functions to use the output arguments as pointer to a buffer.</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">state::BufOut</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>: <span class="ident">Ext</span>, <span class="ident">S</span>: <span class="ident">BufOut</span><span class="op">&gt;</span> <span class="ident">Environment</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">E</span>, <span class="ident">S</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::AccountId</span>: <span class="ident">UncheckedFrom</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">E::T</span> <span class="kw">as</span> <span class="ident">SysConfig</span><span class="op">&gt;</span><span class="ident">::Hash</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AsRef</span><span class="op">&lt;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
 {
@@ -912,33 +933,56 @@
 	<span class="ident">output_len_ptr</span>: <span class="ident">u32</span>,
 }
 
-<span class="doccomment">/// Private submodule with public types to prevent other modules from naming them.</span>
-<span class="kw">mod</span> <span class="ident">state</span> {
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">State</span> {}
+<span class="doccomment">/// Any state of an [`Environment`] implements this trait.</span>
+<span class="doccomment">/// See [typestate programming](https://docs.rust-embedded.org/book/static-guarantees/typestate-programming.html).</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">State</span>: <span class="ident">sealed::Sealed</span> {}
 
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PrimIn</span>: <span class="ident">State</span> {}
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PrimOut</span>: <span class="ident">State</span> {}
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BufIn</span>: <span class="ident">State</span> {}
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BufOut</span>: <span class="ident">State</span> {}
+<span class="doccomment">/// A state that uses primitive inputs.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PrimIn</span>: <span class="ident">State</span> {}
 
-	<span class="doccomment">/// The initial state of an [`Environment`](`super::Environment`).</span>
-	<span class="doccomment">/// See [typestate programming](https://docs.rust-embedded.org/book/static-guarantees/typestate-programming.html).</span>
-	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Init</span> {}
-	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">OnlyIn</span> {}
-	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PrimInBufOut</span> {}
-	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BufInBufOut</span> {}
+<span class="doccomment">/// A state that uses primitive outputs.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PrimOut</span>: <span class="ident">State</span> {}
 
-	<span class="kw">impl</span> <span class="ident">State</span> <span class="kw">for</span> <span class="ident">Init</span> {}
-	<span class="kw">impl</span> <span class="ident">State</span> <span class="kw">for</span> <span class="ident">OnlyIn</span> {}
-	<span class="kw">impl</span> <span class="ident">State</span> <span class="kw">for</span> <span class="ident">PrimInBufOut</span> {}
-	<span class="kw">impl</span> <span class="ident">State</span> <span class="kw">for</span> <span class="ident">BufInBufOut</span> {}
+<span class="doccomment">/// A state that uses a buffer as input.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BufIn</span>: <span class="ident">State</span> {}
 
-	<span class="kw">impl</span> <span class="ident">PrimIn</span> <span class="kw">for</span> <span class="ident">OnlyIn</span> {}
-	<span class="kw">impl</span> <span class="ident">PrimOut</span> <span class="kw">for</span> <span class="ident">OnlyIn</span> {}
-	<span class="kw">impl</span> <span class="ident">PrimIn</span> <span class="kw">for</span> <span class="ident">PrimInBufOut</span> {}
-	<span class="kw">impl</span> <span class="ident">BufOut</span> <span class="kw">for</span> <span class="ident">PrimInBufOut</span> {}
-	<span class="kw">impl</span> <span class="ident">BufIn</span> <span class="kw">for</span> <span class="ident">BufInBufOut</span> {}
-	<span class="kw">impl</span> <span class="ident">BufOut</span> <span class="kw">for</span> <span class="ident">BufInBufOut</span> {}
+<span class="doccomment">/// A state that uses a buffer as output.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BufOut</span>: <span class="ident">State</span> {}
+
+<span class="doccomment">/// The initial state of an [`Environment`].</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">InitState</span> {}
+
+<span class="doccomment">/// A state that uses all arguments as primitive inputs.</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">OnlyInState</span> {}
+
+<span class="doccomment">/// A state that uses two arguments as primitive inputs and the other two as buffer output.</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PrimInBufOutState</span> {}
+
+<span class="doccomment">/// Uses a buffer for input and a buffer for output.</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BufInBufOutState</span> {}
+
+<span class="kw">mod</span> <span class="ident">sealed</span> {
+	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+
+	<span class="doccomment">/// Trait to prevent users from implementing `State` for anything else.</span>
+	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Sealed</span> {}
+
+	<span class="kw">impl</span> <span class="ident">Sealed</span> <span class="kw">for</span> <span class="ident">InitState</span> {}
+	<span class="kw">impl</span> <span class="ident">Sealed</span> <span class="kw">for</span> <span class="ident">OnlyInState</span> {}
+	<span class="kw">impl</span> <span class="ident">Sealed</span> <span class="kw">for</span> <span class="ident">PrimInBufOutState</span> {}
+	<span class="kw">impl</span> <span class="ident">Sealed</span> <span class="kw">for</span> <span class="ident">BufInBufOutState</span> {}
+
+	<span class="kw">impl</span> <span class="ident">State</span> <span class="kw">for</span> <span class="ident">InitState</span> {}
+	<span class="kw">impl</span> <span class="ident">State</span> <span class="kw">for</span> <span class="ident">OnlyInState</span> {}
+	<span class="kw">impl</span> <span class="ident">State</span> <span class="kw">for</span> <span class="ident">PrimInBufOutState</span> {}
+	<span class="kw">impl</span> <span class="ident">State</span> <span class="kw">for</span> <span class="ident">BufInBufOutState</span> {}
+
+	<span class="kw">impl</span> <span class="ident">PrimIn</span> <span class="kw">for</span> <span class="ident">OnlyInState</span> {}
+	<span class="kw">impl</span> <span class="ident">PrimOut</span> <span class="kw">for</span> <span class="ident">OnlyInState</span> {}
+	<span class="kw">impl</span> <span class="ident">PrimIn</span> <span class="kw">for</span> <span class="ident">PrimInBufOutState</span> {}
+	<span class="kw">impl</span> <span class="ident">BufOut</span> <span class="kw">for</span> <span class="ident">PrimInBufOutState</span> {}
+	<span class="kw">impl</span> <span class="ident">BufIn</span> <span class="kw">for</span> <span class="ident">BufInBufOutState</span> {}
+	<span class="kw">impl</span> <span class="ident">BufOut</span> <span class="kw">for</span> <span class="ident">BufInBufOutState</span> {}
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pallet_contracts" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>

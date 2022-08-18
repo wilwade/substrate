@@ -1068,7 +1068,6 @@
 <span id="1062">1062</span>
 <span id="1063">1063</span>
 <span id="1064">1064</span>
-<span id="1065">1065</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -1154,7 +1153,7 @@
 	<span class="kw">let</span> <span class="ident">validator_prefs</span> <span class="op">=</span>
 		<span class="ident">ValidatorPrefs</span> { <span class="ident">commission</span>: <span class="ident">Perbill::from_percent</span>(<span class="number">50</span>), ..<span class="ident">Default::default</span>() };
 	<span class="ident">Staking</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::validate</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">v_controller</span>).<span class="ident">into</span>(), <span class="ident">validator_prefs</span>)<span class="question-mark">?</span>;
-	<span class="kw">let</span> <span class="ident">stash_lookup</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">v_stash</span>.<span class="ident">clone</span>());
+	<span class="kw">let</span> <span class="ident">stash_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">v_stash</span>.<span class="ident">clone</span>());
 
 	<span class="ident">points_total</span> <span class="op">+</span><span class="op">=</span> <span class="number">10</span>;
 	<span class="ident">points_individual</span>.<span class="ident">push</span>((<span class="ident">v_stash</span>.<span class="ident">clone</span>(), <span class="number">10</span>));
@@ -1288,8 +1287,7 @@
 	<span class="ident">bond</span> {
 		<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">create_funded_user</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="string">&quot;stash&quot;</span>, <span class="ident">USER_SEED</span>, <span class="number">100</span>);
 		<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">create_funded_user</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="string">&quot;controller&quot;</span>, <span class="ident">USER_SEED</span>, <span class="number">100</span>);
-		<span class="kw">let</span> <span class="ident">controller_lookup</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>
-			<span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">controller</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> <span class="ident">controller_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">controller</span>.<span class="ident">clone</span>());
 		<span class="kw">let</span> <span class="ident">reward_destination</span> <span class="op">=</span> <span class="ident">RewardDestination::Staked</span>;
 		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">T::Currency::minimum_balance</span>() <span class="op">*</span> <span class="number">10u32</span>.<span class="ident">into</span>();
 		<span class="macro">whitelist_account!</span>(<span class="ident">stash</span>);
@@ -1436,7 +1434,7 @@
 			<span class="number">100</span>,
 			<span class="ident">Default::default</span>(),
 		)<span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">stash_lookup</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">stash</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> <span class="ident">stash_lookup</span> <span class="op">=</span> <span class="ident">T::Lookup::unlookup</span>(<span class="ident">stash</span>.<span class="ident">clone</span>());
 
 		<span class="comment">// they start validating.</span>
 		<span class="ident">Staking</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::validate</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">controller</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(), <span class="ident">Default::default</span>())<span class="question-mark">?</span>;

@@ -1720,9 +1720,6 @@
 <span id="1714">1714</span>
 <span id="1715">1715</span>
 <span id="1716">1716</span>
-<span id="1717">1717</span>
-<span id="1718">1718</span>
-<span id="1719">1719</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1765,10 +1762,10 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">impls</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">slashing</span>, <span class="ident">weights::WeightInfo</span>, <span class="ident">ActiveEraInfo</span>, <span class="ident">BalanceOf</span>, <span class="ident">EraPayout</span>, <span class="ident">EraRewardPoints</span>, <span class="ident">Exposure</span>,
-	<span class="ident">Forcing</span>, <span class="ident">MaxUnlockingChunks</span>, <span class="ident">NegativeImbalanceOf</span>, <span class="ident">Nominations</span>, <span class="ident">PositiveImbalanceOf</span>, <span class="ident">Releases</span>,
-	<span class="ident">RewardDestination</span>, <span class="ident">SessionInterface</span>, <span class="ident">StakingLedger</span>, <span class="ident">UnappliedSlash</span>, <span class="ident">UnlockChunk</span>,
-	<span class="ident">ValidatorPrefs</span>,
+	<span class="ident">slashing</span>, <span class="ident">weights::WeightInfo</span>, <span class="ident">AccountIdLookupOf</span>, <span class="ident">ActiveEraInfo</span>, <span class="ident">BalanceOf</span>, <span class="ident">EraPayout</span>,
+	<span class="ident">EraRewardPoints</span>, <span class="ident">Exposure</span>, <span class="ident">Forcing</span>, <span class="ident">MaxUnlockingChunks</span>, <span class="ident">NegativeImbalanceOf</span>, <span class="ident">Nominations</span>,
+	<span class="ident">PositiveImbalanceOf</span>, <span class="ident">Releases</span>, <span class="ident">RewardDestination</span>, <span class="ident">SessionInterface</span>, <span class="ident">StakingLedger</span>,
+	<span class="ident">UnappliedSlash</span>, <span class="ident">UnlockChunk</span>, <span class="ident">ValidatorPrefs</span>,
 };
 
 <span class="kw">const</span> <span class="ident">STAKING_ID</span>: <span class="ident">LockIdentifier</span> <span class="op">=</span> <span class="kw-2">*</span><span class="string">b&quot;staking &quot;</span>;
@@ -2493,7 +2490,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::bond</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bond</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="ident">controller</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
+			<span class="ident">controller</span>: <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">value</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">payee</span>: <span class="ident">RewardDestination</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
@@ -2780,7 +2777,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::nominate</span>(<span class="ident">targets</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nominate</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="ident">targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span><span class="op">&gt;</span>,
+			<span class="ident">targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
@@ -2900,7 +2897,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_controller</span>())]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_controller</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="ident">controller</span>: <span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span>,
+			<span class="ident">controller</span>: <span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">old_controller</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::bonded</span>(<span class="kw-2">&amp;</span><span class="ident">stash</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotStash</span>)<span class="question-mark">?</span>;
@@ -3246,10 +3243,7 @@
 		<span class="doccomment">/// Note: Making this call only makes sense if you first set the validator preferences to</span>
 		<span class="doccomment">/// block any further nominations.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::kick</span>(<span class="ident">who</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>))]</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kick</span>(
-			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-			<span class="ident">who</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T::Lookup</span> <span class="kw">as</span> <span class="ident">StaticLookup</span><span class="op">&gt;</span><span class="ident">::Source</span><span class="op">&gt;</span>,
-		) -&gt; <span class="ident">DispatchResult</span> {
+		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kick</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">who</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AccountIdLookupOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">controller</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">ledger</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::ledger</span>(<span class="kw-2">&amp;</span><span class="ident">controller</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NotController</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">stash</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">ledger</span>.<span class="ident">stash</span>;
