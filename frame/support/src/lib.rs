@@ -949,6 +949,38 @@ pub mod tests {
 	}
 
 	#[test]
+	fn storage_alias_with_clear_prefix_works() {
+		new_test_ext().execute_with(|| {
+			use crate::storage::generator::StorageDoubleMap;
+			#[crate::storage_alias]
+			type GenericData<T> = StorageDoubleMap<
+				Test,
+				Blake2_128Concat,
+				<T as Config>::BlockNumber,
+				Blake2_128Concat,
+				<T as Config>::BlockNumber,
+				<T as Config>::BlockNumber,
+			>;
+
+			for i in 0..10 {
+				GenericData::<Test>::insert(i, i, i);
+			}
+
+			// Has stuff!
+			assert_eq!(GenericData::<Test>::iter().count(), 10);
+
+			let key = GenericData::<Test>::prefix_hash();
+			let result =
+			frame_support::storage::unhashed::clear_prefix(&key, Some(5), None);
+
+			// Fails. It is 0 now, but it should still have 5
+			assert_eq!(GenericData::<Test>::iter().count(), 5);
+			// Fails. It returns that it cleared 5, but it actually clears 10 and should only be 5.
+			assert_eq!(result.unique, 5);
+		});
+	}
+
+	#[test]
 	fn storage_value_mutate_exists_should_work() {
 		new_test_ext().execute_with(|| {
 			#[crate::storage_alias]
