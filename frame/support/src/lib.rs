@@ -950,22 +950,29 @@ pub mod tests {
 
 	#[test]
 	fn storage_alias_with_clear_prefix_works() {
-		new_test_ext().execute_with(|| {
-			use crate::storage::generator::StorageDoubleMap;
-			#[crate::storage_alias]
-			type GenericData<T> = StorageDoubleMap<
-				Test,
-				Blake2_128Concat,
-				<T as Config>::BlockNumber,
-				Blake2_128Concat,
-				<T as Config>::BlockNumber,
-				<T as Config>::BlockNumber,
-			>;
+		use crate::storage::generator::StorageDoubleMap;
+		#[crate::storage_alias]
+		type GenericData<T> = StorageDoubleMap<
+			Test,
+			Blake2_128Concat,
+			<T as Config>::BlockNumber,
+			Blake2_128Concat,
+			<T as Config>::BlockNumber,
+			<T as Config>::BlockNumber,
+		>;
 
+		let mut ext = new_test_ext();
+		ext.execute_with(|| {
+			// Setup
 			for i in 0..10 {
 				GenericData::<Test>::insert(i, i, i);
 			}
+		});
 
+		// Commit the changes so we aren't just working with the overlay storage
+		ext.commit_all().unwrap();
+
+		ext.execute_with(|| {
 			// Has stuff!
 			assert_eq!(GenericData::<Test>::iter().count(), 10);
 
@@ -973,9 +980,7 @@ pub mod tests {
 			let result =
 			frame_support::storage::unhashed::clear_prefix(&key, Some(5), None);
 
-			// Fails. It is 0 now, but it should still have 5
 			assert_eq!(GenericData::<Test>::iter().count(), 5);
-			// Fails. It returns that it cleared 5, but it actually clears 10 and should only be 5.
 			assert_eq!(result.unique, 5);
 		});
 	}
